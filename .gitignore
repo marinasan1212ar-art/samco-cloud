@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+staticfiles/
+.DS_Store
+cloudflared
+cf.tgz
