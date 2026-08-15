@@ -126,3 +126,7 @@ MAILERS = {
         'BACKEND': 'django.core.mail.backends.console.EmailBackend',
     },
 }
+
+# স্ট্যাটিক ফাইল কনফিগারেশন
+STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
