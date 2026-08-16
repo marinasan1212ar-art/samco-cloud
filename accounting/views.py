@@ -1,12 +1,13 @@
 from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from django.shortcuts import render
-from .models import Account, Customer, Product, Invoice, JournalEntry
+from django.shortcuts import render, get_object_or_404
+from .models import Account, Customer, Product, Invoice, JournalEntry, CompanySettings
 from .serializers import (
     AccountSerializer, CustomerSerializer, ProductSerializer,
     InvoiceSerializer, JournalEntrySerializer
 )
+from .zatca import generate_qr_image_base64
 
 class AccountViewSet(viewsets.ModelViewSet):
     queryset = Account.objects.all().order_by('code')
@@ -28,7 +29,6 @@ class JournalEntryViewSet(viewsets.ModelViewSet):
     queryset = JournalEntry.objects.all().order_by('-id')
     serializer_class = JournalEntrySerializer
 
-# 🌐 ড্যাশবোর্ড রেন্ডার ভিউ (HTML Frontend)
 def dashboard_view(request):
     total_sales = sum(inv.total_amount for inv in Invoice.objects.all())
     total_vat = sum(inv.vat_amount for inv in Invoice.objects.all())
@@ -48,7 +48,20 @@ def dashboard_view(request):
         'invoices': invoices
     })
 
-# 📊 API Summary
+def invoice_detail_view(request, pk):
+    invoice = get_object_or_404(Invoice, pk=pk)
+    company, _ = CompanySettings.objects.get_or_create(id=1)
+    
+    qr_img = ""
+    if invoice.zatca_qr_b64:
+        qr_img = generate_qr_image_base64(invoice.zatca_qr_b64)
+
+    return render(request, 'accounting/invoice_detail.html', {
+        'invoice': invoice,
+        'company': company,
+        'qr_image': qr_img
+    })
+
 class FinancialSummaryAPIView(APIView):
     def get(self, request):
         total_sales = sum(inv.total_amount for inv in Invoice.objects.all())

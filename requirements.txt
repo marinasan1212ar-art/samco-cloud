@@ -2,3 +2,6 @@ Django
 djangorestframework
 gunicorn
 whitenoise
+qrcode
+pillow
+reportlab

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Account, JournalEntry, JournalEntryLine, Customer, Product, Invoice, InvoiceItem
+from .models import Account, JournalEntry, JournalEntryLine, Customer, Product, Invoice, InvoiceItem, Quotation, QuotationItem, CompanySettings
 
 class JournalEntryLineInline(admin.TabularInline):
     model = JournalEntryLine
@@ -8,6 +8,23 @@ class JournalEntryLineInline(admin.TabularInline):
 class InvoiceItemInline(admin.TabularInline):
     model = InvoiceItem
     extra = 1
+
+class QuotationItemInline(admin.TabularInline):
+    model = QuotationItem
+    extra = 1
+
+@admin.register(CompanySettings)
+class CompanySettingsAdmin(admin.ModelAdmin):
+    list_display = ('company_name_en', 'vat_number', 'phone')
+
+@admin.register(Quotation)
+class QuotationAdmin(admin.ModelAdmin):
+    list_display = ('quote_no', 'customer', 'date', 'total_amount', 'status')
+    inlines = [QuotationItemInline]
+    
+    def response_add(self, request, obj, post_url_continue=None):
+        obj.update_totals()
+        return super().response_add(request, obj, post_url_continue)
 
 @admin.register(Account)
 class AccountAdmin(admin.ModelAdmin):
