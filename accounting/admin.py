@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils.html import format_html
 from .models import Account, JournalEntry, JournalEntryLine, Customer, Product, Invoice, InvoiceItem, Quotation, QuotationItem, CompanySettings
 
 class JournalEntryLineInline(admin.TabularInline):
@@ -44,8 +45,15 @@ class ProductAdmin(admin.ModelAdmin):
 
 @admin.register(Invoice)
 class InvoiceAdmin(admin.ModelAdmin):
-    list_display = ('invoice_no', 'customer', 'date', 'subtotal', 'vat_amount', 'total_amount')
+    list_display = ('invoice_no', 'customer', 'date', 'subtotal', 'vat_amount', 'total_amount', 'print_tax_invoice')
     inlines = [InvoiceItemInline]
+
+    def print_tax_invoice(self, obj):
+        return format_html(
+            '<a class="button" style="background-color: #00F0FF; color: #000; font-weight: bold; padding: 4px 10px; border-radius: 6px; text-decoration: none;" href="/invoice/{}/" target="_blank">🖨️ Print Tax Invoice</a>',
+            obj.pk
+        )
+    print_tax_invoice.short_description = "ZATCA Invoice"
 
     def response_add(self, request, obj, post_url_continue=None):
         obj.update_totals_and_post_accounting()
