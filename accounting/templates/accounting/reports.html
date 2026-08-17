@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Statements & Accounting Reports - {{ company.company_name_en }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white !important; color: black !important; padding: 0 !important; }
+            .print-card { border: 1px solid #cbd5e1 !important; box-shadow: none !important; background: white !important; color: black !important; }
+            .print-text-dark { color: #0f172a !important; }
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans antialiased p-4 md:p-8">
+
+    <!-- Top Action Bar -->
+    <div class="max-w-6xl mx-auto mb-6 flex justify-between items-center no-print">
+        <a href="/" class="text-sm font-semibold text-slate-400 hover:text-white flex items-center gap-2">
+            <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+        </a>
+        <div class="flex items-center gap-3">
+            <span class="text-xs px-3 py-1.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Double-Entry Balanced 🟢
+            </span>
+            <button onclick="window.print()" class="bg-gradient-to-r from-cyan-500 to-emerald-400 text-slate-950 px-5 py-2 rounded-xl font-bold text-sm shadow-lg flex items-center gap-2">
+                <i class="fa-solid fa-print"></i> Print Report (طباعة التقرير)
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="max-w-6xl mx-auto space-y-6">
+        
+        <!-- Header Banner -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl flex justify-between items-center print-card">
+            <div>
+                <h1 class="text-xl md:text-2xl font-black text-white print-text-dark">{{ company.company_name_en }}</h1>
+                <p class="text-sm font-bold text-slate-400 print-text-dark" dir="rtl">{{ company.company_name_ar }}</p>
+                <p class="text-xs text-slate-500 mt-1">VAT: <span class="font-bold text-slate-300 print-text-dark">{{ company.vat_number }}</span> | CR: {{ company.cr_number }}</p>
+            </div>
+            <div class="text-right">
+                <span class="text-xs font-bold uppercase tracking-widest text-amber-400 bg-amber-500/10 px-3 py-1 rounded-md border border-amber-500/20">
+                    Corporate Financial Center
+                </span>
+                <p class="text-xs text-slate-400 mt-1">Generated: {% now "d F Y H:i" %} (SAR)</p>
+            </div>
+        </div>
+
+        <!-- 📑 Report Selection Tabs (No-Print) -->
+        <div class="flex flex-wrap gap-2 no-print border-b border-slate-800 pb-3">
+            <button onclick="switchTab('pnl')" id="tab-btn-pnl" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold bg-cyan-500 text-slate-950 shadow-lg">
+                📈 Profit & Loss (قائمة الدخل)
+            </button>
+            <button onclick="switchTab('bs')" id="tab-btn-bs" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 hover:text-white border border-slate-800">
+                🏛️ Balance Sheet (الميزانية العمومية)
+            </button>
+            <button onclick="switchTab('tb')" id="tab-btn-tb" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 hover:text-white border border-slate-800">
+                ⚖️ Trial Balance (ميزان المراجعة)
+            </button>
+            <button onclick="switchTab('vat')" id="tab-btn-vat" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 hover:text-white border border-slate-800">
+                🧾 ZATCA VAT Return (الإقرار الضريبي)
+            </button>
+            <button onclick="switchTab('gl')" id="tab-btn-gl" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 hover:text-white border border-slate-800">
+                📖 General Ledger (دفتر الأستاذ)
+            </button>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- 📈 1. PROFIT & LOSS STATEMENT (قائمة الدخل) -->
+        <!-- ========================================================= -->
+        <div id="tab-pnl" class="tab-content bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-xl print-card">
+            <div class="border-b border-slate-800 pb-4 mb-6 flex justify-between items-center">
+                <div>
+                    <h2 class="text-lg font-black text-white print-text-dark">Income Statement / Profit & Loss (قائمة الدخل)</h2>
+                    <p class="text-xs text-slate-400">Trading & Operational Financial Performance</p>
+                </div>
+                <span class="text-xs bg-slate-800 px-3 py-1 rounded-lg text-slate-300 font-bold">Currency: SAR</span>
+            </div>
+
+            <div class="space-y-4 text-xs">
+                <!-- Revenue -->
+                <div class="p-4 bg-slate-800/40 rounded-xl space-y-2 border border-slate-800">
+                    <div class="flex justify-between font-bold text-sm text-cyan-400">
+                        <span>1. Operating Revenue / المبيعات والإيرادات:</span>
+                        <span>{{ pnl.revenue|floatformat:2 }} SAR</span>
+                    </div>
+                    <div class="flex justify-between text-slate-400 pl-4">
+                        <span>• Gross Invoiced Sales (Net of VAT)</span>
+                        <span>{{ pnl.revenue|floatformat:2 }} SAR</span>
+                    </div>
+                </div>
+
+                <!-- Cost of Goods Sold -->
+                <div class="p-4 bg-slate-800/40 rounded-xl space-y-2 border border-slate-800">
+                    <div class="flex justify-between font-bold text-sm text-amber-400">
+                        <span>2. Cost of Goods Sold (COGS) / تكلفة المبيعات:</span>
+                        <span>({{ pnl.cogs|floatformat:2 }}) SAR</span>
+                    </div>
+                    <div class="flex justify-between text-slate-400 pl-4">
+                        <span>• Material Purchases & Manufacturing Direct Costs</span>
+                        <span>{{ pnl.cogs|floatformat:2 }} SAR</span>
+                    </div>
+                </div>
+
+                <!-- Gross Profit -->
+                <div class="p-4 bg-slate-800/80 rounded-xl flex justify-between font-bold text-sm text-white border border-slate-700">
+                    <span>GROSS PROFIT / مجمل الربح:</span>
+                    <span class="text-emerald-400 font-black text-base">{{ pnl.gross_profit|floatformat:2 }} SAR</span>
+                </div>
+
+                <!-- Operating Expenses -->
+                <div class="p-4 bg-slate-800/40 rounded-xl space-y-2 border border-slate-800">
+                    <div class="flex justify-between font-bold text-sm text-rose-400">
+                        <span>3. Operating & Administrative Expenses / المصروفات التشغيلية:</span>
+                        <span>({{ pnl.expenses|floatformat:2 }}) SAR</span>
+                    </div>
+                    <div class="flex justify-between text-slate-400 pl-4">
+                        <span>• General Utilities, Rent & Payment Vouchers</span>
+                        <span>{{ pnl.expenses|floatformat:2 }} SAR</span>
+                    </div>
+                </div>
+
+                <!-- Net Profit Final -->
+                <div class="p-5 bg-gradient-to-r from-slate-900 to-slate-800 rounded-xl flex justify-between items-center border-2 border-emerald-500/30 text-white mt-6">
+                    <div>
+                        <p class="text-base font-black uppercase">NET PROFIT / صافي الربح (بعد المصروفات):</p>
+                        <p class="text-[10px] text-slate-400">Retained Earnings for Corporate Growth</p>
+                    </div>
+                    <span class="text-2xl font-black text-emerald-400">{{ pnl.net_profit|floatformat:2 }} SAR</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- 🏛️ 2. BALANCE SHEET (الميزانية العمومية) -->
+        <!-- ========================================================= -->
+        <div id="tab-bs" class="tab-content bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-xl print-card hidden">
+            <div class="border-b border-slate-800 pb-4 mb-6 flex justify-between items-center">
+                <div>
+                    <h2 class="text-lg font-black text-white print-text-dark">Balance Sheet Statement (الميزانية العمومية)</h2>
+                    <p class="text-xs text-slate-400">Financial Position: Assets = Liabilities + Equity</p>
+                </div>
+                <span class="text-xs bg-slate-800 px-3 py-1 rounded-lg text-slate-300 font-bold">As of Today</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+                <!-- ASSETS COLUMN -->
+                <div class="space-y-3 bg-slate-800/30 p-5 rounded-xl border border-slate-800">
+                    <h3 class="font-black text-sm text-cyan-400 border-b border-slate-700 pb-2">ASSETS / الأصول</h3>
+                    <div class="flex justify-between py-1.5 border-b border-slate-800/60">
+                        <span class="text-slate-300">Cash on Hand & Bank Accounts (النقد والبنوك):</span>
+                        <span class="font-bold text-white">{{ bs.bank_cash|floatformat:2 }} SAR</span>
+                    </div>
+                    <div class="flex justify-between py-1.5 border-b border-slate-800/60">
+                        <span class="text-slate-300">Accounts Receivable (الذمم المدينة - العملاء):</span>
+                        <span class="font-bold text-white">{{ bs.ar|floatformat:2 }} SAR</span>
+                    </div>
+                    <div class="flex justify-between py-1.5 border-b border-slate-800/60">
+                        <span class="text-slate-300">Inventory Stock Valuation (المخزون السلعي):</span>
+                        <span class="font-bold text-white">{{ bs.inventory|floatformat:2 }} SAR</span>
+                    </div>
+                    <div class="flex justify-between py-1.5 border-b border-slate-800/60">
+                        <span class="text-slate-300">VAT Input Tax Recoverable (ضريبة المدخلات):</span>
+                        <span class="font-bold text-white">{{ bs.vat_input|floatformat:2 }} SAR</span>
+                    </div>
+                    <div class="flex justify-between pt-3 font-black text-sm text-cyan-400 border-t-2 border-slate-700">
+                        <span>TOTAL ASSETS / مجموع الأصول:</span>
+                        <span>{{ bs.total_assets|floatformat:2 }} SAR</span>
+                    </div>
+                </div>
+
+                <!-- LIABILITIES & EQUITY COLUMN -->
+                <div class="space-y-3 bg-slate-800/30 p-5 rounded-xl border border-slate-800">
+                    <h3 class="font-black text-sm text-rose-400 border-b border-slate-700 pb-2">LIABILITIES & EQUITY / الخصوم وحقوق الملكية</h3>
+                    <div class="flex justify-between py-1.5 border-b border-slate-800/60">
+                        <span class="text-slate-300">Accounts Payable (الذمم الدائنة - الموردين):</span>
+                        <span class="font-bold text-white">{{ bs.ap|floatformat:2 }} SAR</span>
+                    </div>
+                    <div class="flex justify-between py-1.5 border-b border-slate-800/60">
+                        <span class="text-slate-300">VAT Output Tax Due (ضريبة المخرجات المستحقة):</span>
+                        <span class="font-bold text-white">{{ bs.vat_output|floatformat:2 }} SAR</span>
+                    </div>
+                    <div class="flex justify-between py-1.5 font-bold text-slate-200 border-b border-slate-700">
+                        <span>Total Liabilities / مجموع الخصوم:</span>
+                        <span>{{ bs.total_liabilities|floatformat:2 }} SAR</span>
+                    </div>
+
+                    <h4 class="font-black text-xs text-amber-400 pt-2">EQUITY / حقوق الملكية</h4>
+                    <div class="flex justify-between py-1.5 border-b border-slate-800/60">
+                        <span class="text-slate-300">Retained Earnings & Capital (الأرباح المبقاة):</span>
+                        <span class="font-bold text-emerald-400">{{ bs.equity|floatformat:2 }} SAR</span>
+                    </div>
+
+                    <div class="flex justify-between pt-3 font-black text-sm text-emerald-400 border-t-2 border-slate-700">
+                        <span>TOTAL LIABILITIES & EQUITY:</span>
+                        <span>{{ bs.total_assets|floatformat:2 }} SAR</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- ⚖️ 3. TRIAL BALANCE (ميزان المراجعة) -->
+        <!-- ========================================================= -->
+        <div id="tab-tb" class="tab-content bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-xl print-card hidden">
+            <div class="border-b border-slate-800 pb-4 mb-6 flex justify-between items-center">
+                <div>
+                    <h2 class="text-lg font-black text-white print-text-dark">Trial Balance / General Ledger Summary (ميزان المراجعة)</h2>
+                    <p class="text-xs text-slate-400">Equilibrium Verification of All Ledgers</p>
+                </div>
+                <span class="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-1 rounded-md font-bold">Balanced 🟢</span>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                    <thead>
+                        <tr class="bg-slate-800/80 text-slate-300 uppercase font-bold border-b border-slate-700">
+                            <th class="p-3">Account Code</th>
+                            <th class="p-3">Account Name</th>
+                            <th class="p-3">Classification</th>
+                            <th class="p-3 text-right">Debit Total (مدين)</th>
+                            <th class="p-3 text-right">Credit Total (دائن)</th>
+                            <th class="p-3 text-right">Net Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800">
+                        {% for row in trial_balance %}
+                        <tr class="hover:bg-slate-800/40 transition">
+                            <td class="p-3 font-mono text-cyan-400 font-bold">{{ row.code }}</td>
+                            <td class="p-3 font-semibold text-white">{{ row.name }}</td>
+                            <td class="p-3 text-slate-400 font-medium">{{ row.type }}</td>
+                            <td class="p-3 text-right font-mono text-slate-200">{{ row.debit_total|floatformat:2 }}</td>
+                            <td class="p-3 text-right font-mono text-slate-200">{{ row.credit_total|floatformat:2 }}</td>
+                            <td class="p-3 text-right font-mono font-bold {% if row.net_balance >= 0 %}text-emerald-400{% else %}text-rose-400{% endif %}">
+                                {{ row.net_balance|floatformat:2 }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr class="bg-slate-800 text-white font-black text-xs border-t-2 border-slate-700">
+                            <td colspan="3" class="p-3 uppercase">Grand Equilibrium Total (SAR):</td>
+                            <td class="p-3 text-right text-emerald-400">{{ tot_debit_all|floatformat:2 }} SAR</td>
+                            <td class="p-3 text-right text-emerald-400">{{ tot_credit_all|floatformat:2 }} SAR</td>
+                            <td class="p-3 text-right text-cyan-400">0.00 (Balanced)</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- 🧾 4. ZATCA VAT RETURN REPORT (الإقرار الضريبي) -->
+        <!-- ========================================================= -->
+        <div id="tab-vat" class="tab-content bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-xl print-card hidden">
+            <div class="border-b border-slate-800 pb-4 mb-6 flex justify-between items-center">
+                <div>
+                    <h2 class="text-lg font-black text-white print-text-dark">ZATCA 15% VAT Return Declaration (تقرير الإقرار الضريبي)</h2>
+                    <p class="text-xs text-slate-400">Quarterly / Monthly Official Tax Return Template (Saudi Arabia)</p>
+                </div>
+                <span class="text-xs bg-amber-500/10 text-amber-400 border border-amber-500/20 px-3 py-1 rounded-md font-bold">Standard 15% Rate</span>
+            </div>
+
+            <div class="space-y-6 text-xs">
+                <!-- Sales (Output VAT) -->
+                <div class="border border-slate-800 rounded-xl overflow-hidden">
+                    <div class="bg-slate-800 p-3 font-bold text-cyan-400 text-sm">
+                        A. VAT on Standard Rated Sales (ضريبة المبيعات الخاضعة للنسبة الأساسية)
+                    </div>
+                    <div class="p-4 bg-slate-800/30 flex justify-between items-center">
+                        <div>
+                            <p class="text-slate-300 font-semibold">Standard Rated 15% Domestic Invoiced Sales</p>
+                            <p class="text-[10px] text-slate-500">Total base amount before tax: {{ vat.sales_base|floatformat:2 }} SAR</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs text-slate-400">Output VAT Collected:</span>
+                            <p class="text-base font-black text-amber-400">{{ vat.sales_vat|floatformat:2 }} SAR</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Purchases (Input VAT) -->
+                <div class="border border-slate-800 rounded-xl overflow-hidden">
+                    <div class="bg-slate-800 p-3 font-bold text-emerald-400 text-sm">
+                        B. VAT on Standard Rated Purchases (ضريبة المشتريات القابلة للاسترداد)
+                    </div>
+                    <div class="p-4 bg-slate-800/30 flex justify-between items-center">
+                        <div>
+                            <p class="text-slate-300 font-semibold">Standard Rated 15% Local Vendor Purchases</p>
+                            <p class="text-[10px] text-slate-500">Total purchase expenses: {{ vat.pur_base|floatformat:2 }} SAR</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs text-slate-400">Input VAT Paid:</span>
+                            <p class="text-base font-black text-emerald-400">{{ vat.pur_vat|floatformat:2 }} SAR</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Net VAT Payable -->
+                <div class="p-6 bg-slate-800/60 rounded-xl border-2 border-amber-500/40 flex justify-between items-center">
+                    <div>
+                        <h3 class="text-base font-black text-white">NET VAT PAYABLE TO ZATCA / صافي الضريبة المستحقة للسداد:</h3>
+                        <p class="text-[11px] text-slate-400">Net Output Tax Minus Input Tax (ضريبة المخرجات ناقص ضريبة المدخلات)</p>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-2xl font-black text-amber-400">{{ vat.net_due|floatformat:2 }} SAR</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- 📖 5. GENERAL LEDGER (دفتر الأستاذ) -->
+        <!-- ========================================================= -->
+        <div id="tab-gl" class="tab-content bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-xl print-card hidden">
+            <div class="border-b border-slate-800 pb-4 mb-6 flex justify-between items-center">
+                <div>
+                    <h2 class="text-lg font-black text-white print-text-dark">General Ledger Detail Trail (دفتر الأستاذ العام)</h2>
+                    <p class="text-xs text-slate-400">Double-Entry Cryptographic Audit Line Items</p>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                    <thead>
+                        <tr class="bg-slate-800/80 text-slate-300 uppercase font-bold border-b border-slate-700">
+                            <th class="p-3">Date</th>
+                            <th class="p-3">Ref No</th>
+                            <th class="p-3">Account</th>
+                            <th class="p-3">Description</th>
+                            <th class="p-3 text-right">Debit (SAR)</th>
+                            <th class="p-3 text-right">Credit (SAR)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800">
+                        {% for line in ledger_entries %}
+                        <tr class="hover:bg-slate-800/40 transition">
+                            <td class="p-3 text-slate-400">{{ line.journal_entry.date }}</td>
+                            <td class="p-3 font-mono text-cyan-400 font-bold">{{ line.journal_entry.reference_no }}</td>
+                            <td class="p-3 font-semibold text-white">{{ line.account.code }} - {{ line.account.name }}</td>
+                            <td class="p-3 text-slate-300">{{ line.description }}</td>
+                            <td class="p-3 text-right font-mono font-bold text-emerald-400">{% if line.debit > 0 %}{{ line.debit|floatformat:2 }}{% else %}-{% endif %}</td>
+                            <td class="p-3 text-right font-mono font-bold text-cyan-400">{% if line.credit > 0 %}{{ line.credit|floatformat:2 }}{% else %}-{% endif %}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="6" class="p-6 text-center text-slate-500 italic">No ledger transactions posted yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Tab Switching Script -->
+    <script>
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = 'tab-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 hover:text-white border border-slate-800';
+            });
+
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+            const activeBtn = document.getElementById('tab-btn-' + tabId);
+            activeBtn.className = 'tab-btn px-4 py-2 rounded-xl text-xs font-bold bg-cyan-500 text-slate-950 shadow-lg';
+        }
+    </script>
+</body>
+</html>

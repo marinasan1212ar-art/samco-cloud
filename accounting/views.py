@@ -2,7 +2,13 @@ from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.shortcuts import render, get_object_or_404
-from .models import Account, Customer, Supplier, Product, Invoice, PurchaseBill, BankAccount, ReceiptVoucher, PaymentVoucher, JournalEntry, CompanySettings
+from django.db.models import Sum
+from decimal import Decimal
+from .models import (
+    Account, Customer, Supplier, Product, Invoice, PurchaseBill, 
+    BankAccount, ReceiptVoucher, PaymentVoucher, JournalEntry, 
+    JournalEntryLine, CompanySettings
+)
 from .serializers import (
     AccountSerializer, CustomerSerializer, SupplierSerializer, ProductSerializer,
     InvoiceSerializer, PurchaseBillSerializer, BankAccountSerializer,
@@ -10,6 +16,7 @@ from .serializers import (
 )
 from .zatca import generate_qr_image_base64
 
+# --- API ViewSets ---
 class AccountViewSet(viewsets.ModelViewSet):
     queryset = Account.objects.all().order_by('code')
     serializer_class = AccountSerializer
@@ -50,6 +57,7 @@ class JournalEntryViewSet(viewsets.ModelViewSet):
     queryset = JournalEntry.objects.all().order_by('-id')
     serializer_class = JournalEntrySerializer
 
+# --- Web Dashboard View ---
 def dashboard_view(request):
     total_sales = sum(inv.total_amount for inv in Invoice.objects.all())
     total_purchases = sum(bill.total_amount for bill in PurchaseBill.objects.all())
@@ -82,6 +90,7 @@ def dashboard_view(request):
         'recent_payments': recent_payments
     })
 
+# --- Invoice Detail View ---
 def invoice_detail_view(request, pk):
     invoice = get_object_or_404(Invoice, pk=pk)
     company, _ = CompanySettings.objects.get_or_create(id=1)
@@ -100,6 +109,7 @@ def invoice_detail_view(request, pk):
         'qr_image': qr_img
     })
 
+# --- Voucher Print View ---
 def voucher_print_view(request, v_type, pk):
     company, _ = CompanySettings.objects.get_or_create(id=1)
     if v_type == 'receipt':
@@ -123,4 +133,98 @@ def voucher_print_view(request, v_type, pk):
         'party_label': party_label,
         'party_name': party_name,
         'company': company
+    })
+
+# --- 📊 FINANCIAL REPORTS ENGINE (Quyod Model) ---
+def reports_view(request):
+    company, _ = CompanySettings.objects.get_or_create(id=1)
+    
+    # ১. Trial Balance (রেওয়ামিল) হিসাব
+    accounts = Account.objects.all().order_by('code')
+    trial_balance = []
+    tot_debit_all = Decimal('0.00')
+    tot_credit_all = Decimal('0.00')
+
+    for acc in accounts:
+        debit_sum = JournalEntryLine.objects.filter(account=acc).aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
+        credit_sum = JournalEntryLine.objects.filter(account=acc).aggregate(Sum('credit'))['credit__sum'] or Decimal('0.00')
+        
+        net_balance = debit_sum - credit_sum
+        tot_debit_all += debit_sum
+        tot_credit_all += credit_sum
+
+        trial_balance.append({
+            'code': acc.code,
+            'name': acc.name,
+            'type': acc.account_type,
+            'debit_total': debit_sum,
+            'credit_total': credit_sum,
+            'net_balance': net_balance
+        })
+
+    # ২. Profit & Loss (লাভ-ক্ষতি বিবরণী)
+    total_sales_revenue = sum(inv.subtotal for inv in Invoice.objects.all())
+    total_cogs = sum(bill.subtotal for bill in PurchaseBill.objects.all())
+    gross_profit = total_sales_revenue - total_cogs
+    
+    operating_expenses = JournalEntryLine.objects.filter(account__account_type='Expense').aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
+    net_profit = gross_profit - operating_expenses
+
+    # ৩. Balance Sheet (উদ্বৃত্তপত্র)
+    total_bank_cash = sum(b.balance for b in BankAccount.objects.all())
+    accounts_receivable = sum(inv.total_amount for inv in Invoice.objects.all()) - sum(rv.amount for rv in ReceiptVoucher.objects.all())
+    inventory_valuation = sum(p.current_stock * Decimal('15.00') for p in Product.objects.all()) # গড় মূল্যায়ন
+    vat_input_tax = sum(bill.vat_amount for bill in PurchaseBill.objects.all())
+    
+    total_assets = total_bank_cash + max(Decimal('0.00'), accounts_receivable) + inventory_valuation + vat_input_tax
+
+    accounts_payable = sum(bill.total_amount for bill in PurchaseBill.objects.all()) - sum(pv.amount for pv in PaymentVoucher.objects.all())
+    vat_output_tax = sum(inv.vat_amount for inv in Invoice.objects.all())
+    
+    total_liabilities = max(Decimal('0.00'), accounts_payable) + vat_output_tax
+    total_equity = total_assets - total_liabilities # ব্যালান্সিং সমীকরণ (Assets = Liabilities + Equity)
+
+    # ৪. ZATCA 15% VAT Return Report
+    vat_sales_subtotal = sum(inv.subtotal for inv in Invoice.objects.all())
+    vat_sales_tax = sum(inv.vat_amount for inv in Invoice.objects.all())
+    
+    vat_purchase_subtotal = sum(bill.subtotal for bill in PurchaseBill.objects.all())
+    vat_purchase_tax = sum(bill.vat_amount for bill in PurchaseBill.objects.all())
+    
+    net_vat_due = vat_sales_tax - vat_purchase_tax
+
+    # ৫. General Ledger (সাম্প্রতিক খতিয়ান লাইন)
+    recent_ledger_entries = JournalEntryLine.objects.select_related('journal_entry', 'account').order_by('-id')[:30]
+
+    return render(request, 'accounting/reports.html', {
+        'company': company,
+        'trial_balance': trial_balance,
+        'tot_debit_all': tot_debit_all,
+        'tot_credit_all': tot_credit_all,
+        'pnl': {
+            'revenue': total_sales_revenue,
+            'cogs': total_cogs,
+            'gross_profit': gross_profit,
+            'expenses': operating_expenses,
+            'net_profit': net_profit,
+        },
+        'bs': {
+            'bank_cash': total_bank_cash,
+            'ar': max(Decimal('0.00'), accounts_receivable),
+            'inventory': inventory_valuation,
+            'vat_input': vat_input_tax,
+            'total_assets': total_assets,
+            'ap': max(Decimal('0.00'), accounts_payable),
+            'vat_output': vat_output_tax,
+            'total_liabilities': total_liabilities,
+            'equity': total_equity,
+        },
+        'vat': {
+            'sales_base': vat_sales_subtotal,
+            'sales_vat': vat_sales_tax,
+            'pur_base': vat_purchase_subtotal,
+            'pur_vat': vat_purchase_tax,
+            'net_due': net_vat_due,
+        },
+        'ledger_entries': recent_ledger_entries,
     })
