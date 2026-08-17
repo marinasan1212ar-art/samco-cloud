@@ -3,10 +3,14 @@ from rest_framework.routers import DefaultRouter
 from .views import (
     AccountViewSet, CustomerViewSet, SupplierViewSet, ProductViewSet,
     InvoiceViewSet, PurchaseBillViewSet, BankAccountViewSet,
-    ReceiptVoucherViewSet, PaymentVoucherViewSet, JournalEntryViewSet
+    ReceiptVoucherViewSet, PaymentVoucherViewSet, JournalEntryViewSet,
+    WarehouseViewSet, WarehouseStockViewSet, StockTransferViewSet
 )
 
 router = DefaultRouter()
+router.register(r'warehouses', WarehouseViewSet)
+router.register(r'warehouse-stocks', WarehouseStockViewSet)
+router.register(r'stock-transfers', StockTransferViewSet)
 router.register(r'accounts', AccountViewSet)
 router.register(r'banks', BankAccountViewSet)
 router.register(r'customers', CustomerViewSet)

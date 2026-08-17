@@ -1,5 +1,35 @@
 from rest_framework import serializers
-from .models import Account, Customer, Supplier, Product, Invoice, InvoiceItem, PurchaseBill, PurchaseBillItem, BankAccount, ReceiptVoucher, PaymentVoucher, JournalEntry, JournalEntryLine
+from .models import (
+    Account, Customer, Supplier, Product, Invoice, InvoiceItem, PurchaseBill, 
+    PurchaseBillItem, BankAccount, ReceiptVoucher, PaymentVoucher, 
+    JournalEntry, JournalEntryLine, Warehouse, WarehouseStock, StockTransfer, StockTransferItem
+)
+
+class WarehouseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Warehouse
+        fields = '__all__'
+
+class WarehouseStockSerializer(serializers.ModelSerializer):
+    warehouse_name = serializers.CharField(source='warehouse.name_en', read_only=True)
+    product_name = serializers.CharField(source='product.name', read_only=True)
+    class Meta:
+        model = WarehouseStock
+        fields = '__all__'
+
+class StockTransferItemSerializer(serializers.ModelSerializer):
+    product_name = serializers.CharField(source='product.name', read_only=True)
+    class Meta:
+        model = StockTransferItem
+        fields = ['id', 'product', 'product_name', 'qty']
+
+class StockTransferSerializer(serializers.ModelSerializer):
+    items = StockTransferItemSerializer(many=True, read_only=True)
+    source_name = serializers.CharField(source='source_warehouse.name_en', read_only=True)
+    destination_name = serializers.CharField(source='destination_warehouse.name_en', read_only=True)
+    class Meta:
+        model = StockTransfer
+        fields = '__all__'
 
 class AccountSerializer(serializers.ModelSerializer):
     class Meta:

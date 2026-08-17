@@ -37,10 +37,22 @@ class CompanySettings(models.Model):
         return self.company_name_en
 
 
-# ৩. Bank & Cash Accounts (ট্রেজারি ও ব্যাংক)
+# ৩. Divisions & Warehouses (SAMCO-এর ৫টি ডিভিশন)
+class Warehouse(models.Model):
+    code = models.CharField(max_length=50, unique=True)
+    name_en = models.CharField(max_length=150)
+    name_ar = models.CharField(max_length=150, help_text="اسم الفرع / المستودع")
+    location = models.CharField(max_length=255, default="Riyadh, KSA")
+    manager_name = models.CharField(max_length=150, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.name_en} ({self.name_ar})"
+
+
+# ৪. Bank & Cash Accounts
 class BankAccount(models.Model):
     name = models.CharField(max_length=150, help_text="Ex: Al Rajhi Bank, Petty Cash (الخزينة)")
-    account_number = models.CharField(max_length=100, blank=True, null=True, help_text="IBAN or Account No")
+    account_number = models.CharField(max_length=100, blank=True, null=True)
     branch = models.CharField(max_length=150, blank=True, null=True)
     balance = models.DecimalField(max_digits=15, decimal_places=2, default=0.00)
     chart_account = models.ForeignKey(Account, on_delete=models.SET_NULL, null=True, blank=True, related_name="bank_records")
@@ -49,43 +61,56 @@ class BankAccount(models.Model):
         return f"{self.name} (Balance: {self.balance:.2f} SAR)"
 
 
-# ৪. Customer (গ্রাহক)
+# ৫. Customer
 class Customer(models.Model):
     name = models.CharField(max_length=255)
-    name_ar = models.CharField(max_length=255, blank=True, null=True, help_text="الاسم بالعربية")
+    name_ar = models.CharField(max_length=255, blank=True, null=True)
     phone = models.CharField(max_length=50, blank=True, null=True)
-    vat_number = models.CharField(max_length=50, blank=True, null=True, help_text="Customer VAT ID")
+    vat_number = models.CharField(max_length=50, blank=True, null=True)
     address = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.name
 
 
-# ৫. Supplier (সরবরাহকারী)
+# ৬. Supplier
 class Supplier(models.Model):
     name = models.CharField(max_length=255)
-    name_ar = models.CharField(max_length=255, blank=True, null=True, help_text="اسم المورد")
+    name_ar = models.CharField(max_length=255, blank=True, null=True)
     phone = models.CharField(max_length=50, blank=True, null=True)
-    vat_number = models.CharField(max_length=50, blank=True, null=True, help_text="Supplier VAT ID")
+    vat_number = models.CharField(max_length=50, blank=True, null=True)
     address = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.name
 
 
-# ৬. Product (পণ্য ও স্টক)
+# ৭. Product (পণ্য ও কেন্দ্রীয় স্টক)
 class Product(models.Model):
     cat_no = models.CharField(max_length=100, unique=True)
     name = models.CharField(max_length=255)
-    name_ar = models.CharField(max_length=255, blank=True, null=True, help_text="اسم الصنف")
+    name_ar = models.CharField(max_length=255, blank=True, null=True)
     sale_price = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     current_stock = models.IntegerField(default=0)
 
     def __str__(self):
-        return f"[{self.cat_no}] {self.name} (Stock: {self.current_stock})"
+        return f"[{self.cat_no}] {self.name} (Total Stock: {self.current_stock})"
 
 
-# ৭. Quotation
+# ৮. Division-specific Stock (প্রতি ডিভিশনের আলাদা স্টক)
+class WarehouseStock(models.Model):
+    warehouse = models.ForeignKey(Warehouse, on_delete=models.CASCADE, related_name='stocks')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='division_stocks')
+    stock_qty = models.IntegerField(default=0)
+
+    class Meta:
+        unique_together = ('warehouse', 'product')
+
+    def __str__(self):
+        return f"{self.warehouse.name_en} - {self.product.name} ({self.stock_qty} Pcs)"
+
+
+# ৯. Quotation
 class Quotation(models.Model):
     quote_no = models.CharField(max_length=100, unique=True)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
@@ -118,11 +143,12 @@ class QuotationItem(models.Model):
         super().save(*args, **kwargs)
 
 
-# ৮. Sales Invoice (ZATCA Phase-2)
+# ১০. Sales Invoice (ZATCA Phase-2)
 class Invoice(models.Model):
     invoice_no = models.CharField(max_length=100, unique=True)
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
+    warehouse = models.ForeignKey(Warehouse, on_delete=models.SET_NULL, null=True, blank=True, help_text="Dispatching Division")
     date = models.DateTimeField(auto_now_add=True)
     invoice_type = models.CharField(max_length=50, default='Tax Invoice (فاتورة ضريبية)')
     
@@ -183,11 +209,18 @@ class InvoiceItem(models.Model):
         self.product.current_stock = models.F('current_stock') - self.qty
         self.product.save()
 
+        # যদি কোনো নির্দিষ্ট ডিভিশন থাকে সেখান থেকেও স্টক মাইনাস হবে
+        if self.invoice.warehouse:
+            ws, _ = WarehouseStock.objects.get_or_create(warehouse=self.invoice.warehouse, product=self.product)
+            ws.stock_qty = models.F('stock_qty') - self.qty
+            ws.save()
 
-# ৯. Purchase Bill / فاتورة المشتريات
+
+# ১১. Purchase Bill
 class PurchaseBill(models.Model):
     bill_no = models.CharField(max_length=100, unique=True)
     supplier = models.ForeignKey(Supplier, on_delete=models.PROTECT)
+    warehouse = models.ForeignKey(Warehouse, on_delete=models.SET_NULL, null=True, blank=True, help_text="Receiving Division")
     date = models.DateField(auto_now_add=True)
     
     subtotal = models.DecimalField(max_digits=12, decimal_places=2, default=0.00, editable=False)
@@ -232,20 +265,60 @@ class PurchaseBillItem(models.Model):
         self.product.current_stock = models.F('current_stock') + self.qty
         self.product.save()
 
+        # নির্দিষ্ট ডিভিশন স্টকে যোগ করা
+        if self.bill.warehouse:
+            ws, _ = WarehouseStock.objects.get_or_create(warehouse=self.bill.warehouse, product=self.product)
+            ws.stock_qty = models.F('stock_qty') + self.qty
+            ws.save()
 
-# ১০. Receipt Voucher / سند قبض (কাস্টমার থেকে টাকা জমার রসিদ)
+
+# ১২. Inter-Warehouse Transfer (تحويل مخزني - ডিভিশন ট্রান্সফার স্লিপ)
+class StockTransfer(models.Model):
+    transfer_no = models.CharField(max_length=100, unique=True, default="TR-001")
+    date = models.DateField(default=datetime.now)
+    source_warehouse = models.ForeignKey(Warehouse, on_delete=models.PROTECT, related_name='transfers_out', help_text="From Division / من فرع")
+    destination_warehouse = models.ForeignKey(Warehouse, on_delete=models.PROTECT, related_name='transfers_in', help_text="To Division / إلى فرع")
+    status = models.CharField(max_length=20, default='COMPLETED', choices=[('PENDING', 'Pending'), ('COMPLETED', 'Completed 🟢'), ('CANCELLED', 'Cancelled 🔴')])
+    notes = models.TextField(blank=True, null=True, help_text="Driver / Gate Pass notes")
+
+    def __str__(self):
+        return f"سند تحويل #{self.transfer_no} ({self.source_warehouse.code} ➔ {self.destination_warehouse.code})"
+
+    def execute_transfer(self):
+        """এক ডিভিশন থেকে স্টক কমিয়ে অন্য ডিভিশনে স্টক স্থানান্তর"""
+        if self.status == 'COMPLETED':
+            for item in self.items.all():
+                # সোর্স ডিভিশন থেকে কমানো
+                s_ws, _ = WarehouseStock.objects.get_or_create(warehouse=self.source_warehouse, product=item.product)
+                s_ws.stock_qty = models.F('stock_qty') - item.qty
+                s_ws.save()
+
+                # ডেস্টিনেশন ডিভিশনে বাড়ানো
+                d_ws, _ = WarehouseStock.objects.get_or_create(warehouse=self.destination_warehouse, product=item.product)
+                d_ws.stock_qty = models.F('stock_qty') + item.qty
+                d_ws.save()
+
+
+class StockTransferItem(models.Model):
+    transfer = models.ForeignKey(StockTransfer, on_delete=models.CASCADE, related_name='items')
+    product = models.ForeignKey(Product, on_delete=models.PROTECT)
+    qty = models.IntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.product.name} ({self.qty} Pcs)"
+
+
+# ১৩. Receipt Voucher & Payment Voucher
 class ReceiptVoucher(models.Model):
     voucher_no = models.CharField(max_length=100, unique=True, default="RV-001")
     date = models.DateField(default=datetime.now)
     customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
-    invoice = models.ForeignKey(Invoice, on_delete=models.SET_NULL, null=True, blank=True, help_text="Optional linked invoice")
-    bank_account = models.ForeignKey(BankAccount, on_delete=models.PROTECT, help_text="Deposit to Bank / Cash Drawer")
+    invoice = models.ForeignKey(Invoice, on_delete=models.SET_NULL, null=True, blank=True)
+    bank_account = models.ForeignKey(BankAccount, on_delete=models.PROTECT)
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     payment_method = models.CharField(max_length=50, default="Bank Transfer", choices=[
-        ('Cash', 'Cash (نقدي)'),
-        ('Bank Transfer', 'Bank Transfer (تحويل بنكي)'),
-        ('Mada / Card', 'Mada / Card (شبكة)'),
-        ('Cheque', 'Cheque (شيك)')
+        ('Cash', 'Cash (نقدي)'), ('Bank Transfer', 'Bank Transfer (تحويل بنكي)'),
+        ('Mada / Card', 'Mada / Card (شبكة)'), ('Cheque', 'Cheque (شيك)')
     ])
     notes = models.TextField(blank=True, null=True)
 
@@ -253,15 +326,10 @@ class ReceiptVoucher(models.Model):
         return f"سند قبض #{self.voucher_no} - {self.customer.name} ({self.amount} SAR)"
 
     def post_accounting(self):
-        # ১. ব্যাংকে টাকা বাড়ানো
         self.bank_account.balance = models.F('balance') + self.amount
         self.bank_account.save()
 
-        # ২. ডাবল-এন্ট্রি জার্নাল তৈরি
-        bank_chart_acc = self.bank_account.chart_account
-        if not bank_chart_acc:
-            bank_chart_acc, _ = Account.objects.get_or_create(code="1010", defaults={"name": "Cash & Bank Asset", "account_type": "Asset"})
-        
+        bank_chart_acc = self.bank_account.chart_account or Account.objects.get_or_create(code="1010", defaults={"name": "Cash & Bank Asset", "account_type": "Asset"})[0]
         ar_acc, _ = Account.objects.get_or_create(code="1200", defaults={"name": "Accounts Receivable", "account_type": "Asset"})
 
         je, _ = JournalEntry.objects.get_or_create(
@@ -270,27 +338,22 @@ class ReceiptVoucher(models.Model):
         )
         je.lines.all().delete()
 
-        # Debit: Bank / Cash (টাকা জমা হলো)
         JournalEntryLine.objects.create(journal_entry=je, account=bank_chart_acc, debit=self.amount, credit=0, description=f"Received via {self.payment_method}")
-        # Credit: Accounts Receivable (কাস্টমারের বকেয়া কমে গেল)
-        JournalEntryLine.objects.create(journal_entry=je, account=ar_acc, debit=0, credit=self.amount, description=f"Payment received from {self.customer.name}")
+        JournalEntryLine.objects.create(journal_entry=je, account=ar_acc, debit=0, credit=self.amount, description=f"Payment from {self.customer.name}")
 
 
-# ১১. Payment Voucher / سند صرف (সাপ্লায়ার বা খরচের টাকা পরিশোধ)
 class PaymentVoucher(models.Model):
     voucher_no = models.CharField(max_length=100, unique=True, default="PV-001")
     date = models.DateField(default=datetime.now)
-    supplier = models.ForeignKey(Supplier, on_delete=models.SET_NULL, null=True, blank=True, help_text="Supplier if paying vendor bill")
+    supplier = models.ForeignKey(Supplier, on_delete=models.SET_NULL, null=True, blank=True)
     purchase_bill = models.ForeignKey(PurchaseBill, on_delete=models.SET_NULL, null=True, blank=True)
-    bank_account = models.ForeignKey(BankAccount, on_delete=models.PROTECT, help_text="Paid from Bank / Cash Drawer")
+    bank_account = models.ForeignKey(BankAccount, on_delete=models.PROTECT)
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     payment_method = models.CharField(max_length=50, default="Bank Transfer", choices=[
-        ('Cash', 'Cash (نقدي)'),
-        ('Bank Transfer', 'Bank Transfer (تحويل بنكي)'),
-        ('Card', 'Card (بطاقة)'),
-        ('Cheque', 'Cheque (شيك)')
+        ('Cash', 'Cash (نقدي)'), ('Bank Transfer', 'Bank Transfer (تحويل بنكي)'),
+        ('Card', 'Card (بطاقة)'), ('Cheque', 'Cheque (شيك)')
     ])
-    expense_reason = models.CharField(max_length=255, blank=True, null=True, help_text="e.g. Supplier Bill Settlement, Factory Rent, Fuel")
+    expense_reason = models.CharField(max_length=255, blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
 
     def __str__(self):
@@ -298,35 +361,24 @@ class PaymentVoucher(models.Model):
         return f"سند صرف #{self.voucher_no} - {payee} ({self.amount} SAR)"
 
     def post_accounting(self):
-        # ১. ব্যাংক থেকে টাকা কমানো
         self.bank_account.balance = models.F('balance') - self.amount
         self.bank_account.save()
 
-        # ২. ডাবল-এন্ট্রি জার্নাল তৈরি
-        bank_chart_acc = self.bank_account.chart_account
-        if not bank_chart_acc:
-            bank_chart_acc, _ = Account.objects.get_or_create(code="1010", defaults={"name": "Cash & Bank Asset", "account_type": "Asset"})
+        bank_chart_acc = self.bank_account.chart_account or Account.objects.get_or_create(code="1010", defaults={"name": "Cash & Bank Asset", "account_type": "Asset"})[0]
+        debit_acc = Account.objects.get_or_create(code="2000", defaults={"name": "Accounts Payable (Suppliers)", "account_type": "Liability"})[0] if self.supplier else Account.objects.get_or_create(code="5000", defaults={"name": "Operating Expense", "account_type": "Expense"})[0]
 
-        if self.supplier:
-            debit_acc, _ = Account.objects.get_or_create(code="2000", defaults={"name": "Accounts Payable (Suppliers)", "account_type": "Liability"})
-            desc = f"Payment to supplier {self.supplier.name}"
-        else:
-            debit_acc, _ = Account.objects.get_or_create(code="5000", defaults={"name": "General Operating Expense", "account_type": "Expense"})
-            desc = self.expense_reason or "General Expense Payment"
-
+        desc = f"Payment to supplier {self.supplier.name}" if self.supplier else self.expense_reason or "General Expense"
         je, _ = JournalEntry.objects.get_or_create(
             reference_no=f"PV-{self.voucher_no}",
             defaults={"description": f"Payment Voucher #{self.voucher_no} - {desc}"}
         )
         je.lines.all().delete()
 
-        # Debit: Accounts Payable বা Expense (দেনা কমলো বা খরচ হলো)
         JournalEntryLine.objects.create(journal_entry=je, account=debit_acc, debit=self.amount, credit=0, description=desc)
-        # Credit: Bank / Cash (টাকা চলে গেল)
         JournalEntryLine.objects.create(journal_entry=je, account=bank_chart_acc, debit=0, credit=self.amount, description=f"Paid via {self.payment_method}")
 
 
-# ১২. Journal Entry Models
+# ১৪. Journal Entry Models
 class JournalEntry(models.Model):
     date = models.DateField(auto_now_add=True)
     reference_no = models.CharField(max_length=100)

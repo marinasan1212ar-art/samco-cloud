@@ -1,6 +1,11 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Account, BankAccount, JournalEntry, JournalEntryLine, Customer, Supplier, Product, Invoice, InvoiceItem, PurchaseBill, PurchaseBillItem, Quotation, QuotationItem, ReceiptVoucher, PaymentVoucher, CompanySettings
+from .models import (
+    Account, BankAccount, JournalEntry, JournalEntryLine, Customer, Supplier, 
+    Product, Invoice, InvoiceItem, PurchaseBill, PurchaseBillItem, Quotation, 
+    QuotationItem, ReceiptVoucher, PaymentVoucher, CompanySettings,
+    Warehouse, WarehouseStock, StockTransfer, StockTransferItem
+)
 
 class JournalEntryLineInline(admin.TabularInline):
     model = JournalEntryLine
@@ -17,6 +22,37 @@ class PurchaseBillItemInline(admin.TabularInline):
 class QuotationItemInline(admin.TabularInline):
     model = QuotationItem
     extra = 1
+
+class StockTransferItemInline(admin.TabularInline):
+    model = StockTransferItem
+    extra = 1
+
+@admin.register(Warehouse)
+class WarehouseAdmin(admin.ModelAdmin):
+    list_display = ('code', 'name_en', 'name_ar', 'location', 'manager_name')
+
+@admin.register(WarehouseStock)
+class WarehouseStockAdmin(admin.ModelAdmin):
+    list_display = ('warehouse', 'product', 'stock_qty')
+    list_filter = ('warehouse',)
+    search_fields = ('product__name', 'product__cat_no')
+
+@admin.register(StockTransfer)
+class StockTransferAdmin(admin.ModelAdmin):
+    list_display = ('transfer_no', 'date', 'source_warehouse', 'destination_warehouse', 'status', 'print_transfer_slip')
+    list_filter = ('status', 'source_warehouse', 'destination_warehouse')
+    inlines = [StockTransferItemInline]
+
+    def print_transfer_slip(self, obj):
+        return format_html(
+            '<a class="button" style="background-color: #38BDF8; color: #000; font-weight: bold; padding: 4px 10px; border-radius: 6px; text-decoration: none;" href="/transfer/{}/" target="_blank">📄 سند تحويل Print</a>',
+            obj.pk
+        )
+    print_transfer_slip.short_description = "Transfer Slip"
+
+    def response_add(self, request, obj, post_url_continue=None):
+        obj.execute_transfer()
+        return super().response_add(request, obj, post_url_continue)
 
 @admin.register(CompanySettings)
 class CompanySettingsAdmin(admin.ModelAdmin):
@@ -66,7 +102,7 @@ class SupplierAdmin(admin.ModelAdmin):
 
 @admin.register(PurchaseBill)
 class PurchaseBillAdmin(admin.ModelAdmin):
-    list_display = ('bill_no', 'supplier', 'date', 'subtotal', 'vat_amount', 'total_amount')
+    list_display = ('bill_no', 'supplier', 'warehouse', 'date', 'subtotal', 'vat_amount', 'total_amount')
     inlines = [PurchaseBillItemInline]
     
     def response_add(self, request, obj, post_url_continue=None):
@@ -100,7 +136,7 @@ class ProductAdmin(admin.ModelAdmin):
 
 @admin.register(Invoice)
 class InvoiceAdmin(admin.ModelAdmin):
-    list_display = ('invoice_no', 'customer', 'date', 'subtotal', 'vat_amount', 'total_amount', 'print_tax_invoice')
+    list_display = ('invoice_no', 'customer', 'warehouse', 'date', 'subtotal', 'vat_amount', 'total_amount', 'print_tax_invoice')
     inlines = [InvoiceItemInline]
 
     def print_tax_invoice(self, obj):
