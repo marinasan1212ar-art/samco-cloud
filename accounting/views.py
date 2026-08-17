@@ -52,6 +52,11 @@ def invoice_detail_view(request, pk):
     invoice = get_object_or_404(Invoice, pk=pk)
     company, _ = CompanySettings.objects.get_or_create(id=1)
     
+    # কিউআর কোড না থাকলে অটো-জেনারেট করা
+    if not invoice.zatca_qr_b64:
+        invoice.update_totals_and_post_accounting()
+        invoice.refresh_from_db()
+
     qr_img = ""
     if invoice.zatca_qr_b64:
         qr_img = generate_qr_image_base64(invoice.zatca_qr_b64)
