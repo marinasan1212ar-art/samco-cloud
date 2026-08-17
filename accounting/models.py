@@ -37,7 +37,19 @@ class CompanySettings(models.Model):
         return self.company_name_en
 
 
-# ৩. Customer (গ্রাহক)
+# ৩. Bank & Cash Accounts (ট্রেজারি ও ব্যাংক)
+class BankAccount(models.Model):
+    name = models.CharField(max_length=150, help_text="Ex: Al Rajhi Bank, Petty Cash (الخزينة)")
+    account_number = models.CharField(max_length=100, blank=True, null=True, help_text="IBAN or Account No")
+    branch = models.CharField(max_length=150, blank=True, null=True)
+    balance = models.DecimalField(max_digits=15, decimal_places=2, default=0.00)
+    chart_account = models.ForeignKey(Account, on_delete=models.SET_NULL, null=True, blank=True, related_name="bank_records")
+
+    def __str__(self):
+        return f"{self.name} (Balance: {self.balance:.2f} SAR)"
+
+
+# ৪. Customer (গ্রাহক)
 class Customer(models.Model):
     name = models.CharField(max_length=255)
     name_ar = models.CharField(max_length=255, blank=True, null=True, help_text="الاسم بالعربية")
@@ -49,19 +61,19 @@ class Customer(models.Model):
         return self.name
 
 
-# ৪. Supplier / المورد (সরবরাহকারী)
+# ৫. Supplier (সরবরাহকারী)
 class Supplier(models.Model):
     name = models.CharField(max_length=255)
     name_ar = models.CharField(max_length=255, blank=True, null=True, help_text="اسم المورد")
     phone = models.CharField(max_length=50, blank=True, null=True)
-    vat_number = models.CharField(max_length=50, blank=True, null=True, help_text="Supplier VAT ID (15 Digits)")
+    vat_number = models.CharField(max_length=50, blank=True, null=True, help_text="Supplier VAT ID")
     address = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.name
 
 
-# ৫. Product (পণ্য ও স্টক)
+# ৬. Product (পণ্য ও স্টক)
 class Product(models.Model):
     cat_no = models.CharField(max_length=100, unique=True)
     name = models.CharField(max_length=255)
@@ -73,7 +85,7 @@ class Product(models.Model):
         return f"[{self.cat_no}] {self.name} (Stock: {self.current_stock})"
 
 
-# ৬. Quotation
+# ৭. Quotation
 class Quotation(models.Model):
     quote_no = models.CharField(max_length=100, unique=True)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
@@ -106,7 +118,7 @@ class QuotationItem(models.Model):
         super().save(*args, **kwargs)
 
 
-# ৭. Sales Invoice (ZATCA Phase-2 Compliant)
+# ৮. Sales Invoice (ZATCA Phase-2)
 class Invoice(models.Model):
     invoice_no = models.CharField(max_length=100, unique=True)
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
@@ -172,7 +184,7 @@ class InvoiceItem(models.Model):
         self.product.save()
 
 
-# ৮. Purchase Bill / فاتورة المشتريات (ক্রয় চালান ও অটো-স্টক ইন)
+# ৯. Purchase Bill / فاتورة المشتريات
 class PurchaseBill(models.Model):
     bill_no = models.CharField(max_length=100, unique=True)
     supplier = models.ForeignKey(Supplier, on_delete=models.PROTECT)
@@ -192,7 +204,6 @@ class PurchaseBill(models.Model):
 
         PurchaseBill.objects.filter(pk=self.pk).update(subtotal=sub, vat_amount=vat, total_amount=tot)
 
-        # ডাবল-এন্ট্রি ক্রয় হিসাব
         inv_acc, _ = Account.objects.get_or_create(code="1300", defaults={"name": "Inventory Asset", "account_type": "Asset"})
         vat_in_acc, _ = Account.objects.get_or_create(code="1400", defaults={"name": "VAT Input Tax (15% Recoverable)", "account_type": "Asset"})
         ap_acc, _ = Account.objects.get_or_create(code="2000", defaults={"name": "Accounts Payable (Suppliers)", "account_type": "Liability"})
@@ -203,11 +214,8 @@ class PurchaseBill(models.Model):
         )
         je.lines.all().delete()
 
-        # Debit: Inventory Asset (মালের মোট ক্রয়মূল্য)
         JournalEntryLine.objects.create(journal_entry=je, account=inv_acc, debit=sub, credit=0, description=f"Stock In from {self.supplier.name}")
-        # Debit: VAT Input Tax (১৫% পরিশোধিত ভ্যাট)
         JournalEntryLine.objects.create(journal_entry=je, account=vat_in_acc, debit=vat, credit=0, description="15% Input VAT Paid")
-        # Credit: Accounts Payable (সাপ্লায়ারের পাওনা)
         JournalEntryLine.objects.create(journal_entry=je, account=ap_acc, debit=0, credit=tot, description=f"Payable to {self.supplier.name}")
 
 
@@ -221,12 +229,104 @@ class PurchaseBillItem(models.Model):
     def save(self, *args, **kwargs):
         self.total = Decimal(self.qty) * Decimal(self.unit_cost)
         super().save(*args, **kwargs)
-        # 📦 ক্রয় করার সাথে সাথে স্টক বেড়ে যাবে!
         self.product.current_stock = models.F('current_stock') + self.qty
         self.product.save()
 
 
-# ৯. Journal Entry Models
+# ১০. Receipt Voucher / سند قبض (কাস্টমার থেকে টাকা জমার রসিদ)
+class ReceiptVoucher(models.Model):
+    voucher_no = models.CharField(max_length=100, unique=True, default="RV-001")
+    date = models.DateField(default=datetime.now)
+    customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
+    invoice = models.ForeignKey(Invoice, on_delete=models.SET_NULL, null=True, blank=True, help_text="Optional linked invoice")
+    bank_account = models.ForeignKey(BankAccount, on_delete=models.PROTECT, help_text="Deposit to Bank / Cash Drawer")
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    payment_method = models.CharField(max_length=50, default="Bank Transfer", choices=[
+        ('Cash', 'Cash (نقدي)'),
+        ('Bank Transfer', 'Bank Transfer (تحويل بنكي)'),
+        ('Mada / Card', 'Mada / Card (شبكة)'),
+        ('Cheque', 'Cheque (شيك)')
+    ])
+    notes = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f"سند قبض #{self.voucher_no} - {self.customer.name} ({self.amount} SAR)"
+
+    def post_accounting(self):
+        # ১. ব্যাংকে টাকা বাড়ানো
+        self.bank_account.balance = models.F('balance') + self.amount
+        self.bank_account.save()
+
+        # ২. ডাবল-এন্ট্রি জার্নাল তৈরি
+        bank_chart_acc = self.bank_account.chart_account
+        if not bank_chart_acc:
+            bank_chart_acc, _ = Account.objects.get_or_create(code="1010", defaults={"name": "Cash & Bank Asset", "account_type": "Asset"})
+        
+        ar_acc, _ = Account.objects.get_or_create(code="1200", defaults={"name": "Accounts Receivable", "account_type": "Asset"})
+
+        je, _ = JournalEntry.objects.get_or_create(
+            reference_no=f"RV-{self.voucher_no}",
+            defaults={"description": f"Receipt Voucher #{self.voucher_no} received from {self.customer.name}"}
+        )
+        je.lines.all().delete()
+
+        # Debit: Bank / Cash (টাকা জমা হলো)
+        JournalEntryLine.objects.create(journal_entry=je, account=bank_chart_acc, debit=self.amount, credit=0, description=f"Received via {self.payment_method}")
+        # Credit: Accounts Receivable (কাস্টমারের বকেয়া কমে গেল)
+        JournalEntryLine.objects.create(journal_entry=je, account=ar_acc, debit=0, credit=self.amount, description=f"Payment received from {self.customer.name}")
+
+
+# ১১. Payment Voucher / سند صرف (সাপ্লায়ার বা খরচের টাকা পরিশোধ)
+class PaymentVoucher(models.Model):
+    voucher_no = models.CharField(max_length=100, unique=True, default="PV-001")
+    date = models.DateField(default=datetime.now)
+    supplier = models.ForeignKey(Supplier, on_delete=models.SET_NULL, null=True, blank=True, help_text="Supplier if paying vendor bill")
+    purchase_bill = models.ForeignKey(PurchaseBill, on_delete=models.SET_NULL, null=True, blank=True)
+    bank_account = models.ForeignKey(BankAccount, on_delete=models.PROTECT, help_text="Paid from Bank / Cash Drawer")
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    payment_method = models.CharField(max_length=50, default="Bank Transfer", choices=[
+        ('Cash', 'Cash (نقدي)'),
+        ('Bank Transfer', 'Bank Transfer (تحويل بنكي)'),
+        ('Card', 'Card (بطاقة)'),
+        ('Cheque', 'Cheque (شيك)')
+    ])
+    expense_reason = models.CharField(max_length=255, blank=True, null=True, help_text="e.g. Supplier Bill Settlement, Factory Rent, Fuel")
+    notes = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        payee = self.supplier.name if self.supplier else self.expense_reason or "General Expense"
+        return f"سند صرف #{self.voucher_no} - {payee} ({self.amount} SAR)"
+
+    def post_accounting(self):
+        # ১. ব্যাংক থেকে টাকা কমানো
+        self.bank_account.balance = models.F('balance') - self.amount
+        self.bank_account.save()
+
+        # ২. ডাবল-এন্ট্রি জার্নাল তৈরি
+        bank_chart_acc = self.bank_account.chart_account
+        if not bank_chart_acc:
+            bank_chart_acc, _ = Account.objects.get_or_create(code="1010", defaults={"name": "Cash & Bank Asset", "account_type": "Asset"})
+
+        if self.supplier:
+            debit_acc, _ = Account.objects.get_or_create(code="2000", defaults={"name": "Accounts Payable (Suppliers)", "account_type": "Liability"})
+            desc = f"Payment to supplier {self.supplier.name}"
+        else:
+            debit_acc, _ = Account.objects.get_or_create(code="5000", defaults={"name": "General Operating Expense", "account_type": "Expense"})
+            desc = self.expense_reason or "General Expense Payment"
+
+        je, _ = JournalEntry.objects.get_or_create(
+            reference_no=f"PV-{self.voucher_no}",
+            defaults={"description": f"Payment Voucher #{self.voucher_no} - {desc}"}
+        )
+        je.lines.all().delete()
+
+        # Debit: Accounts Payable বা Expense (দেনা কমলো বা খরচ হলো)
+        JournalEntryLine.objects.create(journal_entry=je, account=debit_acc, debit=self.amount, credit=0, description=desc)
+        # Credit: Bank / Cash (টাকা চলে গেল)
+        JournalEntryLine.objects.create(journal_entry=je, account=bank_chart_acc, debit=0, credit=self.amount, description=f"Paid via {self.payment_method}")
+
+
+# ১২. Journal Entry Models
 class JournalEntry(models.Model):
     date = models.DateField(auto_now_add=True)
     reference_no = models.CharField(max_length=100)

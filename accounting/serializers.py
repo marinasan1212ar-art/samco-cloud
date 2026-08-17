@@ -1,9 +1,14 @@
 from rest_framework import serializers
-from .models import Account, Customer, Supplier, Product, Invoice, InvoiceItem, PurchaseBill, PurchaseBillItem, JournalEntry, JournalEntryLine
+from .models import Account, Customer, Supplier, Product, Invoice, InvoiceItem, PurchaseBill, PurchaseBillItem, BankAccount, ReceiptVoucher, PaymentVoucher, JournalEntry, JournalEntryLine
 
 class AccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
+        fields = '__all__'
+
+class BankAccountSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BankAccount
         fields = '__all__'
 
 class CustomerSerializer(serializers.ModelSerializer):
@@ -19,6 +24,20 @@ class SupplierSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
+        fields = '__all__'
+
+class ReceiptVoucherSerializer(serializers.ModelSerializer):
+    customer_name = serializers.CharField(source='customer.name', read_only=True)
+    bank_name = serializers.CharField(source='bank_account.name', read_only=True)
+    class Meta:
+        model = ReceiptVoucher
+        fields = '__all__'
+
+class PaymentVoucherSerializer(serializers.ModelSerializer):
+    supplier_name = serializers.CharField(source='supplier.name', read_only=True)
+    bank_name = serializers.CharField(source='bank_account.name', read_only=True)
+    class Meta:
+        model = PaymentVoucher
         fields = '__all__'
 
 class PurchaseBillItemSerializer(serializers.ModelSerializer):

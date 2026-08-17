@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Account, JournalEntry, JournalEntryLine, Customer, Supplier, Product, Invoice, InvoiceItem, PurchaseBill, PurchaseBillItem, Quotation, QuotationItem, CompanySettings
+from .models import Account, BankAccount, JournalEntry, JournalEntryLine, Customer, Supplier, Product, Invoice, InvoiceItem, PurchaseBill, PurchaseBillItem, Quotation, QuotationItem, ReceiptVoucher, PaymentVoucher, CompanySettings
 
 class JournalEntryLineInline(admin.TabularInline):
     model = JournalEntryLine
@@ -22,6 +22,43 @@ class QuotationItemInline(admin.TabularInline):
 class CompanySettingsAdmin(admin.ModelAdmin):
     list_display = ('company_name_en', 'vat_number', 'phone')
 
+@admin.register(BankAccount)
+class BankAccountAdmin(admin.ModelAdmin):
+    list_display = ('name', 'account_number', 'branch', 'balance')
+    search_fields = ('name', 'account_number')
+
+@admin.register(ReceiptVoucher)
+class ReceiptVoucherAdmin(admin.ModelAdmin):
+    list_display = ('voucher_no', 'customer', 'date', 'bank_account', 'amount', 'payment_method', 'print_voucher')
+    list_filter = ('payment_method', 'bank_account')
+
+    def print_voucher(self, obj):
+        return format_html(
+            '<a class="button" style="background-color: #10B981; color: #000; font-weight: bold; padding: 4px 10px; border-radius: 6px; text-decoration: none;" href="/voucher/receipt/{}/" target="_blank">📄 سند قبض Print</a>',
+            obj.pk
+        )
+    print_voucher.short_description = "Print Voucher"
+
+    def response_add(self, request, obj, post_url_continue=None):
+        obj.post_accounting()
+        return super().response_add(request, obj, post_url_continue)
+
+@admin.register(PaymentVoucher)
+class PaymentVoucherAdmin(admin.ModelAdmin):
+    list_display = ('voucher_no', 'supplier', 'date', 'bank_account', 'amount', 'payment_method', 'print_voucher')
+    list_filter = ('payment_method', 'bank_account')
+
+    def print_voucher(self, obj):
+        return format_html(
+            '<a class="button" style="background-color: #F59E0B; color: #000; font-weight: bold; padding: 4px 10px; border-radius: 6px; text-decoration: none;" href="/voucher/payment/{}/" target="_blank">📄 سند صرف Print</a>',
+            obj.pk
+        )
+    print_voucher.short_description = "Print Voucher"
+
+    def response_add(self, request, obj, post_url_continue=None):
+        obj.post_accounting()
+        return super().response_add(request, obj, post_url_continue)
+
 @admin.register(Supplier)
 class SupplierAdmin(admin.ModelAdmin):
     list_display = ('name', 'phone', 'vat_number')
@@ -35,10 +72,6 @@ class PurchaseBillAdmin(admin.ModelAdmin):
     def response_add(self, request, obj, post_url_continue=None):
         obj.update_totals_and_post_accounting()
         return super().response_add(request, obj, post_url_continue)
-
-    def response_change(self, request, obj):
-        obj.update_totals_and_post_accounting()
-        return super().response_change(request, obj)
 
 @admin.register(Quotation)
 class QuotationAdmin(admin.ModelAdmin):
