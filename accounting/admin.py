@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Account, JournalEntry, JournalEntryLine, Customer, Product, Invoice, InvoiceItem, Quotation, QuotationItem, CompanySettings
+from .models import Account, JournalEntry, JournalEntryLine, Customer, Supplier, Product, Invoice, InvoiceItem, PurchaseBill, PurchaseBillItem, Quotation, QuotationItem, CompanySettings
 
 class JournalEntryLineInline(admin.TabularInline):
     model = JournalEntryLine
@@ -10,6 +10,10 @@ class InvoiceItemInline(admin.TabularInline):
     model = InvoiceItem
     extra = 1
 
+class PurchaseBillItemInline(admin.TabularInline):
+    model = PurchaseBillItem
+    extra = 1
+
 class QuotationItemInline(admin.TabularInline):
     model = QuotationItem
     extra = 1
@@ -17,6 +21,24 @@ class QuotationItemInline(admin.TabularInline):
 @admin.register(CompanySettings)
 class CompanySettingsAdmin(admin.ModelAdmin):
     list_display = ('company_name_en', 'vat_number', 'phone')
+
+@admin.register(Supplier)
+class SupplierAdmin(admin.ModelAdmin):
+    list_display = ('name', 'phone', 'vat_number')
+    search_fields = ('name', 'vat_number')
+
+@admin.register(PurchaseBill)
+class PurchaseBillAdmin(admin.ModelAdmin):
+    list_display = ('bill_no', 'supplier', 'date', 'subtotal', 'vat_amount', 'total_amount')
+    inlines = [PurchaseBillItemInline]
+    
+    def response_add(self, request, obj, post_url_continue=None):
+        obj.update_totals_and_post_accounting()
+        return super().response_add(request, obj, post_url_continue)
+
+    def response_change(self, request, obj):
+        obj.update_totals_and_post_accounting()
+        return super().response_change(request, obj)
 
 @admin.register(Quotation)
 class QuotationAdmin(admin.ModelAdmin):

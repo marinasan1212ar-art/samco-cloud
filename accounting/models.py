@@ -37,7 +37,7 @@ class CompanySettings(models.Model):
         return self.company_name_en
 
 
-# ৩. Customer
+# ৩. Customer (গ্রাহক)
 class Customer(models.Model):
     name = models.CharField(max_length=255)
     name_ar = models.CharField(max_length=255, blank=True, null=True, help_text="الاسم بالعربية")
@@ -49,7 +49,19 @@ class Customer(models.Model):
         return self.name
 
 
-# ৪. Product
+# ৪. Supplier / المورد (সরবরাহকারী)
+class Supplier(models.Model):
+    name = models.CharField(max_length=255)
+    name_ar = models.CharField(max_length=255, blank=True, null=True, help_text="اسم المورد")
+    phone = models.CharField(max_length=50, blank=True, null=True)
+    vat_number = models.CharField(max_length=50, blank=True, null=True, help_text="Supplier VAT ID (15 Digits)")
+    address = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
+
+# ৫. Product (পণ্য ও স্টক)
 class Product(models.Model):
     cat_no = models.CharField(max_length=100, unique=True)
     name = models.CharField(max_length=255)
@@ -61,7 +73,7 @@ class Product(models.Model):
         return f"[{self.cat_no}] {self.name} (Stock: {self.current_stock})"
 
 
-# ৫. Quotation
+# ৬. Quotation
 class Quotation(models.Model):
     quote_no = models.CharField(max_length=100, unique=True)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
@@ -94,7 +106,7 @@ class QuotationItem(models.Model):
         super().save(*args, **kwargs)
 
 
-# ৬. Invoice (ZATCA Phase-2)
+# ৭. Sales Invoice (ZATCA Phase-2 Compliant)
 class Invoice(models.Model):
     invoice_no = models.CharField(max_length=100, unique=True)
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
@@ -137,7 +149,7 @@ class Invoice(models.Model):
 
         je, _ = JournalEntry.objects.get_or_create(
             reference_no=f"INV-{self.invoice_no}",
-            defaults={"description": f"ZATCA Sales Tax Invoice #{self.invoice_no} to {self.customer.name}"}
+            defaults={"description": f"Sales Tax Invoice #{self.invoice_no} to {self.customer.name}"}
         )
         je.lines.all().delete()
 
@@ -160,7 +172,61 @@ class InvoiceItem(models.Model):
         self.product.save()
 
 
-# ৭. Journal Entry Models
+# ৮. Purchase Bill / فاتورة المشتريات (ক্রয় চালান ও অটো-স্টক ইন)
+class PurchaseBill(models.Model):
+    bill_no = models.CharField(max_length=100, unique=True)
+    supplier = models.ForeignKey(Supplier, on_delete=models.PROTECT)
+    date = models.DateField(auto_now_add=True)
+    
+    subtotal = models.DecimalField(max_digits=12, decimal_places=2, default=0.00, editable=False)
+    vat_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0.00, editable=False)
+    total_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0.00, editable=False)
+
+    def __str__(self):
+        return f"Bill #{self.bill_no} - {self.supplier.name}"
+
+    def update_totals_and_post_accounting(self):
+        sub = sum(item.total for item in self.items.all())
+        vat = sub * Decimal('0.15')
+        tot = sub + vat
+
+        PurchaseBill.objects.filter(pk=self.pk).update(subtotal=sub, vat_amount=vat, total_amount=tot)
+
+        # ডাবল-এন্ট্রি ক্রয় হিসাব
+        inv_acc, _ = Account.objects.get_or_create(code="1300", defaults={"name": "Inventory Asset", "account_type": "Asset"})
+        vat_in_acc, _ = Account.objects.get_or_create(code="1400", defaults={"name": "VAT Input Tax (15% Recoverable)", "account_type": "Asset"})
+        ap_acc, _ = Account.objects.get_or_create(code="2000", defaults={"name": "Accounts Payable (Suppliers)", "account_type": "Liability"})
+
+        je, _ = JournalEntry.objects.get_or_create(
+            reference_no=f"BILL-{self.bill_no}",
+            defaults={"description": f"Purchase Bill #{self.bill_no} from {self.supplier.name}"}
+        )
+        je.lines.all().delete()
+
+        # Debit: Inventory Asset (মালের মোট ক্রয়মূল্য)
+        JournalEntryLine.objects.create(journal_entry=je, account=inv_acc, debit=sub, credit=0, description=f"Stock In from {self.supplier.name}")
+        # Debit: VAT Input Tax (১৫% পরিশোধিত ভ্যাট)
+        JournalEntryLine.objects.create(journal_entry=je, account=vat_in_acc, debit=vat, credit=0, description="15% Input VAT Paid")
+        # Credit: Accounts Payable (সাপ্লায়ারের পাওনা)
+        JournalEntryLine.objects.create(journal_entry=je, account=ap_acc, debit=0, credit=tot, description=f"Payable to {self.supplier.name}")
+
+
+class PurchaseBillItem(models.Model):
+    bill = models.ForeignKey(PurchaseBill, on_delete=models.CASCADE, related_name='items')
+    product = models.ForeignKey(Product, on_delete=models.PROTECT)
+    qty = models.IntegerField(default=1)
+    unit_cost = models.DecimalField(max_digits=12, decimal_places=2)
+    total = models.DecimalField(max_digits=12, decimal_places=2, editable=False)
+
+    def save(self, *args, **kwargs):
+        self.total = Decimal(self.qty) * Decimal(self.unit_cost)
+        super().save(*args, **kwargs)
+        # 📦 ক্রয় করার সাথে সাথে স্টক বেড়ে যাবে!
+        self.product.current_stock = models.F('current_stock') + self.qty
+        self.product.save()
+
+
+# ৯. Journal Entry Models
 class JournalEntry(models.Model):
     date = models.DateField(auto_now_add=True)
     reference_no = models.CharField(max_length=100)
