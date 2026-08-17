@@ -1,4 +1,7 @@
 from django.db import models
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from decimal import Decimal
 import uuid
 from datetime import datetime
@@ -37,7 +40,7 @@ class CompanySettings(models.Model):
         return self.company_name_en
 
 
-# ৩. Divisions & Warehouses (SAMCO-এর ৫টি ডিভিশন)
+# ৩. Divisions & Warehouses
 class Warehouse(models.Model):
     code = models.CharField(max_length=50, unique=True)
     name_en = models.CharField(max_length=150)
@@ -49,7 +52,35 @@ class Warehouse(models.Model):
         return f"{self.name_en} ({self.name_ar})"
 
 
-# ৪. Bank & Cash Accounts
+# ৪. User Roles & Multi-Tenant Access (RBAC)
+class UserProfile(models.Model):
+    ROLE_CHOICES = [
+        ('ADMIN', 'Admin / General Manager (المدير العام)'),
+        ('ACCOUNTANT', 'Accountant (المحاسب)'),
+        ('SALESMAN', 'Salesman (مندوب مبيعات)'),
+        ('WAREHOUSE_KEEPER', 'Warehouse Keeper (أمين المستودع)'),
+    ]
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    role = models.CharField(max_length=30, choices=ROLE_CHOICES, default='ADMIN')
+    assigned_warehouse = models.ForeignKey(Warehouse, on_delete=models.SET_NULL, null=True, blank=True, help_text="Designated Division")
+    phone = models.CharField(max_length=50, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.user.username} ({self.get_role_display()})"
+
+@receiver(post_save, sender=User)
+def create_or_save_user_profile(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.create(user=instance)
+    else:
+        try:
+            instance.profile.save()
+        except UserProfile.DoesNotExist:
+            UserProfile.objects.create(user=instance)
+
+
+# ৫. Bank & Cash Accounts
 class BankAccount(models.Model):
     name = models.CharField(max_length=150, help_text="Ex: Al Rajhi Bank, Petty Cash (الخزينة)")
     account_number = models.CharField(max_length=100, blank=True, null=True)
@@ -61,7 +92,7 @@ class BankAccount(models.Model):
         return f"{self.name} (Balance: {self.balance:.2f} SAR)"
 
 
-# ৫. Customer
+# ৬. Customer
 class Customer(models.Model):
     name = models.CharField(max_length=255)
     name_ar = models.CharField(max_length=255, blank=True, null=True)
@@ -73,7 +104,7 @@ class Customer(models.Model):
         return self.name
 
 
-# ৬. Supplier
+# ৭. Supplier
 class Supplier(models.Model):
     name = models.CharField(max_length=255)
     name_ar = models.CharField(max_length=255, blank=True, null=True)
@@ -85,7 +116,7 @@ class Supplier(models.Model):
         return self.name
 
 
-# ৭. Product (পণ্য ও কেন্দ্রীয় স্টক)
+# ৮. Product (পণ্য ও স্টক)
 class Product(models.Model):
     cat_no = models.CharField(max_length=100, unique=True)
     name = models.CharField(max_length=255)
@@ -97,7 +128,7 @@ class Product(models.Model):
         return f"[{self.cat_no}] {self.name} (Total Stock: {self.current_stock})"
 
 
-# ৮. Division-specific Stock (প্রতি ডিভিশনের আলাদা স্টক)
+# ৯. Division-specific Stock
 class WarehouseStock(models.Model):
     warehouse = models.ForeignKey(Warehouse, on_delete=models.CASCADE, related_name='stocks')
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='division_stocks')
@@ -110,7 +141,7 @@ class WarehouseStock(models.Model):
         return f"{self.warehouse.name_en} - {self.product.name} ({self.stock_qty} Pcs)"
 
 
-# ৯. Quotation
+# ১০. Quotation
 class Quotation(models.Model):
     quote_no = models.CharField(max_length=100, unique=True)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
@@ -143,7 +174,7 @@ class QuotationItem(models.Model):
         super().save(*args, **kwargs)
 
 
-# ১০. Sales Invoice (ZATCA Phase-2)
+# ১১. Sales Invoice (ZATCA Phase-2)
 class Invoice(models.Model):
     invoice_no = models.CharField(max_length=100, unique=True)
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
@@ -209,14 +240,13 @@ class InvoiceItem(models.Model):
         self.product.current_stock = models.F('current_stock') - self.qty
         self.product.save()
 
-        # যদি কোনো নির্দিষ্ট ডিভিশন থাকে সেখান থেকেও স্টক মাইনাস হবে
         if self.invoice.warehouse:
             ws, _ = WarehouseStock.objects.get_or_create(warehouse=self.invoice.warehouse, product=self.product)
             ws.stock_qty = models.F('stock_qty') - self.qty
             ws.save()
 
 
-# ১১. Purchase Bill
+# ১২. Purchase Bill
 class PurchaseBill(models.Model):
     bill_no = models.CharField(max_length=100, unique=True)
     supplier = models.ForeignKey(Supplier, on_delete=models.PROTECT)
@@ -265,35 +295,31 @@ class PurchaseBillItem(models.Model):
         self.product.current_stock = models.F('current_stock') + self.qty
         self.product.save()
 
-        # নির্দিষ্ট ডিভিশন স্টকে যোগ করা
         if self.bill.warehouse:
             ws, _ = WarehouseStock.objects.get_or_create(warehouse=self.bill.warehouse, product=self.product)
             ws.stock_qty = models.F('stock_qty') + self.qty
             ws.save()
 
 
-# ১২. Inter-Warehouse Transfer (تحويل مخزني - ডিভিশন ট্রান্সফার স্লিপ)
+# ১৩. Inter-Warehouse Transfer
 class StockTransfer(models.Model):
     transfer_no = models.CharField(max_length=100, unique=True, default="TR-001")
     date = models.DateField(default=datetime.now)
     source_warehouse = models.ForeignKey(Warehouse, on_delete=models.PROTECT, related_name='transfers_out', help_text="From Division / من فرع")
     destination_warehouse = models.ForeignKey(Warehouse, on_delete=models.PROTECT, related_name='transfers_in', help_text="To Division / إلى فرع")
     status = models.CharField(max_length=20, default='COMPLETED', choices=[('PENDING', 'Pending'), ('COMPLETED', 'Completed 🟢'), ('CANCELLED', 'Cancelled 🔴')])
-    notes = models.TextField(blank=True, null=True, help_text="Driver / Gate Pass notes")
+    notes = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f"سند تحويل #{self.transfer_no} ({self.source_warehouse.code} ➔ {self.destination_warehouse.code})"
 
     def execute_transfer(self):
-        """এক ডিভিশন থেকে স্টক কমিয়ে অন্য ডিভিশনে স্টক স্থানান্তর"""
         if self.status == 'COMPLETED':
             for item in self.items.all():
-                # সোর্স ডিভিশন থেকে কমানো
                 s_ws, _ = WarehouseStock.objects.get_or_create(warehouse=self.source_warehouse, product=item.product)
                 s_ws.stock_qty = models.F('stock_qty') - item.qty
                 s_ws.save()
 
-                # ডেস্টিনেশন ডিভিশনে বাড়ানো
                 d_ws, _ = WarehouseStock.objects.get_or_create(warehouse=self.destination_warehouse, product=item.product)
                 d_ws.stock_qty = models.F('stock_qty') + item.qty
                 d_ws.save()
@@ -308,7 +334,7 @@ class StockTransferItem(models.Model):
         return f"{self.product.name} ({self.qty} Pcs)"
 
 
-# ১৩. Receipt Voucher & Payment Voucher
+# ১৪. Receipt & Payment Vouchers
 class ReceiptVoucher(models.Model):
     voucher_no = models.CharField(max_length=100, unique=True, default="RV-001")
     date = models.DateField(default=datetime.now)
@@ -378,7 +404,7 @@ class PaymentVoucher(models.Model):
         JournalEntryLine.objects.create(journal_entry=je, account=bank_chart_acc, debit=0, credit=self.amount, description=f"Paid via {self.payment_method}")
 
 
-# ১৪. Journal Entry Models
+# ১৫. Journal Entry Models
 class JournalEntry(models.Model):
     date = models.DateField(auto_now_add=True)
     reference_no = models.CharField(max_length=100)

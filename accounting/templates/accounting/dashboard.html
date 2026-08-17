@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{% if is_ar %}ar{% else %}en{% endif %}" dir="{{ lang_dir }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAMCO Cloud ERP - Modern Accounting Dashboard</title>
+    <title>SAMCO Cloud ERP - {% if is_ar %}لوحة التحكم السحابية{% else %}Cloud Accounting Dashboard{% endif %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen flex">
 
-    <!-- 🌟 LEFT SIDEBAR -->
-    <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between hidden md:flex">
+    <!-- 🌟 LEFT/RIGHT SIDEBAR (RTL/LTR Adaptive) -->
+    <aside class="w-64 bg-slate-900 border-slate-800 {% if is_ar %}border-l{% else %}border-r{% endif %} flex flex-col justify-between hidden md:flex">
         <div>
             <!-- Logo -->
             <div class="h-16 flex items-center px-6 border-b border-slate-800 gap-3">
@@ -20,62 +20,89 @@
                 </div>
                 <div>
                     <h1 class="font-bold text-base tracking-wide text-white">SAMCO ERP</h1>
-                    <p class="text-[10px] text-cyan-400 font-semibold tracking-wider uppercase">Cloud Accounting</p>
+                    <p class="text-[10px] text-cyan-400 font-semibold tracking-wider uppercase">{% if is_ar %}النظام المحاسبي السحابي{% else %}Cloud Accounting{% endif %}</p>
                 </div>
             </div>
 
-            <!-- Navigation Links -->
-            <nav class="p-4 space-y-1">
-                <a href="/" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-cyan-500/10 text-cyan-400 font-semibold text-sm border border-cyan-500/20">
-                    <i class="fa-solid fa-chart-pie w-5"></i> Dashboard
+            <!-- Role-Aware Navigation Links -->
+            <nav class="p-4 space-y-1 text-xs">
+                <a href="/" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-cyan-500/10 text-cyan-400 font-bold border border-cyan-500/20">
+                    <i class="fa-solid fa-chart-pie w-5"></i> {% if is_ar %}لوحة التحكم الرئيسية{% else %}Dashboard Overview{% endif %}
                 </a>
-                <a href="/reports/" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 font-bold text-sm border border-amber-500/30 transition">
-                    <i class="fa-solid fa-file-invoice-dollar w-5"></i> 📊 Financial Reports
+
+                {% if user_role == 'ADMIN' or user_role == 'ACCOUNTANT' %}
+                <a href="/reports/" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 font-bold border border-amber-500/30 transition">
+                    <i class="fa-solid fa-file-invoice-dollar w-5"></i> {% if is_ar %}📊 القوائم والتقارير المالية{% else %}📊 Financial Reports{% endif %}
                 </a>
-                <a href="/admin/accounting/invoice/" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 font-medium text-sm transition">
-                    <i class="fa-solid fa-file-lines w-5"></i> Sales Invoices
+                {% endif %}
+
+                {% if user_role == 'ADMIN' or user_role == 'ACCOUNTANT' or user_role == 'SALESMAN' %}
+                <a href="/admin/accounting/invoice/" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 font-medium transition">
+                    <i class="fa-solid fa-file-lines w-5"></i> {% if is_ar %}فواتير المبيعات (ضريبية){% else %}Sales Tax Invoices{% endif %}
                 </a>
-                <a href="/admin/accounting/purchasebill/" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 font-medium text-sm transition">
-                    <i class="fa-solid fa-cart-shopping w-5"></i> Purchase Bills
+                <a href="/admin/accounting/quotation/" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 font-medium transition">
+                    <i class="fa-solid fa-file-signature w-5"></i> {% if is_ar %}عروض الأسعار{% else %}Quotations (عروض سعر){% endif %}
                 </a>
-                <a href="/admin/accounting/receiptvoucher/" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 font-medium text-sm transition">
-                    <i class="fa-solid fa-receipt w-5"></i> Receipt (سند قبض)
+                <a href="/admin/accounting/customer/" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 font-medium transition">
+                    <i class="fa-solid fa-users w-5"></i> {% if is_ar %}دليل العملاء{% else %}Customers{% endif %}
                 </a>
-                <a href="/admin/accounting/paymentvoucher/" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 font-medium text-sm transition">
-                    <i class="fa-solid fa-money-bill-transfer w-5"></i> Payment (سند صرف)
+                {% endif %}
+
+                {% if user_role == 'ADMIN' or user_role == 'ACCOUNTANT' %}
+                <a href="/admin/accounting/purchasebill/" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 font-medium transition">
+                    <i class="fa-solid fa-cart-shopping w-5"></i> {% if is_ar %}فواتير المشتريات{% else %}Purchase Bills{% endif %}
                 </a>
-                <a href="/admin/accounting/bankaccount/" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 font-medium text-sm transition">
-                    <i class="fa-solid fa-building-columns w-5"></i> Banks & Treasury
+                <a href="/admin/accounting/receiptvoucher/" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 font-medium transition">
+                    <i class="fa-solid fa-receipt w-5"></i> {% if is_ar %}سندات القبض (تحصيل){% else %}Receipt Vouchers (سند قبض){% endif %}
                 </a>
-                <a href="/admin/accounting/customer/" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 font-medium text-sm transition">
-                    <i class="fa-solid fa-users w-5"></i> Customers
+                <a href="/admin/accounting/paymentvoucher/" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 font-medium transition">
+                    <i class="fa-solid fa-money-bill-transfer w-5"></i> {% if is_ar %}سندات الصرف{% else %}Payment Vouchers (سند صرف){% endif %}
                 </a>
-                <a href="/admin/accounting/supplier/" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 font-medium text-sm transition">
-                    <i class="fa-solid fa-truck-field w-5"></i> Suppliers
+                <a href="/admin/accounting/bankaccount/" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 font-medium transition">
+                    <i class="fa-solid fa-building-columns w-5"></i> {% if is_ar %}البنوك والخزينة{% else %}Banks & Treasury{% endif %}
                 </a>
-                <a href="/admin/accounting/product/" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 font-medium text-sm transition">
-                    <i class="fa-solid fa-boxes-stacked w-5"></i> Products & Stock
+                <a href="/admin/accounting/supplier/" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 font-medium transition">
+                    <i class="fa-solid fa-truck-field w-5"></i> {% if is_ar %}دليل الموردين{% else %}Suppliers{% endif %}
                 </a>
-                <a href="/admin/accounting/account/" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 font-medium text-sm transition">
-                    <i class="fa-solid fa-book-journal-whills w-5"></i> Chart of Accounts
+                {% endif %}
+
+                {% if user_role == 'ADMIN' or user_role == 'WAREHOUSE_KEEPER' or user_role == 'ACCOUNTANT' %}
+                <a href="/admin/accounting/stocktransfer/" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sky-400 bg-sky-500/10 border border-sky-500/20 font-bold transition">
+                    <i class="fa-solid fa-arrow-right-arrow-left w-5"></i> {% if is_ar %}التحويل المخزني (بين الفروع){% else %}Stock Transfers (تحويل مخزني){% endif %}
                 </a>
-                <a href="/api/" target="_blank" class="flex items-center gap-3 px-4 py-3 rounded-xl text-emerald-400 hover:bg-emerald-500/10 font-medium text-sm transition">
+                <a href="/admin/accounting/warehouse/" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 font-medium transition">
+                    <i class="fa-solid fa-warehouse w-5"></i> {% if is_ar %}فروع وأقسام سامكو (5){% else %}SAMCO Divisions (5){% endif %}
+                </a>
+                <a href="/admin/accounting/product/" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 font-medium transition">
+                    <i class="fa-solid fa-boxes-stacked w-5"></i> {% if is_ar %}المنتجات والمخزون{% else %}Products & Stock{% endif %}
+                </a>
+                {% endif %}
+
+                {% if user_role == 'ADMIN' %}
+                <a href="/admin/accounting/account/" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 font-medium transition">
+                    <i class="fa-solid fa-book-journal-whills w-5"></i> {% if is_ar %}دليل الحسابات الشامل{% else %}Chart of Accounts{% endif %}
+                </a>
+                {% endif %}
+
+                <a href="/api/" target="_blank" class="flex items-center gap-3 px-4 py-3 rounded-xl text-emerald-400 hover:bg-emerald-500/10 font-medium transition">
                     <i class="fa-solid fa-network-wired w-5"></i> REST API Gateway
                 </a>
             </nav>
         </div>
 
-        <!-- User profile footer -->
-        <div class="p-4 border-t border-slate-800">
-            <div class="flex items-center gap-3 p-2 bg-slate-800/40 rounded-xl">
-                <div class="w-8 h-8 rounded-lg bg-amber-400 text-black flex items-center justify-center font-bold text-sm">
-                    A
+        <!-- User Profile & Language Indicator -->
+        <div class="p-4 border-t border-slate-800 text-xs">
+            <div class="flex items-center justify-between p-2.5 bg-slate-800/40 rounded-xl">
+                <div class="flex items-center gap-2.5 min-w-0">
+                    <div class="w-8 h-8 rounded-lg bg-amber-400 text-black flex items-center justify-center font-bold text-xs">
+                        {{ user_role|slice:":1" }}
+                    </div>
+                    <div class="min-w-0">
+                        <p class="font-bold text-white truncate">{{ request.user.username|default:"Admin" }}</p>
+                        <p class="text-[10px] text-cyan-400 font-semibold">{{ user_role }}</p>
+                    </div>
                 </div>
-                <div class="flex-1 min-w-0">
-                    <p class="text-xs font-bold text-white truncate">Administrator</p>
-                    <p class="text-[10px] text-emerald-400">● Live Online</p>
-                </div>
-                <a href="/admin/logout/" class="text-slate-400 hover:text-rose-400 text-sm p-1">
+                <a href="/admin/logout/" class="text-slate-400 hover:text-rose-400 text-sm p-1" title="Logout">
                     <i class="fa-solid fa-right-from-bracket"></i>
                 </a>
             </div>
@@ -84,24 +111,42 @@
 
     <!-- 🌐 MAIN CONTENT AREA -->
     <main class="flex-1 flex flex-col min-w-0 overflow-y-auto">
-        <!-- Top Navbar -->
+        <!-- Top Navbar with Language Switcher -->
         <header class="h-16 bg-slate-900/60 backdrop-blur border-b border-slate-800 flex items-center justify-between px-8 sticky top-0 z-30">
             <div class="flex items-center gap-4">
                 <span class="text-xs px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold flex items-center gap-1.5">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> ZATCA Phase-2 Ready
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> {% if is_ar %}نظام الفوترة متوافق مع هيئة الزكاة{% else %}ZATCA Phase-2 Ready{% endif %}
                 </span>
-                <span class="text-xs text-slate-400 font-medium">Saudi Arabia (SAR)</span>
+                <span class="text-xs text-slate-400 font-medium">{% if is_ar %}المملكة العربية السعودية (ريال){% else %}Saudi Arabia (SAR){% endif %}</span>
             </div>
 
+            <!-- Language Switcher & Action Buttons -->
             <div class="flex items-center gap-3">
-                <a href="/reports/" class="flex items-center gap-2 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 font-bold px-4 py-2 rounded-xl text-xs transition">
-                    <i class="fa-solid fa-chart-line"></i> Financial Reports
+                <!-- 🌐 LIVE 1-CLICK LANGUAGE SWITCHER BUTTON -->
+                {% if is_ar %}
+                <a href="/set-language/en/" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs border border-slate-700 transition">
+                    🌐 English (LTR)
                 </a>
+                {% else %}
+                <a href="/set-language/ar/" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold text-xs border border-amber-500/30 transition">
+                    🌐 العربية (RTL)
+                </a>
+                {% endif %}
+
+                {% if user_role == 'ADMIN' or user_role == 'ACCOUNTANT' %}
+                <a href="/reports/" class="flex items-center gap-2 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 font-bold px-3.5 py-2 rounded-xl text-xs transition">
+                    <i class="fa-solid fa-chart-line"></i> {% if is_ar %}التقارير المالية{% else %}Reports{% endif %}
+                </a>
+                {% endif %}
+
+                {% if user_role == 'ADMIN' or user_role == 'ACCOUNTANT' or user_role == 'SALESMAN' %}
                 <a href="/admin/accounting/invoice/add/" class="flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-emerald-400 hover:opacity-95 text-slate-950 font-bold px-4 py-2 rounded-xl text-xs shadow-lg shadow-cyan-500/10 transition">
-                    <i class="fa-solid fa-plus"></i> Create Invoice
+                    <i class="fa-solid fa-plus"></i> {% if is_ar %}إنشاء فاتورة{% else %}Create Invoice{% endif %}
                 </a>
-                <a href="/admin/" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold px-4 py-2 rounded-xl text-xs border border-slate-700 transition">
-                    Django Admin
+                {% endif %}
+
+                <a href="/admin/" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold px-3 py-2 rounded-xl text-xs border border-slate-700 transition">
+                    Admin
                 </a>
             </div>
         </header>
@@ -113,12 +158,12 @@
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 relative overflow-hidden shadow-xl">
                     <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-cyan-500/10 rounded-full blur-xl"></div>
                     <div class="flex items-center justify-between text-slate-400 mb-2">
-                        <span class="text-xs font-semibold uppercase tracking-wider">Total Sales</span>
+                        <span class="text-xs font-semibold uppercase tracking-wider">{% if is_ar %}إجمالي المبيعات{% else %}Total Sales{% endif %}</span>
                         <i class="fa-solid fa-hand-holding-dollar text-cyan-400"></i>
                     </div>
                     <h2 class="text-2xl font-bold text-white">{{ summary.total_sales_sar|floatformat:2 }} <span class="text-xs font-semibold text-cyan-400">SAR</span></h2>
                     <p class="text-[11px] text-emerald-400 mt-2 font-medium flex items-center gap-1">
-                        <i class="fa-solid fa-arrow-trend-up"></i> Gross Invoiced Revenue
+                        <i class="fa-solid fa-arrow-trend-up"></i> {% if is_ar %}إجمالي المبيعات المفوترة{% else %}Gross Invoiced Revenue{% endif %}
                     </p>
                 </div>
 
@@ -126,47 +171,56 @@
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 relative overflow-hidden shadow-xl">
                     <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-rose-500/10 rounded-full blur-xl"></div>
                     <div class="flex items-center justify-between text-slate-400 mb-2">
-                        <span class="text-xs font-semibold uppercase tracking-wider">Total Purchases</span>
+                        <span class="text-xs font-semibold uppercase tracking-wider">{% if is_ar %}إجمالي المشتريات{% else %}Total Purchases{% endif %}</span>
                         <i class="fa-solid fa-cart-shopping text-rose-400"></i>
                     </div>
                     <h2 class="text-2xl font-bold text-white">{{ summary.total_purchases_sar|floatformat:2 }} <span class="text-xs font-semibold text-rose-400">SAR</span></h2>
-                    <p class="text-[11px] text-slate-400 mt-2 font-medium">Vendor Invoiced Bills</p>
+                    <p class="text-[11px] text-slate-400 mt-2 font-medium">{% if is_ar %}فواتير المشتريات والمواد{% else %}Vendor Invoiced Bills{% endif %}</p>
                 </div>
 
                 <!-- Net Profit -->
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 relative overflow-hidden shadow-xl">
                     <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-emerald-500/10 rounded-full blur-xl"></div>
                     <div class="flex items-center justify-between text-slate-400 mb-2">
-                        <span class="text-xs font-semibold uppercase tracking-wider">Net Trading Profit</span>
+                        <span class="text-xs font-semibold uppercase tracking-wider">{% if is_ar %}صافي الربح التجاري{% else %}Net Trading Profit{% endif %}</span>
                         <i class="fa-solid fa-scale-balanced text-emerald-400"></i>
                     </div>
                     <h2 class="text-2xl font-bold text-emerald-400">{{ summary.net_profit_sar|floatformat:2 }} <span class="text-xs font-semibold text-slate-400">SAR</span></h2>
-                    <p class="text-[11px] text-emerald-400 mt-2 font-medium">Sales minus Purchases</p>
+                    <p class="text-[11px] text-emerald-400 mt-2 font-medium">{% if is_ar %}المبيعات ناقص المشتريات{% else %}Sales minus Purchases{% endif %}</p>
                 </div>
 
                 <!-- Total Bank Balance -->
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 relative overflow-hidden shadow-xl">
                     <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-amber-500/10 rounded-full blur-xl"></div>
                     <div class="flex items-center justify-between text-slate-400 mb-2">
-                        <span class="text-xs font-semibold uppercase tracking-wider">Treasury & Banks</span>
+                        <span class="text-xs font-semibold uppercase tracking-wider">{% if is_ar %}الخزينة والأرصدة البنكية{% else %}Treasury & Banks{% endif %}</span>
                         <i class="fa-solid fa-building-columns text-amber-400"></i>
                     </div>
                     <h2 class="text-2xl font-bold text-white">{{ summary.total_bank_balance_sar|floatformat:2 }} <span class="text-xs font-semibold text-amber-400">SAR</span></h2>
-                    <p class="text-[11px] text-amber-400 mt-2 font-medium">Live Liquidity in Hand</p>
+                    <p class="text-[11px] text-amber-400 mt-2 font-medium">{% if is_ar %}السيولة النقدية المتاحة{% else %}Live Liquidity in Hand{% endif %}</p>
                 </div>
             </div>
 
-            <!-- Quick Reports Banner -->
-            <div class="p-6 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border border-amber-500/30 rounded-2xl flex flex-col md:flex-row justify-between items-center gap-4 shadow-xl">
-                <div>
-                    <h3 class="text-base font-black text-white flex items-center gap-2">
-                        <i class="fa-solid fa-award text-amber-400"></i> Ready-to-Print Financial Statements & ZATCA Tax Return
+            <!-- SAMCO 5 Divisions Status Banner -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-white text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-warehouse text-cyan-400"></i> {% if is_ar %}حالة الفروع والأقسام الخمسة لشركة سامكو{% else %}SAMCO 5 Divisions Live Status{% endif %}
                     </h3>
-                    <p class="text-xs text-slate-400 mt-1">Instant Balance Sheet, Income Statement, Trial Balance, and General Ledger reports.</p>
+                    <a href="/admin/accounting/stocktransfer/add/" class="text-xs text-sky-400 hover:underline font-bold">
+                        {% if is_ar %}+ تحويل مخزني جديد{% else %}+ New Stock Transfer{% endif %} ➔
+                    </a>
                 </div>
-                <a href="/reports/" class="px-6 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs shadow-lg transition">
-                    Open Financial Reports Center ➔
-                </a>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 text-xs">
+                    {% for wh in warehouses %}
+                    <div class="p-3.5 bg-slate-800/40 border border-slate-800 rounded-xl space-y-1">
+                        <span class="font-bold text-white">{{ wh.name_en }}</span>
+                        <p class="text-[10px] text-slate-400">{{ wh.name_ar }}</p>
+                        <p class="text-[10px] text-emerald-400 font-semibold">Code: {{ wh.code }} ● Active</p>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
     </main>

@@ -1,13 +1,13 @@
 from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Sum
 from decimal import Decimal
 from .models import (
     Account, Customer, Supplier, Product, Invoice, PurchaseBill, 
     BankAccount, ReceiptVoucher, PaymentVoucher, JournalEntry, 
-    JournalEntryLine, CompanySettings, Warehouse, WarehouseStock, StockTransfer
+    JournalEntryLine, CompanySettings, Warehouse, WarehouseStock, StockTransfer, UserProfile
 )
 from .serializers import (
     AccountSerializer, CustomerSerializer, SupplierSerializer, ProductSerializer,
@@ -17,6 +17,7 @@ from .serializers import (
 )
 from .zatca import generate_qr_image_base64
 
+# --- API ViewSets ---
 class WarehouseViewSet(viewsets.ModelViewSet):
     queryset = Warehouse.objects.all().order_by('code')
     serializer_class = WarehouseSerializer
@@ -69,9 +70,19 @@ class JournalEntryViewSet(viewsets.ModelViewSet):
     queryset = JournalEntry.objects.all().order_by('-id')
     serializer_class = JournalEntrySerializer
 
+# 🌐 ১-ক্লিক আরবি ও ইংরেজি ভাষা সুইচ ফাংশন
+def set_language_view(request, lang):
+    if lang in ['ar', 'en']:
+        request.session['lang'] = lang
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+
 # --- Web Dashboard View ---
 def dashboard_view(request):
-    # ৫টি ডিভিশন নিশ্চিতভাবে তৈরি করা (না থাকলে)
+    lang = request.session.get('lang', 'en')
+    is_ar = (lang == 'ar')
+    lang_dir = 'rtl' if is_ar else 'ltr'
+
+    # ৫টি ডিভিশন নিশ্চিত করা
     default_divisions = [
         ("WH-01", "Warehouse Division", "المستودع الرئيسي"),
         ("MED-02", "Media Division", "قسم الميديا"),
@@ -88,6 +99,11 @@ def dashboard_view(request):
     
     total_receipts = sum(rv.amount for rv in ReceiptVoucher.objects.all())
     total_payments = sum(pv.amount for pv in PaymentVoucher.objects.all())
+
+    # ব্যবহারকারীর রোল জানা
+    user_role = 'ADMIN'
+    if request.user.is_authenticated and hasattr(request.user, 'profile'):
+        user_role = request.user.profile.role
 
     summary = {
         "total_sales_sar": total_sales,
@@ -111,7 +127,11 @@ def dashboard_view(request):
         'invoices': invoices,
         'purchases': purchases,
         'transfers': transfers,
-        'warehouses': warehouses
+        'warehouses': warehouses,
+        'lang': lang,
+        'is_ar': is_ar,
+        'lang_dir': lang_dir,
+        'user_role': user_role
     })
 
 # --- Transfer Slip Print View ---
@@ -172,6 +192,10 @@ def voucher_print_view(request, v_type, pk):
     })
 
 def reports_view(request):
+    lang = request.session.get('lang', 'en')
+    is_ar = (lang == 'ar')
+    lang_dir = 'rtl' if is_ar else 'ltr'
+
     company, _ = CompanySettings.objects.get_or_create(id=1)
     accounts = Account.objects.all().order_by('code')
     trial_balance = []
@@ -223,4 +247,7 @@ def reports_view(request):
         'bs': {'bank_cash': total_bank_cash, 'ar': max(Decimal('0.00'), accounts_receivable), 'inventory': inventory_valuation, 'vat_input': vat_input_tax, 'total_assets': total_assets, 'ap': max(Decimal('0.00'), accounts_payable), 'vat_output': vat_output_tax, 'total_liabilities': total_liabilities, 'equity': total_equity},
         'vat': {'sales_base': vat_sales_subtotal, 'sales_vat': vat_sales_tax, 'pur_base': vat_purchase_subtotal, 'pur_vat': vat_purchase_tax, 'net_due': net_vat_due},
         'ledger_entries': recent_ledger_entries,
+        'lang': lang,
+        'is_ar': is_ar,
+        'lang_dir': lang_dir
     })
