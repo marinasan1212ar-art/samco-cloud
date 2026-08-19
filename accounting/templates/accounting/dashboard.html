@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAMCO Cloud ERP - 120% Advanced SaaS</title>
+    <title>SAMCO Cloud ERP - Quyod 100% Advanced SaaS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -13,17 +13,17 @@
         <div>
             <div class="h-16 flex items-center px-6 border-b border-slate-800 gap-3">
                 <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-emerald-400 flex items-center justify-center text-black font-black text-lg shadow-lg shadow-cyan-500/20">S</div>
-                <div><h1 class="font-black text-base tracking-wide text-white">SAMCO ERP</h1><p class="text-[10px] text-amber-400 font-black tracking-wider uppercase">120% Enterprise SaaS</p></div>
+                <div><h1 class="font-black text-base tracking-wide text-white">SAMCO ERP</h1><p class="text-[10px] text-amber-400 font-black tracking-wider uppercase">Quyod Enterprise SaaS</p></div>
             </div>
 
-            <nav class="p-4 space-y-1 text-xs">
+            <nav class="p-4 space-y-1 text-xs font-semibold">
                 <a href="/" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-cyan-500/10 text-cyan-400 font-bold border border-cyan-500/20"><i class="fa-solid fa-chart-pie w-5"></i> {% if is_ar %}الرئيسية{% else %}Dashboard{% endif %}</a>
-                
-                <a href="/pos/" target="_blank" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 text-emerald-400 font-black border border-emerald-500/40 shadow-lg transition hover:scale-105"><i class="fa-solid fa-cash-register w-5 text-emerald-400"></i> {% if is_ar %}نقاط البيع (POS){% else %}Cloud POS Terminal{% endif %}</a>
-
-                <a href="/manufacturing/" class="flex items-center gap-3 px-4 py-3 rounded-xl text-amber-400 hover:bg-amber-500/20 font-bold transition"><i class="fa-solid fa-industry w-5"></i> {% if is_ar %}التصنيع{% else %}Manufacturing{% endif %}</a>
-                <a href="/reports/" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800/60 font-semibold transition"><i class="fa-solid fa-file-invoice-dollar w-5 text-amber-400"></i> {% if is_ar %}التقارير المالية{% else %}Financial Reports{% endif %}</a>
-                <a href="/admin/" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800/60 font-semibold transition"><i class="fa-solid fa-user-shield w-5 text-rose-400"></i> {% if is_ar %}الإدارة{% else %}Admin Database{% endif %}</a>
+                <a href="/pos/" target="_blank" class="flex items-center gap-3 px-4 py-3 rounded-xl text-emerald-400 hover:bg-emerald-500/10 transition"><i class="fa-solid fa-cash-register w-5 text-emerald-400"></i> {% if is_ar %}نقاط البيع (POS){% else %}Cloud POS Terminal{% endif %}</a>
+                <a href="/banking/reconciliation/" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sky-400 hover:bg-sky-500/10 transition"><i class="fa-solid fa-building-columns w-5 text-sky-400"></i> {% if is_ar %}المطابقة البنكية{% else %}Bank Reconciliation{% endif %}</a>
+                <a href="/banking/transfer/" class="flex items-center gap-3 px-4 py-3 rounded-xl text-indigo-400 hover:bg-indigo-500/10 transition"><i class="fa-solid fa-money-bill-transfer w-5 text-indigo-400"></i> {% if is_ar %}التحويل بين الحسابات{% else %}Fund Transfers{% endif %}</a>
+                <a href="/manufacturing/" class="flex items-center gap-3 px-4 py-3 rounded-xl text-amber-400 hover:bg-amber-500/10 transition"><i class="fa-solid fa-industry w-5 text-amber-400"></i> {% if is_ar %}التصنيع{% else %}Manufacturing{% endif %}</a>
+                <a href="/reports/" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800/60 transition"><i class="fa-solid fa-file-invoice-dollar w-5 text-amber-400"></i> {% if is_ar %}التقارير المالية{% else %}Financial Reports{% endif %}</a>
+                <a href="/admin/" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800/60 transition"><i class="fa-solid fa-user-shield w-5 text-rose-400"></i> {% if is_ar %}الإدارة{% else %}Admin Database{% endif %}</a>
             </nav>
         </div>
     </aside>
@@ -34,7 +34,8 @@
                 <span class="text-xs px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> ZATCA Phase-2 & SFDA Ready</span>
             </div>
             <div class="flex items-center gap-2 md:gap-3">
-                <a href="/pos/" target="_blank" class="flex items-center gap-1.5 bg-emerald-500 text-slate-950 font-black px-3.5 py-1.5 rounded-xl text-xs shadow-lg transition hover:bg-emerald-400"><i class="fa-solid fa-cash-register"></i> Open POS</a>
+                <a href="/banking/reconciliation/" class="flex items-center gap-1.5 bg-sky-500/20 border border-sky-500/40 text-sky-400 font-bold px-3 py-1.5 rounded-xl text-xs hover:bg-sky-500/30 transition"><i class="fa-solid fa-building-columns"></i> Bank Match</a>
+                <a href="/pos/" target="_blank" class="flex items-center gap-1.5 bg-emerald-500 text-slate-950 font-black px-3.5 py-1.5 rounded-xl text-xs shadow-lg transition hover:bg-emerald-400"><i class="fa-solid fa-cash-register"></i> Launch POS</a>
                 {% if is_ar %}<a href="/set-language/en/" class="px-3 py-1.5 rounded-xl bg-slate-800 text-slate-200 font-bold text-xs border border-slate-700">🌐 EN</a>{% else %}<a href="/set-language/ar/" class="px-3 py-1.5 rounded-xl bg-slate-800 text-amber-400 font-bold text-xs border border-amber-500/30">🌐 AR</a>{% endif %}
             </div>
         </header>
@@ -47,17 +48,54 @@
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl"><span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Bank Balance</span><h2 class="text-2xl font-black text-amber-400 mt-1">{{ summary.total_bank_balance_sar|floatformat:2 }} <span class="text-xs text-slate-400">SAR</span></h2></div>
             </div>
 
-            <!-- Big POS Banner -->
-            <div class="p-6 md:p-10 bg-gradient-to-r from-emerald-500/20 via-slate-900 to-cyan-500/20 border border-emerald-500/40 rounded-3xl flex flex-col md:flex-row justify-between items-center gap-6 shadow-2xl relative overflow-hidden">
-                <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-emerald-500/10 rounded-full blur-3xl"></div>
-                <div class="z-10">
-                    <span class="px-3 py-1 bg-emerald-500/20 text-emerald-400 font-black text-[10px] uppercase tracking-widest rounded-full border border-emerald-500/30 mb-3 inline-block">New Feature</span>
-                    <h3 class="text-2xl font-black text-white mb-2">Cloud POS (Point of Sale) 🛒</h3>
-                    <p class="text-sm text-slate-400 max-w-lg">Ultra-fast retail touch screen for cashiers. Auto ZATCA thermal receipts, barcode scanning, and instant background accounting (Stock deduction + Cash tracking).</p>
+            <!-- Quyod Action Hub Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Overdue & Unpaid Invoices Tracker -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-sm font-black text-rose-400 flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left"></i> Unpaid & Pending Invoices (فواتير بانتظار التحصيل)</h3>
+                        <span class="text-[10px] bg-rose-500/20 text-rose-300 px-2.5 py-1 rounded-full border border-rose-500/30 font-bold">Action Required</span>
+                    </div>
+                    <div class="space-y-2">
+                        {% for inv in overdue_invoices %}
+                        <div class="flex justify-between items-center p-3 bg-slate-800/60 rounded-xl border border-slate-700 text-xs">
+                            <div>
+                                <p class="font-bold text-white">#{{ inv.invoice_no }} - {{ inv.customer.name }}</p>
+                                <p class="text-[10px] text-slate-400">{{ inv.date|date:"d M Y" }}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-black text-rose-400">{{ inv.remaining_due|floatformat:2 }} SAR</p>
+                                <a href="/invoice/{{ inv.id }}/" class="text-[10px] text-cyan-400 hover:underline">Settle ➔</a>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="text-slate-500 text-xs italic text-center py-4">All invoices are settled! 🟢</p>
+                        {% endfor %}
+                    </div>
                 </div>
-                <a href="/pos/" target="_blank" class="z-10 px-8 py-4 rounded-2xl bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black text-sm shadow-[0_0_20px_rgba(52,211,153,0.4)] transition transform hover:scale-105 flex items-center gap-3">
-                    <i class="fa-solid fa-cash-register text-lg"></i> Launch POS Terminal
-                </a>
+
+                <!-- SFDA Low Stock Alerts -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-sm font-black text-amber-400 flex items-center gap-2"><i class="fa-solid fa-triangle-exclamation"></i> Low Stock Warning (تنبيه انخفاض المخزون)</h3>
+                        <span class="text-[10px] bg-amber-500/20 text-amber-300 px-2.5 py-1 rounded-full border border-amber-500/30 font-bold">&lt; 10 Units</span>
+                    </div>
+                    <div class="space-y-2">
+                        {% for p in low_stock_products %}
+                        <div class="flex justify-between items-center p-3 bg-slate-800/60 rounded-xl border border-slate-700 text-xs">
+                            <div>
+                                <p class="font-bold text-white">{{ p.name }}</p>
+                                <p class="text-[10px] text-slate-400 font-mono">CAT: {{ p.cat_no }}</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="px-2 py-1 bg-amber-500/20 text-amber-400 rounded-md font-black text-[11px]">{{ p.current_stock }} Pcs Left</span>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="text-slate-500 text-xs italic text-center py-4">All stock levels are optimal! 🟢</p>
+                        {% endfor %}
+                    </div>
+                </div>
             </div>
         </div>
     </main>

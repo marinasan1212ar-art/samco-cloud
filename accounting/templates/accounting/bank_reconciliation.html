@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="{% if is_ar %}ar{% else %}en{% endif %}" dir="{{ lang_dir }}">
+<head>
+    <meta charset="UTF-8">
+    <title>Bank Statement Reconciliation - {{ company.company_name_en }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen p-4 md:p-8 font-sans antialiased">
+
+    <div class="max-w-6xl mx-auto mb-6 flex justify-between items-center">
+        <a href="/" class="text-xs md:text-sm font-semibold text-slate-400 hover:text-white flex items-center gap-2">
+            <i class="fa-solid fa-arrow-left"></i> {% if is_ar %}العودة للرئيسية{% else %}Back to Dashboard{% endif %}
+        </a>
+        <a href="/banking/transfer/" class="bg-indigo-500 hover:bg-indigo-400 text-slate-950 px-4 py-2 rounded-xl font-bold text-xs shadow-lg flex items-center gap-2">
+            <i class="fa-solid fa-money-bill-transfer"></i> Fund Transfers
+        </a>
+    </div>
+
+    <div class="max-w-6xl mx-auto space-y-6">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl flex justify-between items-center">
+            <div>
+                <h1 class="text-xl md:text-2xl font-black text-white">🏦 {% if is_ar %}المطابقة والتسوية البنكية{% else %}Bank Statement Reconciliation Hub{% endif %}</h1>
+                <p class="text-xs text-slate-400 mt-1">Automated Bank Matching & Transaction Clearing (Quyod Engine)</p>
+            </div>
+            <div class="text-right">
+                <form method="GET" class="flex items-center gap-2">
+                    <select name="bank_id" onchange="this.form.submit()" class="bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-xs text-white font-bold">
+                        {% for b in banks %}
+                        <option value="{{ b.id }}" {% if selected_bank.id == b.id %}selected{% endif %}>{{ b.name }} ({{ b.balance|floatformat:2 }} SAR)</option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </div>
+        </div>
+
+        <!-- CSV Statement Upload Box -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
+            <h3 class="text-sm font-bold text-sky-400 mb-3"><i class="fa-solid fa-file-csv"></i> Upload Bank Statement (CSV File):</h3>
+            <form method="POST" enctype="multipart/form-data" class="flex flex-col sm:flex-row gap-3 items-center text-xs">
+                {% csrf_token %}
+                <input type="file" name="statement_file" accept=".csv" required class="w-full sm:flex-1 bg-slate-800 border border-slate-700 rounded-xl p-2 text-slate-300">
+                <button type="submit" class="w-full sm:w-auto bg-sky-500 hover:bg-sky-400 text-slate-950 font-black px-5 py-3 rounded-xl transition flex items-center gap-2 justify-center">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Upload & Match Lines
+                </button>
+            </form>
+        </div>
+
+        <!-- Reconciliation Table -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl overflow-hidden">
+            <h3 class="text-sm font-bold text-white mb-4">📋 Bank Statement Lines vs System Ledgers</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                    <thead>
+                        <tr class="bg-slate-800 text-slate-300 uppercase font-bold border-b border-slate-700">
+                            <th class="p-3">Date</th>
+                            <th class="p-3">Bank Transaction Description</th>
+                            <th class="p-3 text-right">Amount (SAR)</th>
+                            <th class="p-3 text-center">Status</th>
+                            <th class="p-3 text-right">Reconcile Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800">
+                        {% for line in statement_lines %}
+                        <tr class="hover:bg-slate-800/40 text-slate-200">
+                            <td class="p-3 text-slate-400">{{ line.date }}</td>
+                            <td class="p-3 font-semibold text-white">{{ line.description }}</td>
+                            <td class="p-3 text-right font-mono font-bold {% if line.transaction_type == 'CREDIT' %}text-emerald-400{% else %}text-rose-400{% endif %}">
+                                {% if line.transaction_type == 'CREDIT' %}+{% else %}-{% endif %}{{ line.amount|floatformat:2 }}
+                            </td>
+                            <td class="p-3 text-center">
+                                {% if line.is_reconciled %}
+                                <span class="px-2 py-1 bg-emerald-500/20 text-emerald-400 font-bold rounded-md text-[10px]">🟢 Matched</span>
+                                {% else %}
+                                <span class="px-2 py-1 bg-amber-500/20 text-amber-400 font-bold rounded-md text-[10px]">🟡 Unreconciled</span>
+                                {% endif %}
+                            </td>
+                            <td class="p-3 text-right">
+                                <form method="POST" class="inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="reconcile_line_id" value="{{ line.id }}">
+                                    <button type="submit" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-cyan-400 font-bold rounded-lg border border-slate-700 text-[10px]">
+                                        Toggle Match ✓
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="5" class="p-8 text-center text-slate-500 italic">No bank statements uploaded yet. Upload a CSV file above to match transactions!</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

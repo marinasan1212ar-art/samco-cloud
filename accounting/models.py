@@ -196,6 +196,47 @@ class BankAccount(models.Model):
     def __str__(self):
         return f"{self.name} ({self.balance:.2f} SAR)"
 
+# 💸 ইন্টারনাল ফান্ড ট্রান্সফার (Internal Fund Transfer)
+class FundTransfer(models.Model):
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True, related_name="fund_transfers")
+    transfer_no = models.CharField(max_length=100, default="FT-001")
+    from_account = models.ForeignKey(BankAccount, on_delete=models.PROTECT, related_name="transfers_out")
+    to_account = models.ForeignKey(BankAccount, on_delete=models.PROTECT, related_name="transfers_in")
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    date = models.DateField(default=datetime.now)
+    notes = models.CharField(max_length=255, blank=True, null=True)
+
+    def post_accounting(self):
+        with transaction.atomic():
+            self.from_account.balance = models.F('balance') - self.amount
+            self.from_account.save()
+            self.to_account.balance = models.F('balance') + self.amount
+            self.to_account.save()
+            comp = self.company or Company.objects.get_or_create(id=1)[0]
+            from_chart = self.from_account.chart_account or Account.objects.get_or_create(company=comp, code="1010", defaults={"name": "Cash & Bank", "account_type": "Asset"})[0]
+            to_chart = self.to_account.chart_account or Account.objects.get_or_create(company=comp, code="1010", defaults={"name": "Cash & Bank", "account_type": "Asset"})[0]
+            je, _ = JournalEntry.objects.get_or_create(company=comp, reference_no=f"FT-{self.transfer_no}", defaults={"description": f"Fund Transfer from {self.from_account.name} to {self.to_account.name}"})
+            je.lines.all().delete()
+            JournalEntryLine.objects.create(journal_entry=je, account=to_chart, debit=self.amount, credit=0, description=f"Transfer In from {self.from_account.name}")
+            JournalEntryLine.objects.create(journal_entry=je, account=from_chart, debit=0, credit=self.amount, description=f"Transfer Out to {self.to_account.name}")
+
+# 🏦 ব্যাংক স্টেটমেন্ট রিকনসিলিয়েশন (Bank Statement Reconciliation)
+class BankStatement(models.Model):
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True, related_name="bank_statements")
+    bank_account = models.ForeignKey(BankAccount, on_delete=models.CASCADE)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    filename = models.CharField(max_length=255)
+    total_reconciled = models.DecimalField(max_digits=15, decimal_places=2, default=0.00)
+
+class BankStatementLine(models.Model):
+    statement = models.ForeignKey(BankStatement, on_delete=models.CASCADE, related_name="lines")
+    date = models.DateField()
+    description = models.CharField(max_length=255)
+    reference_no = models.CharField(max_length=100, blank=True, null=True)
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    transaction_type = models.CharField(max_length=20, default="DEBIT")
+    is_reconciled = models.BooleanField(default=False)
+
 class Customer(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True, related_name="customers")
     name = models.CharField(max_length=255)
@@ -239,16 +280,12 @@ class Product(models.Model):
     def __str__(self):
         return f"[{self.cat_no}] {self.name} (Stock: {self.current_stock})"
 
-# 💊 SFDA Medical/Food Batch & Expiry Tracking Model
 class ProductBatch(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="batches")
-    batch_no = models.CharField(max_length=100, help_text="Batch / Lot Number")
+    batch_no = models.CharField(max_length=100)
     manufacturing_date = models.DateField(default=datetime.now)
-    expiry_date = models.DateField(help_text="SFDA Expiry Date")
+    expiry_date = models.DateField()
     stock_qty = models.IntegerField(default=0)
-
-    def __str__(self):
-        return f"{self.product.name} [Batch: {self.batch_no} | Exp: {self.expiry_date}]"
 
 class WarehouseStock(models.Model):
     warehouse = models.ForeignKey(Warehouse, on_delete=models.CASCADE, related_name='stocks')
@@ -313,9 +350,6 @@ class SalesOrder(models.Model):
     status = models.CharField(max_length=20, default='CONFIRMED')
     total_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
 
-    def __str__(self):
-        return f"SO #{self.so_number} - {self.customer.name}"
-
 class Invoice(models.Model):
     PAYMENT_STATUS_CHOICES = [
         ('UNPAID', 'Unpaid (غير مدفوع) 🔴'),
@@ -376,8 +410,8 @@ class Invoice(models.Model):
 class InvoiceItem(models.Model):
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name='items')
     product = models.ForeignKey(Product, on_delete=models.PROTECT)
-    batch_no = models.CharField(max_length=100, blank=True, null=True, help_text="Batch Number")
-    expiry_date = models.DateField(blank=True, null=True, help_text="Expiry Date")
+    batch_no = models.CharField(max_length=100, blank=True, null=True)
+    expiry_date = models.DateField(blank=True, null=True)
     qty = models.IntegerField(default=1)
     unit_price = models.DecimalField(max_digits=12, decimal_places=2)
     total = models.DecimalField(max_digits=12, decimal_places=2, editable=False)
@@ -393,20 +427,15 @@ class InvoiceItem(models.Model):
         self.product.save()
         super().delete(*args, **kwargs)
 
-# 🚚 ডেলিভারি নোট ও চালান (Delivery Note / سند تسليم بضاعة)
 class DeliveryNote(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True, related_name="delivery_notes")
     delivery_no = models.CharField(max_length=100, default="DN-001")
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name="deliveries")
     warehouse = models.ForeignKey(Warehouse, on_delete=models.PROTECT)
     date = models.DateField(default=datetime.now)
-    driver_name = models.CharField(max_length=150, blank=True, null=True, help_text="اسم السائق")
-    vehicle_no = models.CharField(max_length=50, blank=True, null=True, help_text="رقم اللوحة")
+    driver_name = models.CharField(max_length=150, blank=True, null=True)
+    vehicle_no = models.CharField(max_length=50, blank=True, null=True)
     status = models.CharField(max_length=30, default="DELIVERED")
-    notes = models.TextField(blank=True, null=True)
-
-    def __str__(self):
-        return f"Delivery Note #{self.delivery_no} (Inv #{self.invoice.invoice_no})"
 
 class DeliveryNoteItem(models.Model):
     delivery_note = models.ForeignKey(DeliveryNote, on_delete=models.CASCADE, related_name="items")
@@ -426,9 +455,6 @@ class CreditNote(models.Model):
     vat_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0.00, editable=False)
     total_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0.00, editable=False)
     zatca_qr_b64 = models.TextField(blank=True, null=True, editable=False)
-
-    def __str__(self):
-        return f"Credit Note #{self.credit_note_no} (For Inv #{self.invoice.invoice_no})"
 
     def update_totals_and_post_accounting(self):
         with transaction.atomic():
@@ -474,9 +500,6 @@ class PurchaseOrder(models.Model):
     status = models.CharField(max_length=20, default='ISSUED')
     total_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
 
-    def __str__(self):
-        return f"PO #{self.po_number} - {self.supplier.name}"
-
 class PurchaseBill(models.Model):
     PAYMENT_STATUS_CHOICES = [
         ('UNPAID', 'Unpaid (غير مدفوع) 🔴'),
@@ -497,9 +520,6 @@ class PurchaseBill(models.Model):
 
     def remaining_due(self):
         return max(Decimal('0.00'), self.total_amount - self.amount_paid)
-
-    def __str__(self):
-        return f"Bill #{self.bill_no} - {self.supplier.name}"
 
     def recalculate_payment_status(self):
         paid = sum(pv.amount for pv in self.payments.all())

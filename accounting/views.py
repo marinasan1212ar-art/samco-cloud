@@ -8,6 +8,7 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.models import User
 from decimal import Decimal
 from datetime import datetime, timedelta
+import csv, io
 
 from .models import (
     Account, Customer, Supplier, Product, Invoice, PurchaseBill, 
@@ -16,7 +17,8 @@ from .models import (
     UserProfile, BillOfMaterials, WorkOrder, Employee, MonthlyPayroll, 
     PayrollItem, CostCenter, FixedAsset, StockAdjustment, CompanySettings,
     SubscriptionPlan, CompanySubscription, PaymentTransaction,
-    CreditNote, CreditNoteItem, DeliveryNote, DeliveryNoteItem, ProductBatch
+    CreditNote, CreditNoteItem, DeliveryNote, DeliveryNoteItem, ProductBatch,
+    FundTransfer, BankStatement, BankStatementLine
 )
 from .serializers import (
     AccountSerializer, CustomerSerializer, SupplierSerializer, ProductSerializer,
@@ -32,6 +34,7 @@ def get_user_company(request):
     comp, _ = Company.objects.get_or_create(id=1, defaults={"name": "SECOND ADVANCE MEDICAL COMPANY (SAMCO)", "vat_number": "310122456700003"})
     return comp
 
+# --- 🌟 QUYOD ADVANCED DASHBOARD ---
 def dashboard_view(request):
     lang = request.session.get('lang', 'en'); is_ar = (lang == 'ar'); lang_dir = 'rtl' if is_ar else 'ltr'
     company = get_user_company(request)
@@ -39,6 +42,10 @@ def dashboard_view(request):
     total_sales = sum(inv.total_amount for inv in Invoice.objects.filter(company=company))
     total_purchases = sum(bill.total_amount for bill in PurchaseBill.objects.filter(company=company))
     total_bank_balance = sum(b.balance for b in BankAccount.objects.filter(company=company))
+
+    # Overdue/Unpaid invoices and Low stock alerts
+    overdue_invoices = Invoice.objects.filter(company=company, payment_status__in=['UNPAID', 'PARTIALLY_PAID']).order_by('-date')[:5]
+    low_stock_products = Product.objects.filter(company=company, current_stock__lte=10).order_by('current_stock')[:5]
 
     summary = {
         "total_sales_sar": total_sales,
@@ -62,7 +69,85 @@ def dashboard_view(request):
     return render(request, 'accounting/dashboard.html', {
         'company': company, 'summary': summary, 'invoices': invoices,
         'purchases': purchases, 'warehouses': warehouses, 'lang': lang,
-        'is_ar': is_ar, 'lang_dir': lang_dir, 'user_role': user_role
+        'is_ar': is_ar, 'lang_dir': lang_dir, 'user_role': user_role,
+        'overdue_invoices': overdue_invoices, 'low_stock_products': low_stock_products
+    })
+
+# --- 🏦 BANK RECONCILIATION & STATEMENT MATCHING ---
+def bank_reconciliation_view(request):
+    lang = request.session.get('lang', 'en'); is_ar = (lang == 'ar'); lang_dir = 'rtl' if is_ar else 'ltr'
+    company = get_user_company(request)
+    banks = BankAccount.objects.filter(company=company)
+    selected_bank_id = request.GET.get('bank_id', banks.first().id if banks.exists() else None)
+    selected_bank = BankAccount.objects.filter(id=selected_bank_id).first() if selected_bank_id else None
+
+    # Handle Bank Statement CSV Upload
+    if request.method == 'POST' and request.FILES.get('statement_file'):
+        file = request.FILES['statement_file']
+        bs = BankStatement.objects.create(company=company, bank_account=selected_bank, filename=file.name)
+        
+        decoded_file = file.read().decode('utf-8')
+        io_string = io.StringIO(decoded_file)
+        reader = csv.reader(io_string)
+        
+        for row in reader:
+            if len(row) >= 3:
+                try:
+                    d_date = row[0].strip() or datetime.now().strftime("%Y-%m-%d")
+                    desc = row[1].strip()
+                    amt = Decimal(row[2].strip().replace(',', ''))
+                    BankStatementLine.objects.create(
+                        statement=bs, date=d_date, description=desc, amount=abs(amt),
+                        transaction_type="CREDIT" if amt >= 0 else "DEBIT"
+                    )
+                except Exception:
+                    continue
+        return redirect(f'/banking/reconciliation/?bank_id={selected_bank.id}')
+
+    # Handle Line Item Reconciliation Action
+    if request.method == 'POST' and 'reconcile_line_id' in request.POST:
+        line_id = request.POST.get('reconcile_line_id')
+        line = get_object_or_404(BankStatementLine, id=line_id)
+        line.is_reconciled = not line.is_reconciled
+        line.save()
+        return redirect(f'/banking/reconciliation/?bank_id={selected_bank.id}')
+
+    statement_lines = BankStatementLine.objects.filter(statement__bank_account=selected_bank).order_by('-date') if selected_bank else []
+    recent_receipts = ReceiptVoucher.objects.filter(bank_account=selected_bank).order_by('-date')[:10] if selected_bank else []
+    recent_payments = PaymentVoucher.objects.filter(bank_account=selected_bank).order_by('-date')[:10] if selected_bank else []
+
+    return render(request, 'accounting/bank_reconciliation.html', {
+        'company': company, 'banks': banks, 'selected_bank': selected_bank,
+        'statement_lines': statement_lines, 'receipts': recent_receipts,
+        'payments': recent_payments, 'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir
+    })
+
+# --- 💸 FUND TRANSFER VIEW ---
+def fund_transfer_view(request):
+    lang = request.session.get('lang', 'en'); is_ar = (lang == 'ar'); lang_dir = 'rtl' if is_ar else 'ltr'
+    company = get_user_company(request)
+    banks = BankAccount.objects.filter(company=company)
+    transfers = FundTransfer.objects.filter(company=company).order_by('-id')[:15]
+
+    if request.method == 'POST':
+        from_id = request.POST.get('from_account')
+        to_id = request.POST.get('to_account')
+        amount = Decimal(request.POST.get('amount', '0.00'))
+        notes = request.POST.get('notes', 'Internal Fund Wire')
+
+        if from_id != to_id and amount > 0:
+            from_acc = get_object_or_404(BankAccount, id=from_id)
+            to_acc = get_object_or_404(BankAccount, id=to_id)
+            ft = FundTransfer.objects.create(
+                company=company, transfer_no=f"FT-{int(datetime.now().timestamp())}",
+                from_account=from_acc, to_account=to_acc, amount=amount, notes=notes
+            )
+            ft.post_accounting()
+            return redirect('/banking/transfer/')
+
+    return render(request, 'accounting/fund_transfer.html', {
+        'company': company, 'banks': banks, 'transfers': transfers,
+        'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir
     })
 
 def invoice_detail_view(request, pk):
@@ -97,7 +182,6 @@ def invoice_detail_view(request, pk):
         'bank_accounts': bank_accounts
     })
 
-# 🚚 ডেলিভারি নোট ভিউ
 def delivery_note_detail_view(request, pk):
     delivery_note = get_object_or_404(DeliveryNote, pk=pk)
     comp = delivery_note.company or get_user_company(request)
@@ -110,7 +194,7 @@ def delivery_note_detail_view(request, pk):
 def create_delivery_note_view(request, invoice_id):
     invoice = get_object_or_404(Invoice, pk=invoice_id)
     comp = invoice.company or get_user_company(request)
-    warehouses = Warehouse.objects.filter(company=comp)
+    warehouses = Warehouse.objects.filter(company=company)
     
     if request.method == 'POST':
         driver = request.POST.get('driver_name', '')
