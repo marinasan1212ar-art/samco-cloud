@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ar" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <title>POS Receipt #{{ invoice.invoice_no }}</title>
+    <style>
+        body { font-family: 'Courier New', Courier, monospace; background: #e0e0e0; margin: 0; padding: 20px; display: flex; justify-content: center; }
+        .receipt { width: 80mm; background: white; padding: 5mm; color: black; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .center { text-align: center; }
+        .bold { font-weight: bold; }
+        .border-b { border-bottom: 1px dashed black; margin-bottom: 5px; padding-bottom: 5px; }
+        table { width: 100%; border-collapse: collapse; font-size: 11px; margin: 10px 0; }
+        th, td { text-align: right; padding: 2px 0; }
+        th:first-child, td:first-child { text-align: left; }
+        .totals { font-size: 12px; margin-top: 10px; }
+        .totals div { display: flex; justify-content: space-between; margin: 3px 0; }
+        .grand-total { font-size: 16px; font-weight: bold; border-top: 1px solid black; padding-top: 5px; margin-top: 5px; }
+        .qr-container { display: flex; justify-content: center; margin: 10px 0; }
+        .qr-container img { width: 40mm; height: 40mm; }
+        .footer { font-size: 10px; text-align: center; margin-top: 10px; }
+        
+        @media print {
+            body { background: white; padding: 0; display: block; }
+            .receipt { width: 100%; box-shadow: none; padding: 0; margin: 0; }
+        }
+    </style>
+</head>
+<body onload="window.print()">
+    <div class="receipt">
+        <div class="center border-b">
+            <h2 style="margin: 0; font-size: 16px;">{{ company.company_name_en }}</h2>
+            <p style="margin: 2px 0; font-size: 14px;" dir="rtl">{{ company.company_name_ar }}</p>
+            <p style="margin: 2px 0; font-size: 11px;">VAT No: {{ company.vat_number }}</p>
+            <p style="margin: 2px 0; font-size: 11px;">{{ company.address_en }}</p>
+        </div>
+        
+        <div class="center border-b" style="padding-top: 5px;">
+            <p class="bold" style="margin: 0; font-size: 13px;">Simplified Tax Invoice</p>
+            <p class="bold" style="margin: 0; font-size: 13px;" dir="rtl">فاتورة ضريبية مبسطة</p>
+        </div>
+
+        <div style="font-size: 11px; margin: 10px 0;">
+            <div>Inv No: <span class="bold">{{ invoice.invoice_no }}</span></div>
+            <div>Date: {{ invoice.date|date:"Y-m-d H:i" }}</div>
+            <div>Customer: {{ invoice.customer.name }}</div>
+        </div>
+
+        <div class="border-b"></div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Item / الصنف</th>
+                    <th>Qty</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in invoice.items.all %}
+                <tr>
+                    <td>{{ item.product.name|truncatechars:15 }}</td>
+                    <td class="center">{{ item.qty }}</td>
+                    <td>{{ item.unit_price|floatformat:2 }}</td>
+                    <td class="bold">{{ item.total|floatformat:2 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="border-b"></div>
+
+        <div class="totals border-b">
+            <div><span>Subtotal (Excl. VAT):</span> <span>{{ invoice.subtotal|floatformat:2 }} SR</span></div>
+            <div><span>VAT (15%):</span> <span>{{ invoice.vat_amount|floatformat:2 }} SR</span></div>
+            <div class="grand-total"><span>Net Total:</span> <span>{{ invoice.total_amount|floatformat:2 }} SR</span></div>
+        </div>
+
+        <div class="qr-container">
+            {% if qr_image %}
+            <img src="data:image/png;base64,{{ qr_image }}" alt="ZATCA QR">
+            {% endif %}
+        </div>
+
+        <div class="footer">
+            <p style="margin: 2px 0;">Thank you for your visit!</p>
+            <p style="margin: 2px 0;" dir="rtl">شكراً لزيارتكم!</p>
+            <p style="margin: 2px 0; font-size: 8px;">Powered by SAMCO Cloud ERP</p>
+        </div>
+    </div>
+</body>
+</html>
