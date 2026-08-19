@@ -4,14 +4,18 @@ from rest_framework.response import Response
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from django.db.models import Sum, Q
+from django.contrib.auth import login, authenticate
+from django.contrib.auth.models import User
 from decimal import Decimal
 from datetime import datetime, timedelta
+
 from .models import (
     Account, Customer, Supplier, Product, Invoice, PurchaseBill, 
     BankAccount, ReceiptVoucher, PaymentVoucher, JournalEntry, 
     JournalEntryLine, Company, Warehouse, WarehouseStock, StockTransfer, 
     UserProfile, BillOfMaterials, WorkOrder, Employee, MonthlyPayroll, 
-    PayrollItem, CostCenter, FixedAsset, StockAdjustment, CompanySettings
+    PayrollItem, CostCenter, FixedAsset, StockAdjustment, CompanySettings,
+    SubscriptionPlan, CompanySubscription, PaymentTransaction
 )
 from .serializers import (
     AccountSerializer, CustomerSerializer, SupplierSerializer, ProductSerializer,
@@ -61,11 +65,73 @@ def dashboard_view(request):
         'is_ar': is_ar, 'lang_dir': lang_dir, 'user_role': user_role
     })
 
-# --- 📋 كشف حساب عميل ومورد (CUSTOMER & SUPPLIER STATEMENT OF ACCOUNT) ---
+# --- 🚀 SAAS SIGNUP & PRICING VIEWS (FIXED) ---
+def company_signup_view(request):
+    error = None
+    if request.method == 'POST':
+        comp_name = request.POST.get('company_name')
+        vat_number = request.POST.get('vat_number', '300000000000003')
+        phone = request.POST.get('phone', '')
+        username = request.POST.get('username')
+        email = request.POST.get('email', '')
+        password = request.POST.get('password')
+
+        if User.objects.filter(username=username).exists():
+            error = "اسم المستخدم موجود بالفعل / Username already exists."
+        else:
+            user = User.objects.create_user(username=username, email=email, password=password)
+            company = Company.objects.create(name=comp_name, vat_number=vat_number, phone=phone)
+            
+            profile, _ = UserProfile.objects.get_or_create(user=user)
+            profile.company = company
+            profile.role = 'ADMIN'
+            profile.save()
+
+            default_plan, _ = SubscriptionPlan.objects.get_or_create(
+                slug='standard-plan',
+                defaults={'name': 'Standard Enterprise Plan', 'price_monthly_sar': Decimal('199.00')}
+            )
+            CompanySubscription.objects.create(company=company, plan=default_plan, status='ACTIVE')
+
+            login(request, user)
+            return redirect('/')
+
+    return render(request, 'accounting/signup.html', {'error': error})
+
+def pricing_checkout_view(request):
+    plans = SubscriptionPlan.objects.filter(is_active=True)
+    if not plans.exists():
+        SubscriptionPlan.objects.create(slug='basic', name='الباقة الأساسية (Basic)', price_monthly_sar=Decimal('99.00'))
+        SubscriptionPlan.objects.create(slug='pro', name='باقة الأعمال المتقدمة (Pro Enterprise)', price_monthly_sar=Decimal('299.00'))
+        plans = SubscriptionPlan.objects.filter(is_active=True)
+
+    company = get_user_company(request)
+
+    if request.method == 'POST':
+        plan_id = request.POST.get('plan_id')
+        pay_method = request.POST.get('payment_method', 'Mada')
+        plan = get_object_or_404(SubscriptionPlan, id=plan_id)
+
+        PaymentTransaction.objects.create(
+            company=company,
+            amount_sar=plan.price_monthly_sar,
+            payment_method=pay_method,
+            status='PAID'
+        )
+
+        sub, _ = CompanySubscription.objects.get_or_create(company=company)
+        sub.plan = plan
+        sub.status = 'ACTIVE'
+        sub.save()
+
+        return redirect('/')
+
+    return render(request, 'accounting/pricing.html', {'plans': plans, 'company': company})
+
+# --- 📋 STATEMENT OF ACCOUNT ---
 def statement_of_account_view(request, party_type, pk):
     lang = request.session.get('lang', 'en'); is_ar = (lang == 'ar'); lang_dir = 'rtl' if is_ar else 'ltr'
     company = get_user_company(request)
-
     ledger_lines = []
     running_balance = Decimal('0.00')
 
@@ -73,8 +139,6 @@ def statement_of_account_view(request, party_type, pk):
         party = get_object_or_404(Customer, pk=pk)
         title_en = "Customer Statement of Account"
         title_ar = "كشف حساب عميل تفصيلي"
-        
-        # ইনভয়েস ও রসিদ
         invoices = Invoice.objects.filter(customer=party).order_by('date')
         receipts = ReceiptVoucher.objects.filter(customer=party).order_by('date')
 
@@ -102,7 +166,6 @@ def statement_of_account_view(request, party_type, pk):
         party = get_object_or_404(Supplier, pk=pk)
         title_en = "Supplier Statement of Account"
         title_ar = "كشف حساب مورد تفصيلي"
-        
         bills = PurchaseBill.objects.filter(supplier=party).order_by('date')
         payments = PaymentVoucher.objects.filter(supplier=party).order_by('date')
 
@@ -130,26 +193,17 @@ def statement_of_account_view(request, party_type, pk):
     ledger_lines.sort(key=lambda x: x['date'])
 
     return render(request, 'accounting/statement.html', {
-        'company': company,
-        'party': party,
-        'party_type': party_type,
-        'title_en': title_en,
-        'title_ar': title_ar,
-        'ledger_lines': ledger_lines,
-        'final_balance': running_balance,
-        'lang': lang,
-        'is_ar': is_ar,
-        'lang_dir': lang_dir
+        'company': company, 'party': party, 'party_type': party_type,
+        'title_en': title_en, 'title_ar': title_ar, 'ledger_lines': ledger_lines,
+        'final_balance': running_balance, 'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir
     })
 
-# --- 🇸🇦 SAUDI WAGE PROTECTION SYSTEM (WPS / MUDAD SIF FILE EXPORT) ---
+# --- 🇸🇦 WPS EXPORT ---
 def wps_sif_export_view(request, payroll_id):
     payroll = get_object_or_404(MonthlyPayroll, pk=payroll_id)
     company = get_user_company(request)
 
-    # সৌদি মানবসম্পদ মন্ত্রণালয়ের মানসম্মত SIF ফরম্যাট
     sif_content = f"SCR|{company.cr_number or '1010445566'}|{company.name}|{payroll.processed_date.strftime('%Y%m%d')}|{payroll.month_year.replace('-','')}|{payroll.items.count()}|{payroll.total_amount:.2f}|SAR\n"
-    
     for idx, item in enumerate(payroll.items.all(), 1):
         emp = item.employee
         sif_content += f"EDR|{emp.iqama_no}|{emp.bank_iban}|{emp.name_en}|{item.basic_salary:.2f}|{item.housing:.2f}|{item.transport:.2f}|{item.deductions:.2f}|{item.net_salary:.2f}|SAR\n"

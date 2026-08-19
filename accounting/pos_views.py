@@ -3,7 +3,6 @@ from datetime import datetime
 from decimal import Decimal
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 from .models import Company, Product, Customer, Invoice, InvoiceItem, BankAccount, ReceiptVoucher, CompanySettings
 from .zatca import generate_zatca_qr_base64, generate_qr_image_base64
 
@@ -19,7 +18,6 @@ def pos_dashboard(request):
     customers = Customer.objects.filter(company=comp)
     return render(request, 'accounting/pos.html', {'products': products, 'customers': customers, 'company': comp})
 
-@csrf_exempt
 def pos_checkout(request):
     if request.method == 'POST':
         try:
@@ -45,10 +43,10 @@ def pos_checkout(request):
             for item in cart:
                 prod = Product.objects.get(id=item['id'])
                 qty = int(item['qty'])
-                price = Decimal(str(item['price']))
+                price = prod.sale_price 
                 
                 InvoiceItem.objects.create(invoice=invoice, product=prod, qty=qty, unit_price=price)
-                subtotal += price * qty
+                subtotal += price * Decimal(qty)
             
             vat = subtotal * Decimal('0.15')
             tot = subtotal + vat
@@ -63,7 +61,6 @@ def pos_checkout(request):
             invoice.zatca_qr_b64 = qr_b64
             invoice.save()
             
-            # অটোমেটিক ক্যাশ ড্রয়ারে টাকা জমা করা
             bank, _ = BankAccount.objects.get_or_create(company=comp, name="POS Cash Drawer (الخزينة)")
             ReceiptVoucher.objects.create(company=comp, voucher_no=f"RV-{inv_no}", customer=cust, invoice=invoice, bank_account=bank, amount=tot, payment_method=pay_method)
             
