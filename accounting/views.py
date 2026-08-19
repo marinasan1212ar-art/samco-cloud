@@ -20,30 +20,60 @@ def get_user_company(request):
     comp, _ = Company.objects.get_or_create(id=1, defaults={"name": "SECOND ADVANCE MEDICAL COMPANY (SAMCO)", "vat_number": "310122456700003"})
     return comp
 
+# 🌟 ১০০% রিয়েল ডাইনামিক ড্যাশবোর্ড
 def dashboard_view(request):
     lang = request.session.get('lang', 'en'); is_ar = (lang == 'ar'); lang_dir = 'rtl' if is_ar else 'ltr'
     company = get_user_company(request)
+
     total_sales = sum(inv.total_amount for inv in Invoice.objects.filter(company=company))
-    total_purchases = sum(bill.total_amount for bill in PurchaseBill.objects.filter(company=company)) + sum(exp.total_amount for exp in DirectExpense.objects.filter(company=company))
+    total_purchases = sum(bill.total_amount for bill in PurchaseBill.objects.filter(company=company))
+    total_expenses = sum(exp.total_amount for exp in DirectExpense.objects.filter(company=company))
     total_bank_balance = sum(b.balance for b in BankAccount.objects.filter(company=company))
+
+    # Cash In vs Cash Out
+    cash_in = ReceiptVoucher.objects.filter(company=company).aggregate(Sum('amount'))['amount__sum'] or Decimal('0.00')
+    cash_out = (PaymentVoucher.objects.filter(company=company).aggregate(Sum('amount'))['amount__sum'] or Decimal('0.00')) + total_expenses
+    net_cash_flow = cash_in - cash_out
+
+    # ZATCA VAT Summary
+    vat_output = sum(inv.vat_amount for inv in Invoice.objects.filter(company=company))
+    vat_input = sum(bill.vat_amount for bill in PurchaseBill.objects.filter(company=company)) + sum(exp.vat_amount for exp in DirectExpense.objects.filter(company=company))
+    net_vat_due = vat_output - vat_input
+
+    # Dynamic Top Customers (Only who purchased)
+    top_customers = Customer.objects.filter(company=company, invoices__isnull=False).annotate(total_spent=Sum('invoices__total_amount')).order_by('-total_spent')[:5]
+
+    # Real Invoices & Overdue
+    invoices = Invoice.objects.filter(company=company).order_by('-id')[:6]
     overdue_invoices = Invoice.objects.filter(company=company, payment_status__in=['UNPAID', 'PARTIALLY_PAID']).order_by('-date')[:5]
     low_stock_products = Product.objects.filter(company=company, current_stock__lte=10).order_by('current_stock')[:5]
+    banks = BankAccount.objects.filter(company=company)
+    recent_expenses = DirectExpense.objects.filter(company=company).order_by('-id')[:4]
 
     summary = {
-        "total_sales_sar": total_sales, "total_purchases_sar": total_purchases, "total_bank_balance_sar": total_bank_balance,
-        "net_profit_sar": total_sales - total_purchases, "total_products": Product.objects.filter(company=company).count(),
-        "total_customers": Customer.objects.filter(company=company).count(), "total_suppliers": Supplier.objects.filter(company=company).count(),
-        "total_employees": Employee.objects.filter(company=company).count(), "total_work_orders": WorkOrder.objects.filter(company=company).count(),
+        "total_sales_sar": total_sales,
+        "total_purchases_sar": total_purchases,
+        "total_expenses_sar": total_expenses,
+        "total_bank_balance_sar": total_bank_balance,
+        "net_profit_sar": total_sales - (total_purchases + total_expenses),
+        "cash_in": cash_in,
+        "cash_out": cash_out,
+        "net_cash_flow": net_cash_flow,
+        "vat_output": vat_output,
+        "vat_input": vat_input,
+        "net_vat_due": net_vat_due,
+        "total_products": Product.objects.filter(company=company).count(),
+        "total_customers": Customer.objects.filter(company=company).count(),
+        "total_suppliers": Supplier.objects.filter(company=company).count(),
+        "total_employees": Employee.objects.filter(company=company).count(),
     }
-    invoices = Invoice.objects.filter(company=company).order_by('-id')[:6]
-    purchases = PurchaseBill.objects.filter(company=company).order_by('-id')[:6]
-    warehouses = Warehouse.objects.filter(company=company).order_by('code')
     user_role = request.user.profile.role if request.user.is_authenticated and hasattr(request.user, 'profile') else 'ADMIN'
 
     return render(request, 'accounting/dashboard.html', {
-        'company': company, 'summary': summary, 'invoices': invoices, 'purchases': purchases,
-        'warehouses': warehouses, 'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir, 'user_role': user_role,
-        'overdue_invoices': overdue_invoices, 'low_stock_products': low_stock_products
+        'company': company, 'summary': summary, 'invoices': invoices,
+        'banks': banks, 'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir, 'user_role': user_role,
+        'overdue_invoices': overdue_invoices, 'low_stock_products': low_stock_products,
+        'top_customers': top_customers, 'recent_expenses': recent_expenses
     })
 
 def invoices_list_view(request):
@@ -65,7 +95,7 @@ def create_invoice_view(request):
     products = Product.objects.filter(company=company)
 
     if request.method == 'POST' and 'create_quick_customer' in request.POST:
-        new_cust = Customer.objects.create(
+        Customer.objects.create(
             company=company, name=request.POST.get('c_name'), name_ar=request.POST.get('c_name_ar', ''),
             vat_number=request.POST.get('c_vat_number', ''), cr_number=request.POST.get('c_cr_number', ''),
             phone=request.POST.get('c_phone', ''), address=request.POST.get('c_address', 'Saudi Arabia')
@@ -110,29 +140,6 @@ def create_invoice_view(request):
         'products': products, 'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir,
         'today': datetime.now().strftime("%Y-%m-%d")
     })
-
-# 🌟 PRICING & AUTO-SEED PLANS (Fixed)
-def pricing_checkout_view(request):
-    lang = request.session.get('lang', 'en'); is_ar = (lang == 'ar'); lang_dir = 'rtl' if is_ar else 'ltr'
-    company = get_user_company(request)
-    
-    plans = SubscriptionPlan.objects.filter(is_active=True)
-    if not plans.exists():
-        SubscriptionPlan.objects.get_or_create(slug='basic', defaults={'name': 'Basic Plan (باقة البداية)', 'price_monthly_sar': Decimal('99.00'), 'price_yearly_sar': Decimal('999.00'), 'max_users': 2})
-        SubscriptionPlan.objects.get_or_create(slug='pro', defaults={'name': 'Qoyod Pro (باقة الأعمال المتقدمة)', 'price_monthly_sar': Decimal('199.00'), 'price_yearly_sar': Decimal('1990.00'), 'max_users': 5})
-        SubscriptionPlan.objects.get_or_create(slug='enterprise', defaults={'name': 'Enterprise Plan (باقة المؤسسات الكبرى)', 'price_monthly_sar': Decimal('399.00'), 'price_yearly_sar': Decimal('3990.00'), 'max_users': 20})
-        plans = SubscriptionPlan.objects.filter(is_active=True)
-
-    if request.method == 'POST':
-        plan = get_object_or_404(SubscriptionPlan, id=request.POST.get('plan_id'))
-        PaymentTransaction.objects.create(company=company, amount_sar=plan.price_monthly_sar, payment_method=request.POST.get('payment_method', 'Mada'), status='PAID')
-        sub, _ = CompanySubscription.objects.get_or_create(company=company)
-        sub.plan = plan
-        sub.status = 'ACTIVE'
-        sub.save()
-        return redirect('/')
-
-    return render(request, 'accounting/pricing.html', {'plans': plans, 'company': company, 'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir})
 
 def invoice_detail_view(request, pk):
     invoice = get_object_or_404(Invoice, pk=pk)
@@ -205,22 +212,6 @@ def price_list_view(request):
         PriceListItem.objects.update_or_create(price_list=get_object_or_404(PriceList, id=request.POST.get('price_list_id')), product=get_object_or_404(Product, id=request.POST.get('product_id')), defaults={'custom_price': Decimal(request.POST.get('custom_price', '0.00'))})
         return redirect('/sales/price-lists/')
     return render(request, 'accounting/price_lists.html', {'company': company, 'price_lists': PriceList.objects.filter(company=company), 'products': Product.objects.filter(company=company), 'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir})
-
-def debit_note_detail_view(request, pk):
-    debit_note = get_object_or_404(DebitNote, pk=pk)
-    return render(request, 'accounting/debit_note_detail.html', {'debit_note': debit_note, 'company': debit_note.company or get_user_company(request)})
-
-def create_debit_note_view(request, bill_id):
-    bill = get_object_or_404(PurchaseBill, pk=bill_id)
-    comp = bill.company or get_user_company(request)
-    if request.method == 'POST':
-        dbn = DebitNote.objects.create(company=comp, debit_note_no=f"DBN-{bill.bill_no}", purchase_bill=bill, reason=request.POST.get('reason', 'Damaged return'))
-        for item in bill.items.all():
-            qty_ret = int(request.POST.get(f'return_qty_{item.id}', 0))
-            if qty_ret > 0: DebitNoteItem.objects.create(debit_note=dbn, product=item.product, qty=qty_ret, unit_cost=item.unit_cost)
-        dbn.update_totals_and_post_accounting()
-        return redirect('debit-note-detail', pk=dbn.pk)
-    return render(request, 'accounting/debit_note_create.html', {'bill': bill, 'company': comp})
 
 def direct_expense_view(request):
     lang = request.session.get('lang', 'en'); is_ar = (lang == 'ar'); lang_dir = 'rtl' if is_ar else 'ltr'
@@ -313,15 +304,37 @@ def create_credit_note_view(request, invoice_id):
         cn.update_totals_and_post_accounting(); return redirect('credit-note-detail', pk=cn.pk)
     return render(request, 'accounting/credit_note_create.html', {'invoice': invoice, 'company': comp})
 
-def company_signup_view(request):
+def debit_note_detail_view(request, pk):
+    debit_note = get_object_or_404(DebitNote, pk=pk)
+    return render(request, 'accounting/debit_note_detail.html', {'debit_note': debit_note, 'company': debit_note.company or get_user_company(request)})
+
+def create_debit_note_view(request, bill_id):
+    bill = get_object_or_404(PurchaseBill, pk=bill_id)
+    comp = bill.company or get_user_company(request)
     if request.method == 'POST':
-        user = User.objects.create_user(username=request.POST.get('username'), email=request.POST.get('email', ''), password=request.POST.get('password'))
-        comp = Company.objects.create(name=request.POST.get('company_name'), vat_number=request.POST.get('vat_number', '300000000000003'), phone=request.POST.get('phone', ''))
-        profile, _ = UserProfile.objects.get_or_create(user=user); profile.company = comp; profile.role = 'ADMIN'; profile.save()
-        plan, _ = SubscriptionPlan.objects.get_or_create(slug='standard', defaults={'name': 'Standard Plan', 'price_monthly_sar': Decimal('199.00')})
-        CompanySubscription.objects.create(company=comp, plan=plan, status='ACTIVE')
-        login(request, user); return redirect('/')
-    return render(request, 'accounting/signup.html')
+        dbn = DebitNote.objects.create(company=comp, debit_note_no=f"DBN-{bill.bill_no}", purchase_bill=bill, reason=request.POST.get('reason', 'Damaged return'))
+        for item in bill.items.all():
+            qty_ret = int(request.POST.get(f'return_qty_{item.id}', 0))
+            if qty_ret > 0: DebitNoteItem.objects.create(debit_note=dbn, product=item.product, qty=qty_ret, unit_cost=item.unit_cost)
+        dbn.update_totals_and_post_accounting()
+        return redirect('debit-note-detail', pk=dbn.pk)
+    return render(request, 'accounting/debit_note_create.html', {'bill': bill, 'company': comp})
+
+def pricing_checkout_view(request):
+    company = get_user_company(request)
+    plans = SubscriptionPlan.objects.filter(is_active=True)
+    if not plans.exists():
+        SubscriptionPlan.objects.get_or_create(slug='basic', defaults={'name': 'Basic Plan (باقة البداية)', 'price_monthly_sar': Decimal('99.00'), 'price_yearly_sar': Decimal('999.00'), 'max_users': 2})
+        SubscriptionPlan.objects.get_or_create(slug='pro', defaults={'name': 'Qoyod Pro (باقة الأعمال المتقدمة)', 'price_monthly_sar': Decimal('199.00'), 'price_yearly_sar': Decimal('1990.00'), 'max_users': 5})
+        SubscriptionPlan.objects.get_or_create(slug='enterprise', defaults={'name': 'Enterprise Plan (باقة المؤسسات الكبرى)', 'price_monthly_sar': Decimal('399.00'), 'price_yearly_sar': Decimal('3990.00'), 'max_users': 20})
+        plans = SubscriptionPlan.objects.filter(is_active=True)
+
+    if request.method == 'POST':
+        plan = get_object_or_404(SubscriptionPlan, id=request.POST.get('plan_id'))
+        PaymentTransaction.objects.create(company=company, amount_sar=plan.price_monthly_sar, payment_method=request.POST.get('payment_method', 'Mada'), status='PAID')
+        sub, _ = CompanySubscription.objects.get_or_create(company=company); sub.plan = plan; sub.status = 'ACTIVE'; sub.save()
+        return redirect('/')
+    return render(request, 'accounting/pricing.html', {'plans': plans, 'company': company})
 
 def statement_of_account_view(request, party_type, pk):
     lang = request.session.get('lang', 'en'); is_ar = (lang == 'ar'); lang_dir = 'rtl' if is_ar else 'ltr'
@@ -407,6 +420,16 @@ def voucher_print_view(request, v_type, pk):
 def transfer_slip_print_view(request, pk):
     t = get_object_or_404(StockTransfer, pk=pk)
     return render(request, 'accounting/transfer_print.html', {'transfer': t, 'company': get_user_company(request), 'qr_image': generate_qr_image_base64(f"TR: {t.transfer_no}")})
+
+def company_signup_view(request):
+    if request.method == 'POST':
+        user = User.objects.create_user(username=request.POST.get('username'), email=request.POST.get('email', ''), password=request.POST.get('password'))
+        comp = Company.objects.create(name=request.POST.get('company_name'), vat_number=request.POST.get('vat_number', '300000000000003'), phone=request.POST.get('phone', ''))
+        profile, _ = UserProfile.objects.get_or_create(user=user); profile.company = comp; profile.role = 'ADMIN'; profile.save()
+        plan, _ = SubscriptionPlan.objects.get_or_create(slug='standard', defaults={'name': 'Standard Plan', 'price_monthly_sar': Decimal('199.00')})
+        CompanySubscription.objects.create(company=comp, plan=plan, status='ACTIVE')
+        login(request, user); return redirect('/')
+    return render(request, 'accounting/signup.html')
 
 class WarehouseViewSet(viewsets.ModelViewSet): queryset = Warehouse.objects.all(); serializer_class = WarehouseSerializer
 class WarehouseStockViewSet(viewsets.ModelViewSet): queryset = WarehouseStock.objects.all(); serializer_class = WarehouseStockSerializer
