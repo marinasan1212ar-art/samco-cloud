@@ -1,170 +1,207 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{% if is_ar %}ar{% else %}en{% endif %}" dir="{{ lang_dir }}">
 <head>
     <meta charset="UTF-8">
-    <title>Qoyod - Cloud Accounting Dashboard</title>
+    <title>{% if is_ar %}قيود - لوحة التحكم السحابية{% else %}Qoyod - Cloud Accounting Dashboard{% endif %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Arabic Font: Cairo -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        .sidebar-transition { transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        body { font-family: {% if is_ar %}'Cairo', sans-serif{% else %}ui-sans-serif, system-ui, sans-serif{% endif %}; }
+        .sidebar-transition { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
     </style>
 </head>
-<body class="bg-[#f8fafc] text-slate-800 min-h-screen flex font-sans antialiased">
+<body class="bg-[#f8fafc] text-slate-800 min-h-screen flex antialiased">
 
-    <!-- 🌟 1. QOYOD OFFICIAL DARK NAVY SIDEBAR -->
-    <aside id="qoyod-sidebar" class="w-64 bg-[#0b132b] text-slate-300 flex flex-col justify-between hidden md:flex shrink-0 sidebar-transition select-none">
+    <!-- 🌟 1. QOYOD OFFICIAL DARK NAVY SIDEBAR (Bilingual RTL/LTR) -->
+    <aside id="qoyod-sidebar" class="w-64 bg-[#0b132b] text-slate-300 flex flex-col justify-between hidden md:flex shrink-0 sidebar-transition select-none {% if is_ar %}border-l border-slate-800/80{% else %}border-r border-slate-800/80{% endif %}">
         <div>
+            <!-- QOYOD Brand Logo -->
             <div class="h-16 flex items-center justify-between px-5 border-b border-slate-800/80">
                 <div class="flex items-center gap-2 overflow-hidden">
-                    <span id="logo-text" class="font-black text-2xl tracking-wider text-white">QOYOD</span>
+                    <span id="logo-text" class="font-black text-2xl tracking-wider text-white">{% if is_ar %}قيود{% else %}QOYOD{% endif %}</span>
                 </div>
                 <button onclick="toggleSidebar()" class="w-8 h-8 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/80 flex items-center justify-center text-base transition" title="Toggle Sidebar">
                     <i class="fa-solid fa-bars"></i>
                 </button>
             </div>
 
+            <!-- Navigation Links -->
             <nav class="p-3 space-y-1 text-xs font-semibold overflow-y-auto max-h-[calc(100vh-14rem)]">
+                <!-- Dashboard Active -->
                 <a href="/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-[#4338ca] text-white font-bold shadow-lg shadow-indigo-900/30">
                     <i class="fa-solid fa-gauge-high w-4 text-sm text-center"></i> 
-                    <span class="nav-label">Dashboard</span>
+                    <span class="nav-label">{% if is_ar %}لوحة التحكم{% else %}Dashboard{% endif %}</span>
                 </a>
 
+                <!-- Sales Dropdown -->
                 <div>
                     <button onclick="toggleMenu('sales-sub', 'sales-icon')" class="w-full flex items-center justify-between px-3.5 py-2 rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition">
                         <span class="flex items-center gap-3">
                             <i class="fa-solid fa-cart-shopping w-4 text-center"></i> 
-                            <span class="nav-label">Sales</span>
+                            <span class="nav-label">{% if is_ar %}المبيعات{% else %}Sales{% endif %}</span>
                         </span>
                         <i id="sales-icon" class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200"></i>
                     </button>
-                    <div id="sales-sub" class="hidden pl-9 pr-2 py-1 space-y-1 text-[11px] text-slate-400 border-l border-slate-800 ml-4 my-1">
-                        <a href="/invoices/" class="block py-1 hover:text-white transition">Invoices (الفواتير)</a>
-                        <a href="/invoices/create/" class="block py-1 hover:text-white transition">+ New Tax Invoice</a>
-                        <a href="/sales/recurring/" class="block py-1 hover:text-white transition">Recurring (المتكررة)</a>
-                        <a href="/sales/price-lists/" class="block py-1 hover:text-white transition">Price Lists (الأسعار)</a>
+                    <div id="sales-sub" class="hidden {% if is_ar %}pr-9 pl-2 border-r border-slate-800 mr-4{% else %}pl-9 pr-2 border-l border-slate-800 ml-4{% endif %} py-1 space-y-1 text-[11px] text-slate-400 my-1">
+                        <a href="/invoices/" class="block py-1 hover:text-white transition">{% if is_ar %}قائمة الفواتير{% else %}Invoices{% endif %}</a>
+                        <a href="/invoices/create/" class="block py-1 hover:text-white transition">{% if is_ar %}+ إنشاء فاتورة ضريبية{% else %}+ New Tax Invoice{% endif %}</a>
+                        <a href="/sales/recurring/" class="block py-1 hover:text-white transition">{% if is_ar %}الفواتير المتكررة{% else %}Recurring Invoices{% endif %}</a>
+                        <a href="/sales/price-lists/" class="block py-1 hover:text-white transition">{% if is_ar %}قوائم الأسعار{% else %}Price Lists{% endif %}</a>
                     </div>
                 </div>
 
+                <!-- Purchases Dropdown -->
                 <div>
                     <button onclick="toggleMenu('pur-sub', 'pur-icon')" class="w-full flex items-center justify-between px-3.5 py-2 rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition">
                         <span class="flex items-center gap-3">
                             <i class="fa-solid fa-basket-shopping w-4 text-center"></i> 
-                            <span class="nav-label">Purchases</span>
+                            <span class="nav-label">{% if is_ar %}المشتريات{% else %}Purchases{% endif %}</span>
                         </span>
                         <i id="pur-icon" class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200"></i>
                     </button>
-                    <div id="pur-sub" class="hidden pl-9 pr-2 py-1 space-y-1 text-[11px] text-slate-400 border-l border-slate-800 ml-4 my-1">
-                        <a href="/expenses/" class="block py-1 hover:text-white transition">Direct Expenses</a>
-                        <a href="/admin/accounting/purchasebill/" class="block py-1 hover:text-white transition">Purchase Bills</a>
+                    <div id="pur-sub" class="hidden {% if is_ar %}pr-9 pl-2 border-r border-slate-800 mr-4{% else %}pl-9 pr-2 border-l border-slate-800 ml-4{% endif %} py-1 space-y-1 text-[11px] text-slate-400 my-1">
+                        <a href="/expenses/" class="block py-1 hover:text-white transition">{% if is_ar %}سندات المصروفات{% else %}Direct Expenses{% endif %}</a>
+                        <a href="/admin/accounting/purchasebill/" class="block py-1 hover:text-white transition">{% if is_ar %}فواتير الشراء{% else %}Purchase Bills{% endif %}</a>
                     </div>
                 </div>
 
                 <a href="/expenses/" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition">
-                    <i class="fa-solid fa-receipt w-4 text-center"></i> <span class="nav-label">Expenses</span>
+                    <i class="fa-solid fa-receipt w-4 text-center"></i> <span class="nav-label">{% if is_ar %}المصروفات{% else %}Expenses{% endif %}</span>
                 </a>
                 
                 <a href="/statement/customer/1/" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition">
-                    <i class="fa-solid fa-user-group w-4 text-center"></i> <span class="nav-label">Contacts</span>
+                    <i class="fa-solid fa-user-group w-4 text-center"></i> <span class="nav-label">{% if is_ar %}جهات الاتصال والعملاء{% else %}Contacts & Customers{% endif %}</span>
                 </a>
 
                 <a href="/inventory/bundles/" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition">
-                    <i class="fa-solid fa-boxes-stacked w-4 text-center"></i> <span class="nav-label">Items & Bundles</span>
+                    <i class="fa-solid fa-boxes-stacked w-4 text-center"></i> <span class="nav-label">{% if is_ar %}المنتجات والمخزون{% else %}Items & Inventory{% endif %}</span>
                 </a>
 
+                <!-- Banking Dropdown -->
                 <div>
                     <button onclick="toggleMenu('bank-sub', 'bank-icon')" class="w-full flex items-center justify-between px-3.5 py-2 rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition">
                         <span class="flex items-center gap-3">
                             <i class="fa-solid fa-building-columns w-4 text-center"></i> 
-                            <span class="nav-label">Banking</span>
+                            <span class="nav-label">{% if is_ar %}البنوك والمالية{% else %}Banking{% endif %}</span>
                         </span>
                         <i id="bank-icon" class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200"></i>
                     </button>
-                    <div id="bank-sub" class="hidden pl-9 pr-2 py-1 space-y-1 text-[11px] text-slate-400 border-l border-slate-800 ml-4 my-1">
-                        <a href="/banking/reconciliation/" class="block py-1 hover:text-white transition">Reconciliation (المطابقة)</a>
-                        <a href="/banking/transfer/" class="block py-1 hover:text-white transition">Transfers (التحويلات)</a>
+                    <div id="bank-sub" class="hidden {% if is_ar %}pr-9 pl-2 border-r border-slate-800 mr-4{% else %}pl-9 pr-2 border-l border-slate-800 ml-4{% endif %} py-1 space-y-1 text-[11px] text-slate-400 my-1">
+                        <a href="/banking/reconciliation/" class="block py-1 hover:text-white transition">{% if is_ar %}التسوية والمطابقة البنكية{% else %}Reconciliation{% endif %}</a>
+                        <a href="/banking/transfer/" class="block py-1 hover:text-white transition">{% if is_ar %}التحويل بين الحسابات{% else %}Fund Transfers{% endif %}</a>
                     </div>
                 </div>
 
                 <a href="/reports/" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition">
-                    <i class="fa-solid fa-calculator w-4 text-center"></i> <span class="nav-label">Accounting</span>
+                    <i class="fa-solid fa-calculator w-4 text-center"></i> <span class="nav-label">{% if is_ar %}المحاسبة العامة{% else %}Accounting{% endif %}</span>
                 </a>
 
                 <a href="/reports/" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition">
-                    <i class="fa-solid fa-chart-column w-4 text-center"></i> <span class="nav-label">Reports</span>
+                    <i class="fa-solid fa-chart-column w-4 text-center"></i> <span class="nav-label">{% if is_ar %}التقارير المالية{% else %}Reports{% endif %}</span>
+                </a>
+
+                <a href="/vat/" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition">
+                    <i class="fa-solid fa-percent w-4 text-center text-amber-400"></i> <span class="nav-label">{% if is_ar %}الإقرار الضريبي (VAT){% else %}VAT Declaration{% endif %}</span>
                 </a>
 
                 <a href="/reports/aging/" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition">
-                    <i class="fa-solid fa-percent w-4 text-center"></i> <span class="nav-label">VAT & Aging</span>
+                    <i class="fa-solid fa-clock-rotate-left w-4 text-center text-cyan-400"></i> <span class="nav-label">{% if is_ar %}أعمار الديون{% else %}Debt Aging{% endif %}</span>
                 </a>
 
                 <a href="/manufacturing/" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition">
-                    <i class="fa-solid fa-diagram-project w-4 text-center"></i> <span class="nav-label">Projects</span>
+                    <i class="fa-solid fa-diagram-project w-4 text-center"></i> <span class="nav-label">{% if is_ar %}المشاريع والتصنيع{% else %}Projects & BOM{% endif %}</span>
                 </a>
 
                 <a href="/payroll/" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition">
-                    <i class="fa-solid fa-id-card-clip w-4 text-center"></i> <span class="nav-label">Payroll</span>
+                    <i class="fa-solid fa-id-card-clip w-4 text-center text-emerald-400"></i> <span class="nav-label">{% if is_ar %}الرواتب والأجور (WPS){% else %}Payroll & WPS{% endif %}</span>
                 </a>
 
                 <a href="/admin/" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition">
-                    <i class="fa-solid fa-gear w-4 text-center"></i> <span class="nav-label">Settings</span>
+                    <i class="fa-solid fa-gear w-4 text-center"></i> <span class="nav-label">{% if is_ar %}الإعدادات{% else %}Settings{% endif %}</span>
                 </a>
             </nav>
         </div>
 
+        <!-- Plan Card (Bottom) -->
         <div id="plan-section" class="p-4 space-y-3">
             <div class="bg-[#1e293b]/70 border border-slate-700/60 rounded-2xl p-3.5 text-xs relative">
-                <p class="text-[10px] text-slate-400 font-semibold uppercase">Your Plan</p>
-                <p class="font-bold text-white text-sm mt-0.5">Qoyod Pro</p>
-                <a href="/pricing/" class="mt-2.5 block text-center bg-[#4338ca] hover:bg-indigo-600 text-white font-bold py-1.5 rounded-lg text-xs transition">Upgrade Now</a>
+                <p class="text-[10px] text-slate-400 font-semibold uppercase">{% if is_ar %}باقتك الحالية{% else %}Your Plan{% endif %}</p>
+                <p class="font-bold text-white text-sm mt-0.5">{% if is_ar %}باقة قيود برو (Pro){% else %}Qoyod Pro{% endif %}</p>
+                <a href="/pricing/" class="mt-2.5 block text-center bg-[#4338ca] hover:bg-indigo-600 text-white font-bold py-1.5 rounded-lg text-xs transition">
+                    {% if is_ar %}ترقية الباقة الآن{% else %}Upgrade Now{% endif %}
+                </a>
             </div>
+            <a href="https://wa.me/966500000000" target="_blank" class="flex items-center gap-2 px-2 text-[11px] text-slate-400 hover:text-slate-200">
+                <i class="fa-solid fa-headset text-emerald-400"></i> {% if is_ar %}المساعدة والدعم الفني{% else %}Need Help? Contact Support{% endif %}
+            </a>
         </div>
     </aside>
 
     <!-- 🌟 2. MAIN WORKSPACE WITH QOYOD HEADER -->
     <main class="flex-1 flex flex-col min-w-0 overflow-y-auto">
         <header class="h-16 bg-white border-b border-slate-200/90 flex items-center justify-between px-6 sticky top-0 z-30">
+            <!-- Search Bar with ⌘ K -->
             <div onclick="openSearchModal()" class="relative w-80 cursor-pointer">
-                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-xs"></i>
-                <input type="text" readonly placeholder="Search in Qoyod" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 pl-9 pr-12 text-xs text-slate-800 cursor-pointer focus:outline-none">
-                <span class="absolute right-2.5 top-2 px-1.5 py-0.5 bg-slate-200/80 text-slate-600 text-[10px] font-mono font-bold rounded">⌘ K</span>
+                <i class="fa-solid fa-magnifying-glass absolute {% if is_ar %}right-3.5{% else %}left-3.5{% endif %} top-3 text-slate-400 text-xs"></i>
+                <input type="text" readonly placeholder="{% if is_ar %}ابحث في قيود...{% else %}Search in Qoyod...{% endif %}" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 {% if is_ar %}pr-9 pl-12 text-right{% else %}pl-9 pr-12{% endif %} text-xs text-slate-800 cursor-pointer focus:outline-none">
+                <span class="absolute {% if is_ar %}left-2.5{% else %}right-2.5{% endif %} top-2 px-1.5 py-0.5 bg-slate-200/80 text-slate-600 text-[10px] font-mono font-bold rounded">⌘ K</span>
             </div>
 
+            <!-- Right Actions Bar -->
             <div class="flex items-center gap-4 relative">
-                <a href="/invoices/create/" class="w-8 h-8 rounded-full bg-[#3b82f6] hover:bg-blue-600 text-white flex items-center justify-center shadow-sm font-black text-sm transition" title="Quick Create">
+                
+                <!-- 🌐 1-CLICK ARABIC / ENGLISH SWITCHER (Matching Quyod) -->
+                {% if is_ar %}
+                <a href="/set-language/en/" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl text-xs flex items-center gap-1.5 border border-slate-200 transition" title="Switch to English">
+                    <i class="fa-solid fa-globe text-indigo-600"></i> English
+                </a>
+                {% else %}
+                <a href="/set-language/ar/" class="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold rounded-xl text-xs flex items-center gap-1.5 border border-indigo-200 transition font-cairo" title="التحويل للغة العربية">
+                    <i class="fa-solid fa-globe text-indigo-600"></i> العربية
+                </a>
+                {% endif %}
+
+                <!-- Blue + Button -->
+                <a href="/invoices/create/" class="w-8 h-8 rounded-full bg-[#3b82f6] hover:bg-blue-600 text-white flex items-center justify-center shadow-sm font-black text-sm transition" title="{% if is_ar %}إنشاء فاتورة جديدة{% else %}Quick Create Invoice{% endif %}">
                     <i class="fa-solid fa-plus"></i>
                 </a>
                 
-                <button onclick="toggleNotifications()" class="text-slate-500 hover:text-slate-800 text-sm relative p-1.5">
-                    <i class="fa-regular fa-bell text-base"></i>
-                    {% if overdue_invoices or low_stock_products %}
-                    <span class="w-2 h-2 rounded-full bg-rose-500 absolute top-1 right-1 animate-pulse"></span>
-                    {% endif %}
-                </button>
-
-                <div id="notif-dropdown" class="hidden absolute right-16 top-10 mt-2 w-80 bg-white border border-slate-200 rounded-2xl shadow-2xl p-4 space-y-3 z-50 text-xs">
-                    <div class="flex justify-between items-center border-b border-slate-100 pb-2">
-                        <span class="font-black text-slate-900">Notifications (التنبيهات)</span>
-                        <span class="text-[10px] text-indigo-600 font-bold">Real-time</span>
-                    </div>
-                    <div class="space-y-2 max-h-64 overflow-y-auto">
-                        {% for inv in overdue_invoices %}
-                        <div class="p-2.5 bg-rose-50 border border-rose-100 rounded-xl">
-                            <p class="font-bold text-rose-800">Unpaid Invoice #{{ inv.invoice_no }}</p>
-                            <p class="text-[10px] text-rose-600 mt-0.5">{{ inv.customer.name }} - SAR {{ inv.remaining_due|floatformat:2 }} due</p>
-                        </div>
-                        {% endfor %}
-
-                        {% for p in low_stock_products %}
-                        <div class="p-2.5 bg-amber-50 border border-amber-100 rounded-xl">
-                            <p class="font-bold text-amber-800">Low Stock: {{ p.name }}</p>
-                            <p class="text-[10px] text-amber-600 mt-0.5">{{ p.current_stock }} units left in warehouse</p>
-                        </div>
-                        {% endfor %}
-
-                        {% if not overdue_invoices and not low_stock_products %}
-                        <p class="text-slate-400 italic text-center py-4">No unread notifications! 🟢</p>
+                <!-- 🔔 Notification Button -->
+                <div class="relative">
+                    <button onclick="toggleNotifications()" class="text-slate-500 hover:text-slate-800 text-sm relative p-1.5">
+                        <i class="fa-regular fa-bell text-base"></i>
+                        {% if overdue_invoices or low_stock_products %}
+                        <span class="w-2 h-2 rounded-full bg-rose-500 absolute top-1 {% if is_ar %}left-1{% else %}right-1{% endif %} animate-pulse"></span>
                         {% endif %}
+                    </button>
+
+                    <div id="notif-dropdown" class="hidden absolute {% if is_ar %}left-0{% else %}right-0{% endif %} top-10 mt-2 w-80 bg-white border border-slate-200 rounded-2xl shadow-2xl p-4 space-y-3 z-50 text-xs text-right">
+                        <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                            <span class="font-black text-slate-900">{% if is_ar %}التنبيهات والإشعارات{% else %}Notifications{% endif %}</span>
+                            <span class="text-[10px] text-indigo-600 font-bold">{% if is_ar %}مباشر{% else %}Real-time{% endif %}</span>
+                        </div>
+                        <div class="space-y-2 max-h-64 overflow-y-auto">
+                            {% for inv in overdue_invoices %}
+                            <div class="p-2.5 bg-rose-50 border border-rose-100 rounded-xl">
+                                <p class="font-bold text-rose-800">{% if is_ar %}فاتورة مستحقة التحصيل{% else %}Unpaid Invoice{% endif %} #{{ inv.invoice_no }}</p>
+                                <p class="text-[10px] text-rose-600 mt-0.5">{{ inv.customer.name }} - SAR {{ inv.remaining_due|floatformat:2 }}</p>
+                            </div>
+                            {% endfor %}
+
+                            {% for p in low_stock_products %}
+                            <div class="p-2.5 bg-amber-50 border border-amber-100 rounded-xl">
+                                <p class="font-bold text-amber-800">{% if is_ar %}انخفاض المخزون:{% else %}Low Stock:{% endif %} {{ p.name }}</p>
+                                <p class="text-[10px] text-amber-600 mt-0.5">{{ p.current_stock }} {% if is_ar %}قطعة متبقية بالمستودع{% else %}units left in warehouse{% endif %}</p>
+                            </div>
+                            {% endfor %}
+
+                            {% if not overdue_invoices and not low_stock_products %}
+                            <p class="text-slate-400 italic text-center py-4">{% if is_ar %}لا توجد إشعارات جديدة! 🟢{% else %}No unread notifications! 🟢{% endif %}</p>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
 
@@ -172,8 +209,9 @@
                     <i class="fa-solid fa-gear"></i>
                 </a>
 
-                <div class="flex items-center gap-2.5 pl-2 border-l border-slate-200">
-                    <div class="text-right">
+                <!-- User Profile Badge -->
+                <div class="flex items-center gap-2.5 {% if is_ar %}pr-2 border-r border-slate-200{% else %}pl-2 border-l border-slate-200{% endif %}">
+                    <div class="{% if is_ar %}text-left{% else %}text-right{% endif %}">
                         <p class="text-xs font-bold text-slate-800 leading-tight">{{ company.name|default:"Demo Company" }}</p>
                         <p class="text-[10px] text-slate-500 leading-tight">{{ request.user.username|default:"John Doe" }}</p>
                     </div>
@@ -188,80 +226,79 @@
         <div class="p-6 space-y-6">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                 <h1 class="text-xl font-bold text-slate-900 flex items-center gap-2">
-                    Good Morning, {{ request.user.username|default:"John Doe" }} <span>👋</span>
+                    {% if is_ar %}صباح الخير، {{ request.user.username|default:"John Doe" }}{% else %}Good Morning, {{ request.user.username|default:"John Doe" }}{% endif %} <span>👋</span>
                 </h1>
                 <div class="flex items-center gap-2 text-xs">
                     <select class="bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-slate-700 font-bold focus:outline-none shadow-sm">
-                        <option>This Month</option>
-                        <option>This Quarter</option>
-                        <option>This Year</option>
+                        <option>{% if is_ar %}هذا الشهر{% else %}This Month{% endif %}</option>
+                        <option>{% if is_ar %}هذا الربع{% else %}This Quarter{% endif %}</option>
+                        <option>{% if is_ar %}هذه السنة{% else %}This Year{% endif %}</option>
                     </select>
                     <a href="/invoices/create/" class="bg-indigo-600 text-white hover:bg-indigo-700 px-3.5 py-1.5 rounded-xl font-bold text-xs shadow-sm flex items-center gap-1.5 transition">
-                        <i class="fa-solid fa-plus"></i> + New Invoice
+                        <i class="fa-solid fa-plus"></i> {% if is_ar %}+ فاتورة جديدة{% else %}+ New Invoice{% endif %}
                     </a>
                 </div>
             </div>
 
-            <!-- 4 KPI Summary Cards (১০০% ডাইনামিক) -->
+            <!-- 4 KPI Summary Cards (১০০% ডাইনামিক ও বাইলিঙ্গুয়াল) -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
                 <!-- Total Sales -->
                 <div class="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-sm space-y-2">
                     <div class="flex justify-between items-center">
-                        <span class="text-slate-500 font-medium">Total Sales</span>
+                        <span class="text-slate-500 font-medium">{% if is_ar %}إجمالي المبيعات{% else %}Total Sales{% endif %}</span>
                         <div class="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center"><i class="fa-regular fa-file-lines"></i></div>
                     </div>
                     <h2 class="text-xl font-black text-slate-900 font-mono">SAR {{ summary.total_sales_sar|floatformat:2 }}</h2>
-                    <p class="text-[10px] text-emerald-600 font-bold flex items-center gap-1">▲ Real-time Invoiced Sales</p>
+                    <p class="text-[10px] text-emerald-600 font-bold flex items-center gap-1">▲ {% if is_ar %}مبيعات فعلية مسجلة{% else %}Real-time Invoiced Sales{% endif %}</p>
                 </div>
 
                 <!-- Total Purchases -->
                 <div class="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-sm space-y-2">
                     <div class="flex justify-between items-center">
-                        <span class="text-slate-500 font-medium">Total Purchases</span>
+                        <span class="text-slate-500 font-medium">{% if is_ar %}إجمالي المشتريات{% else %}Total Purchases{% endif %}</span>
                         <div class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center"><i class="fa-solid fa-cart-arrow-down"></i></div>
                     </div>
                     <h2 class="text-xl font-black text-slate-900 font-mono">SAR {{ summary.total_purchases_sar|floatformat:2 }}</h2>
-                    <p class="text-[10px] text-emerald-600 font-bold flex items-center gap-1">▲ Vendor Billed Purchases</p>
+                    <p class="text-[10px] text-emerald-600 font-bold flex items-center gap-1">▲ {% if is_ar %}فواتير شراء معتمدة{% else %}Vendor Billed Purchases{% endif %}</p>
                 </div>
 
-                <!-- Total Expenses (১০০% ডাইনামিক) -->
+                <!-- Total Expenses -->
                 <div class="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-sm space-y-2">
                     <div class="flex justify-between items-center">
-                        <span class="text-slate-500 font-medium">Total Expenses</span>
+                        <span class="text-slate-500 font-medium">{% if is_ar %}إجمالي المصروفات{% else %}Total Expenses{% endif %}</span>
                         <div class="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center"><i class="fa-solid fa-receipt"></i></div>
                     </div>
                     <h2 class="text-xl font-black text-slate-900 font-mono">SAR {{ summary.total_expenses_sar|floatformat:2 }}</h2>
-                    <p class="text-[10px] text-amber-600 font-bold flex items-center gap-1">● Direct Expense Claims</p>
+                    <p class="text-[10px] text-amber-600 font-bold flex items-center gap-1">● {% if is_ar %}سندات صرف مباشرة{% else %}Direct Expense Claims{% endif %}</p>
                 </div>
 
                 <!-- Net Profit -->
                 <div class="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-sm space-y-2">
                     <div class="flex justify-between items-center">
-                        <span class="text-slate-500 font-medium">Net Profit</span>
+                        <span class="text-slate-500 font-medium">{% if is_ar %}صافي الأرباح{% else %}Net Profit{% endif %}</span>
                         <div class="w-7 h-7 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center"><i class="fa-solid fa-chart-line"></i></div>
                     </div>
                     <h2 class="text-xl font-black text-slate-900 font-mono">SAR {{ summary.net_profit_sar|floatformat:2 }}</h2>
-                    <p class="text-[10px] text-emerald-600 font-bold flex items-center gap-1">▲ Net Trading Earnings</p>
+                    <p class="text-[10px] text-emerald-600 font-bold flex items-center gap-1">▲ {% if is_ar %}صافي أرباح النشاط{% else %}Net Trading Earnings{% endif %}</p>
                 </div>
             </div>
 
             <!-- Middle Row: Sales Wave Chart, Top Customers & Quick Links -->
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-                
                 <div class="lg:col-span-6 bg-white border border-slate-200/90 rounded-2xl p-5 shadow-sm">
                     <div class="flex justify-between items-center mb-3">
-                        <h3 class="font-bold text-slate-900 text-sm">Sales Overview</h3>
-                        <span class="text-xs text-slate-500 border rounded-lg px-2 py-0.5 font-semibold">Live Trend ▾</span>
+                        <h3 class="font-bold text-slate-900 text-sm">{% if is_ar %}نظرة عامة على المبيعات{% else %}Sales Overview{% endif %}</h3>
+                        <span class="text-xs text-slate-500 border rounded-lg px-2 py-0.5 font-semibold">{% if is_ar %}رسم بياني مباشر ▾{% else %}Live Trend ▾{% endif %}</span>
                     </div>
                     <div class="h-48"><canvas id="salesChart"></canvas></div>
                 </div>
 
-                <!-- 🌟 Top Customers (১০০% ডাইনামিক - কোনো ডামি ডেটা নেই) -->
+                <!-- Top Customers -->
                 <div class="lg:col-span-3 bg-white border border-slate-200/90 rounded-2xl p-5 shadow-sm flex flex-col justify-between">
                     <div>
                         <div class="flex justify-between items-center mb-3">
-                            <h3 class="font-bold text-slate-900 text-sm">Top Customers</h3>
-                            <a href="/invoices/" class="text-[11px] font-bold text-indigo-600 hover:underline">View All</a>
+                            <h3 class="font-bold text-slate-900 text-sm">{% if is_ar %}أهم العملاء{% else %}Top Customers{% endif %}</h3>
+                            <a href="/invoices/" class="text-[11px] font-bold text-indigo-600 hover:underline">{% if is_ar %}عرض الكل{% else %}View All{% endif %}</a>
                         </div>
                         <div class="space-y-2.5 text-xs">
                             {% for c in top_customers %}
@@ -272,53 +309,53 @@
                             {% empty %}
                             <div class="py-8 text-center text-slate-400 italic text-[11px]">
                                 <i class="fa-solid fa-users text-slate-300 text-xl mb-1 block"></i>
-                                No customer purchases yet.
+                                {% if is_ar %}لا توجد مبيعات مسجلة لعملاء حتى الآن.{% else %}No customer purchases yet.{% endif %}
                             </div>
                             {% endfor %}
                         </div>
                     </div>
                 </div>
 
-                <!-- 6 Quick Links -->
+                <!-- 6 Quick Links (Arabic & English) -->
                 <div class="lg:col-span-3 bg-white border border-slate-200/90 rounded-2xl p-5 shadow-sm flex flex-col justify-between">
-                    <h3 class="font-bold text-slate-900 text-sm mb-2">Quick Links</h3>
+                    <h3 class="font-bold text-slate-900 text-sm mb-2">{% if is_ar %}روابط سريعة{% else %}Quick Links{% endif %}</h3>
                     <div class="grid grid-cols-3 gap-2 text-center text-[10px] font-bold">
                         <a href="/invoices/create/" class="p-2.5 rounded-xl border border-slate-100 hover:bg-slate-50 transition flex flex-col items-center gap-1.5">
                             <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center text-sm"><i class="fa-regular fa-file-lines"></i></div>
-                            <span class="text-slate-600 leading-tight">Create Invoice</span>
+                            <span class="text-slate-600 leading-tight">{% if is_ar %}فاتورة جديدة{% else %}Create Invoice{% endif %}</span>
                         </a>
                         <a href="/expenses/" class="p-2.5 rounded-xl border border-slate-100 hover:bg-slate-50 transition flex flex-col items-center gap-1.5">
                             <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-sm"><i class="fa-solid fa-cart-plus"></i></div>
-                            <span class="text-slate-600 leading-tight">Purchases</span>
+                            <span class="text-slate-600 leading-tight">{% if is_ar %}أمر شراء{% else %}Purchases{% endif %}</span>
                         </a>
                         <a href="/expenses/" class="p-2.5 rounded-xl border border-slate-100 hover:bg-slate-50 transition flex flex-col items-center gap-1.5">
                             <div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-sm"><i class="fa-solid fa-receipt"></i></div>
-                            <span class="text-slate-600 leading-tight">Add Expense</span>
+                            <span class="text-slate-600 leading-tight">{% if is_ar %}سند صرف{% else %}Add Expense{% endif %}</span>
                         </a>
                         <a href="/invoices/create/" class="p-2.5 rounded-xl border border-slate-100 hover:bg-slate-50 transition flex flex-col items-center gap-1.5">
                             <div class="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center text-sm"><i class="fa-solid fa-user-plus"></i></div>
-                            <span class="text-slate-600 leading-tight">New Contact</span>
+                            <span class="text-slate-600 leading-tight">{% if is_ar %}عميل جديد{% else %}New Contact{% endif %}</span>
                         </a>
                         <a href="/banking/transfer/" class="p-2.5 rounded-xl border border-slate-100 hover:bg-slate-50 transition flex flex-col items-center gap-1.5">
                             <div class="w-8 h-8 rounded-lg bg-teal-50 text-teal-600 flex items-center justify-center text-sm"><i class="fa-solid fa-building-columns"></i></div>
-                            <span class="text-slate-600 leading-tight">Bank Transfer</span>
+                            <span class="text-slate-600 leading-tight">{% if is_ar %}تحويل بنكي{% else %}Bank Transfer{% endif %}</span>
                         </a>
                         <a href="/reports/" class="p-2.5 rounded-xl border border-slate-100 hover:bg-slate-50 transition flex flex-col items-center gap-1.5">
                             <div class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center text-sm"><i class="fa-solid fa-chart-pie"></i></div>
-                            <span class="text-slate-600 leading-tight">Reports</span>
+                            <span class="text-slate-600 leading-tight">{% if is_ar %}التقارير{% else %}Reports{% endif %}</span>
                         </a>
                     </div>
                 </div>
             </div>
 
-            <!-- 🌟 Bottom Row: Bank Accounts, Cash Flow, Recent Transactions & ZATCA VAT (ফাঁকা জায়গা পূর্ণ) -->
+            <!-- Bottom Row -->
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 text-xs">
                 
-                <!-- 1. Real Bank Accounts List -->
+                <!-- 1. Bank Accounts List -->
                 <div class="lg:col-span-3 bg-white border border-slate-200/90 rounded-2xl p-5 shadow-sm space-y-3">
                     <div class="flex justify-between items-center">
-                        <h3 class="font-bold text-slate-900 text-sm">Bank Accounts (البنوك)</h3>
-                        <a href="/banking/reconciliation/" class="text-[11px] font-bold text-indigo-600 hover:underline">Manage</a>
+                        <h3 class="font-bold text-slate-900 text-sm">{% if is_ar %}الحسابات البنكية{% else %}Bank Accounts{% endif %}</h3>
+                        <a href="/banking/reconciliation/" class="text-[11px] font-bold text-indigo-600 hover:underline">{% if is_ar %}إدارة{% else %}Manage{% endif %}</a>
                     </div>
                     <div class="space-y-3">
                         {% for b in banks %}
@@ -330,7 +367,7 @@
                             <span class="font-mono font-bold text-slate-900">SAR {{ b.balance|floatformat:2 }}</span>
                         </div>
                         {% empty %}
-                        <p class="text-slate-400 italic text-center py-4">No bank accounts configured.</p>
+                        <p class="text-slate-400 italic text-center py-4">{% if is_ar %}لا توجد حسابات بنكية مضافة.{% else %}No bank accounts configured.{% endif %}</p>
                         {% endfor %}
                     </div>
                 </div>
@@ -339,56 +376,56 @@
                 <div class="lg:col-span-3 bg-white border border-slate-200/90 rounded-2xl p-5 shadow-sm flex flex-col justify-between">
                     <div>
                         <div class="flex justify-between items-center mb-3">
-                            <h3 class="font-bold text-slate-900 text-sm">Cash Flow (التدفق النقدي)</h3>
-                            <span class="text-[10px] text-slate-400 font-bold">Ledger</span>
+                            <h3 class="font-bold text-slate-900 text-sm">{% if is_ar %}التدفق النقدي{% else %}Cash Flow{% endif %}</h3>
+                            <span class="text-[10px] text-slate-400 font-bold">{% if is_ar %}سجل القيود{% else %}Ledger{% endif %}</span>
                         </div>
                         <div class="space-y-3 pt-1">
                             <div class="flex justify-between items-center font-bold">
-                                <span class="text-slate-600 flex items-center gap-2"><span class="text-emerald-500">❖</span> Cash In</span>
+                                <span class="text-slate-600 flex items-center gap-2"><span class="text-emerald-500">❖</span> {% if is_ar %}نقد وارد{% else %}Cash In{% endif %}</span>
                                 <span class="font-mono text-emerald-600 font-black">SAR {{ summary.cash_in|floatformat:2 }}</span>
                             </div>
                             <div class="flex justify-between items-center font-bold">
-                                <span class="text-slate-600 flex items-center gap-2"><span class="text-rose-500">❖</span> Cash Out</span>
+                                <span class="text-slate-600 flex items-center gap-2"><span class="text-rose-500">❖</span> {% if is_ar %}نقد صادر{% else %}Cash Out{% endif %}</span>
                                 <span class="font-mono text-rose-500 font-black">SAR {{ summary.cash_out|floatformat:2 }}</span>
                             </div>
                         </div>
                     </div>
                     <div class="flex justify-between items-center pt-3 border-t border-slate-100 font-black text-slate-900">
-                        <span>Net Cash Flow</span>
+                        <span>{% if is_ar %}صافي التدفق النقدي{% else %}Net Cash Flow{% endif %}</span>
                         <span class="font-mono {% if summary.net_cash_flow >= 0 %}text-emerald-600{% else %}text-rose-600{% endif %} text-sm">
                             SAR {{ summary.net_cash_flow|floatformat:2 }}
                         </span>
                     </div>
                 </div>
 
-                <!-- 3. Real Recent Invoices Transactions -->
+                <!-- 3. Recent Sales Invoices -->
                 <div class="lg:col-span-3 bg-white border border-slate-200/90 rounded-2xl p-5 shadow-sm space-y-2.5">
                     <div class="flex justify-between items-center mb-1">
-                        <h3 class="font-bold text-slate-900 text-sm">Recent Sales</h3>
-                        <a href="/invoices/" class="text-[11px] font-bold text-indigo-600 hover:underline">View All</a>
+                        <h3 class="font-bold text-slate-900 text-sm">{% if is_ar %}آخر الفواتير{% else %}Recent Sales{% endif %}</h3>
+                        <a href="/invoices/" class="text-[11px] font-bold text-indigo-600 hover:underline">{% if is_ar %}عرض الكل{% else %}View All{% endif %}</a>
                     </div>
                     <div class="space-y-2">
                         {% for inv in invoices %}
                         <div class="flex justify-between items-center">
                             <div><p class="font-mono font-bold text-slate-800 text-[11px]">#{{ inv.invoice_no }}</p><p class="text-[10px] text-slate-400 truncate w-24">{{ inv.customer.name }}</p></div>
-                            <div class="text-right flex items-center gap-1.5"><span class="font-mono font-bold text-slate-900">{{ inv.total_amount|floatformat:2 }}</span><span class="px-1.5 py-0.5 bg-slate-100 text-slate-700 rounded text-[9px] font-bold">{{ inv.get_payment_status_display }}</span></div>
+                            <div class="{% if is_ar %}text-left{% else %}text-right{% endif %} flex items-center gap-1.5"><span class="font-mono font-bold text-slate-900">{{ inv.total_amount|floatformat:2 }}</span><span class="px-1.5 py-0.5 bg-slate-100 text-slate-700 rounded text-[9px] font-bold">{{ inv.get_payment_status_display }}</span></div>
                         </div>
                         {% empty %}
-                        <p class="text-slate-400 italic text-center py-4">No recent sales invoices.</p>
+                        <p class="text-slate-400 italic text-center py-4">{% if is_ar %}لا توجد فواتير مبيعات مسجلة.{% else %}No recent sales invoices.{% endif %}</p>
                         {% endfor %}
                     </div>
                 </div>
 
-                <!-- 4. Real ZATCA VAT Summary Box -->
+                <!-- 4. ZATCA VAT Summary -->
                 <div class="lg:col-span-3 bg-white border border-slate-200/90 rounded-2xl p-5 shadow-sm space-y-2.5">
                     <div class="flex justify-between items-center mb-1">
-                        <h3 class="font-bold text-slate-900 text-sm">ZATCA 15% VAT Return</h3>
-                        <span class="text-[10px] bg-amber-50 text-amber-800 px-2 py-0.5 rounded font-bold border border-amber-200">KSA Tax</span>
+                        <h3 class="font-bold text-slate-900 text-sm">{% if is_ar %}الإقرار الضريبي (15%){% else %}ZATCA 15% VAT Return{% endif %}</h3>
+                        <a href="/vat/" class="text-[10px] bg-amber-50 text-amber-800 px-2 py-0.5 rounded font-bold border border-amber-200 hover:bg-amber-100">{% if is_ar %}تفاصيل الإقرار{% else %}File Return{% endif %}</a>
                     </div>
                     <div class="space-y-2 pt-1 font-semibold text-[11px]">
-                        <div class="flex justify-between text-slate-600"><span>Output VAT (مخرجات):</span><span class="font-bold text-slate-900 font-mono">SAR {{ summary.vat_output|floatformat:2 }}</span></div>
-                        <div class="flex justify-between text-slate-600"><span>Input VAT (مدخلات):</span><span class="font-bold text-slate-900 font-mono">SAR {{ summary.vat_input|floatformat:2 }}</span></div>
-                        <div class="flex justify-between text-slate-900 font-black border-t border-slate-100 pt-2 text-xs"><span>Net VAT Due:</span><span class="text-amber-600 font-mono">SAR {{ summary.net_vat_due|floatformat:2 }}</span></div>
+                        <div class="flex justify-between text-slate-600"><span>{% if is_ar %}ضريبة المخرجات:{% else %}Output VAT:{% endif %}</span><span class="font-bold text-slate-900 font-mono">SAR {{ summary.vat_output|floatformat:2 }}</span></div>
+                        <div class="flex justify-between text-slate-600"><span>{% if is_ar %}ضريبة المدخلات:{% else %}Input VAT:{% endif %}</span><span class="font-bold text-slate-900 font-mono">SAR {{ summary.vat_input|floatformat:2 }}</span></div>
+                        <div class="flex justify-between text-slate-900 font-black border-t border-slate-100 pt-2 text-xs"><span>{% if is_ar %}صافي الضريبة المستحقة:{% else %}Net VAT Due:{% endif %}</span><span class="text-amber-600 font-mono">SAR {{ summary.net_vat_due|floatformat:2 }}</span></div>
                     </div>
                 </div>
 
@@ -400,7 +437,11 @@
                 <div class="flex gap-4">
                     <a href="#" class="hover:underline">Terms of Use</a>
                     <a href="#" class="hover:underline">Privacy Policy</a>
-                    <a href="/set-language/ar/" class="hover:underline font-bold text-slate-600">العربية</a>
+                    {% if is_ar %}
+                    <a href="/set-language/en/" class="hover:underline font-bold text-indigo-600">English</a>
+                    {% else %}
+                    <a href="/set-language/ar/" class="hover:underline font-bold text-indigo-600 font-cairo">العربية</a>
+                    {% endif %}
                 </div>
             </footer>
         </div>
@@ -410,14 +451,15 @@
     <div id="search-modal" class="fixed inset-0 bg-slate-900/60 z-50 flex items-start justify-center pt-24 hidden p-4">
         <div class="bg-white rounded-2xl p-4 w-full max-w-lg shadow-2xl border border-slate-200 space-y-3">
             <div class="relative">
-                <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-sm"></i>
-                <input type="text" autofocus placeholder="Type a command or search..." class="w-full bg-slate-50 border rounded-xl py-2 pl-9 pr-4 text-xs font-bold focus:outline-none">
+                <i class="fa-solid fa-magnifying-glass absolute {% if is_ar %}right-3{% else %}left-3{% endif %} top-3 text-slate-400 text-sm"></i>
+                <input type="text" autofocus placeholder="{% if is_ar %}اكتب أمرًا أو ابحث في قيود...{% else %}Type a command or search...{% endif %}" class="w-full bg-slate-50 border rounded-xl py-2 {% if is_ar %}pr-9 pl-4 text-right{% else %}pl-9 pr-4{% endif %} text-xs font-bold focus:outline-none">
             </div>
             <div class="space-y-1 text-xs">
-                <a href="/invoices/create/" class="flex items-center gap-3 p-2 rounded-lg hover:bg-indigo-50 text-slate-700 font-bold"><i class="fa-solid fa-file-circle-plus text-indigo-600"></i> Create New Tax Invoice</a>
-                <a href="/invoices/" class="flex items-center gap-3 p-2 rounded-lg hover:bg-indigo-50 text-slate-700"><i class="fa-solid fa-file-invoice text-indigo-500"></i> View All Invoices</a>
-                <a href="/expenses/" class="flex items-center gap-3 p-2 rounded-lg hover:bg-indigo-50 text-slate-700"><i class="fa-solid fa-money-bill-wave text-rose-500"></i> Record Direct Expense</a>
-                <a href="/banking/reconciliation/" class="flex items-center gap-3 p-2 rounded-lg hover:bg-indigo-50 text-slate-700"><i class="fa-solid fa-building-columns text-sky-500"></i> Bank Match & Reconciliation</a>
+                <a href="/invoices/create/" class="flex items-center gap-3 p-2 rounded-lg hover:bg-indigo-50 text-slate-700 font-bold"><i class="fa-solid fa-file-circle-plus text-indigo-600"></i> {% if is_ar %}إنشاء فاتورة ضريبية جديدة{% else %}Create New Tax Invoice{% endif %}</a>
+                <a href="/invoices/" class="flex items-center gap-3 p-2 rounded-lg hover:bg-indigo-50 text-slate-700"><i class="fa-solid fa-file-invoice text-indigo-500"></i> {% if is_ar %}عرض قائمة الفواتير{% else %}View All Invoices{% endif %}</a>
+                <a href="/expenses/" class="flex items-center gap-3 p-2 rounded-lg hover:bg-indigo-50 text-slate-700"><i class="fa-solid fa-money-bill-wave text-rose-500"></i> {% if is_ar %}تسجيل سند صرف مصروفات{% else %}Record Direct Expense{% endif %}</a>
+                <a href="/vat/" class="flex items-center gap-3 p-2 rounded-lg hover:bg-indigo-50 text-slate-700"><i class="fa-solid fa-percent text-amber-500"></i> {% if is_ar %}الإقرار الضريبي لهيئة الزكاة{% else %}ZATCA VAT Return{% endif %}</a>
+                <a href="/banking/reconciliation/" class="flex items-center gap-3 p-2 rounded-lg hover:bg-indigo-50 text-slate-700"><i class="fa-solid fa-building-columns text-sky-500"></i> {% if is_ar %}المطابقة والتسوية البنكية{% else %}Bank Match & Reconciliation{% endif %}</a>
             </div>
             <div class="text-right border-t pt-2"><button onclick="closeSearchModal()" class="text-xs font-bold text-slate-400">Esc to close</button></div>
         </div>
@@ -431,12 +473,12 @@
             const plan = document.getElementById('plan-section');
             if (sb.classList.contains('w-64')) {
                 sb.classList.remove('w-64'); sb.classList.add('w-20');
-                logo.innerText = 'Q';
+                logo.innerText = '{% if is_ar %}ق{% else %}Q{% endif %}';
                 labels.forEach(l => l.classList.add('hidden'));
                 plan.classList.add('hidden');
             } else {
                 sb.classList.remove('w-20'); sb.classList.add('w-64');
-                logo.innerText = 'QOYOD';
+                logo.innerText = '{% if is_ar %}قيود{% else %}QOYOD{% endif %}';
                 labels.forEach(l => l.classList.remove('hidden'));
                 plan.classList.remove('hidden');
             }
@@ -458,7 +500,6 @@
             if (e.key === 'Escape') { closeSearchModal(); }
         });
 
-        // 🌟 Real Sales Trend Graph (0 default)
         const ctx = document.getElementById('salesChart').getContext('2d');
         const salesVal = {{ summary.total_sales_sar|default:0 }};
         new Chart(ctx, {
