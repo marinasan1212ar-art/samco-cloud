@@ -399,3 +399,17 @@ class PurchaseBillViewSet(viewsets.ModelViewSet): queryset = PurchaseBill.object
 class ReceiptVoucherViewSet(viewsets.ModelViewSet): queryset = ReceiptVoucher.objects.all(); serializer_class = ReceiptVoucherSerializer
 class PaymentVoucherViewSet(viewsets.ModelViewSet): queryset = PaymentVoucher.objects.all(); serializer_class = PaymentVoucherSerializer
 class JournalEntryViewSet(viewsets.ModelViewSet): queryset = JournalEntry.objects.all(); serializer_class = JournalEntrySerializer
+
+def vat_return_view(request):
+    lang = request.session.get('lang', 'en'); is_ar = (lang == 'ar'); lang_dir = 'rtl' if is_ar else 'ltr'
+    company = get_user_company(request)
+    sales_base = sum(inv.subtotal for inv in Invoice.objects.filter(company=company))
+    sales_vat = sum(inv.vat_amount for inv in Invoice.objects.filter(company=company))
+    pur_base = sum(b.subtotal for b in PurchaseBill.objects.filter(company=company)) + sum(e.subtotal for e in DirectExpense.objects.filter(company=company))
+    pur_vat = sum(b.vat_amount for b in PurchaseBill.objects.filter(company=company)) + sum(e.vat_amount for e in DirectExpense.objects.filter(company=company))
+    net_vat = sales_vat - pur_vat
+    return render(request, 'accounting/vat_return.html', {
+        'company': company, 'sales_base': sales_base, 'sales_vat': sales_vat,
+        'pur_base': pur_base, 'pur_vat': pur_vat, 'net_vat': net_vat,
+        'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir
+    })

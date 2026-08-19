@@ -8,12 +8,13 @@ from accounting.views import (
     credit_note_detail_view, create_credit_note_view, delivery_note_detail_view, create_delivery_note_view,
     bank_reconciliation_view, fund_transfer_view, debit_note_detail_view, create_debit_note_view, direct_expense_view,
     aging_report_view, recurring_invoice_view, price_list_view, product_bundle_view, uom_view,
-    invoices_list_view, create_invoice_view, payroll_view
+    invoices_list_view, create_invoice_view, payroll_view, vat_return_view
 )
 from accounting.pos_views import pos_dashboard, pos_checkout, pos_receipt_print
 
 urlpatterns = [
     path('', dashboard_view, name='home-dashboard'),
+    path('vat/', vat_return_view, name='vat-return'),
     path('payroll/', payroll_view, name='payroll-hub'),
     path('wps-export/<int:payroll_id>/', wps_sif_export_view, name='wps-sif-export'),
     path('invoices/', invoices_list_view, name='invoices-list'),
