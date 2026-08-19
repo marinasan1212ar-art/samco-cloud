@@ -3,12 +3,12 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
 from django.utils.html import format_html
 from .models import (
-    Company, SubscriptionPlan, CompanySubscription, PaymentTransaction,
-    Account, BankAccount, JournalEntry, JournalEntryLine, Customer, Supplier, 
-    Product, Invoice, InvoiceItem, PurchaseBill, PurchaseBillItem, Quotation, 
-    QuotationItem, ReceiptVoucher, PaymentVoucher,
-    Warehouse, WarehouseStock, StockTransfer, StockTransferItem, UserProfile,
-    BillOfMaterials, BOMItem, WorkOrder
+    Company, CompanySettings, Account, BankAccount, JournalEntry, JournalEntryLine, 
+    Customer, Supplier, Product, Invoice, InvoiceItem, PurchaseBill, PurchaseBillItem, 
+    Quotation, QuotationItem, ReceiptVoucher, PaymentVoucher, Warehouse, WarehouseStock, 
+    StockTransfer, StockTransferItem, UserProfile, BillOfMaterials, BOMItem, WorkOrder,
+    CostCenter, FixedAsset, Employee, MonthlyPayroll, PayrollItem, StockAdjustment,
+    SalesOrder, CreditNote, PurchaseOrder
 )
 
 class UserProfileInline(admin.StackedInline):
@@ -24,24 +24,53 @@ class UserAdmin(BaseUserAdmin):
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
 
-@admin.register(Company)
-class CompanyAdmin(admin.ModelAdmin):
-    list_display = ('name', 'vat_number', 'phone', 'created_at', 'is_active')
+@admin.register(CostCenter)
+class CostCenterAdmin(admin.ModelAdmin):
+    list_display = ('code', 'name_en', 'name_ar', 'company')
+
+@admin.register(FixedAsset)
+class FixedAssetAdmin(admin.ModelAdmin):
+    list_display = ('asset_code', 'name', 'purchase_cost', 'accumulated_depreciation', 'cost_center')
+
+@admin.register(Employee)
+class EmployeeAdmin(admin.ModelAdmin):
+    list_display = ('employee_no', 'name_en', 'iqama_no', 'basic_salary', 'joining_date', 'is_active')
+    search_fields = ('name_en', 'iqama_no', 'employee_no')
+
+class PayrollItemInline(admin.TabularInline):
+    model = PayrollItem
+    extra = 0
+
+@admin.register(MonthlyPayroll)
+class MonthlyPayrollAdmin(admin.ModelAdmin):
+    list_display = ('month_year', 'processed_date', 'total_amount', 'is_paid', 'download_wps_sif')
+    inlines = [PayrollItemInline]
+
+    def download_wps_sif(self, obj):
+        return format_html('<a class="button" style="background-color: #10B981; color: #000; font-weight: bold; padding: 4px 8px; border-radius: 6px;" href="/wps-export/{}/">📥 SIF Bank File</a>', obj.pk)
+    download_wps_sif.short_description = "Saudi WPS File"
+
+@admin.register(StockAdjustment)
+class StockAdjustmentAdmin(admin.ModelAdmin):
+    list_display = ('adjustment_no', 'warehouse', 'product', 'system_qty', 'physical_qty', 'variance_qty')
+    def response_add(self, request, obj, post_url_continue=None):
+        obj.apply_adjustment(); return super().response_add(request, obj, post_url_continue)
+
+@admin.register(Customer)
+class CustomerAdmin(admin.ModelAdmin):
+    list_display = ('name', 'phone', 'vat_number', 'print_statement')
     search_fields = ('name', 'vat_number')
+    def print_statement(self, obj):
+        return format_html('<a class="button" style="background-color: #38BDF8; color: #000; font-weight: bold; padding: 4px 8px; border-radius: 6px;" href="/statement/customer/{}/" target="_blank">📋 كشف حساب</a>', obj.pk)
+    print_statement.short_description = "Statement"
 
-@admin.register(SubscriptionPlan)
-class SubscriptionPlanAdmin(admin.ModelAdmin):
-    list_display = ('name', 'price_monthly_sar', 'price_yearly_sar', 'max_users')
-
-@admin.register(CompanySubscription)
-class CompanySubscriptionAdmin(admin.ModelAdmin):
-    list_display = ('company', 'plan', 'status', 'start_date', 'expiry_date')
-    list_filter = ('status', 'plan')
-
-@admin.register(PaymentTransaction)
-class PaymentTransactionAdmin(admin.ModelAdmin):
-    list_display = ('transaction_id', 'company', 'amount_sar', 'payment_method', 'status', 'payment_date')
-    list_filter = ('payment_method', 'status')
+@admin.register(Supplier)
+class SupplierAdmin(admin.ModelAdmin):
+    list_display = ('name', 'phone', 'vat_number', 'print_statement')
+    search_fields = ('name', 'vat_number')
+    def print_statement(self, obj):
+        return format_html('<a class="button" style="background-color: #F59E0B; color: #000; font-weight: bold; padding: 4px 8px; border-radius: 6px;" href="/statement/supplier/{}/" target="_blank">📋 كشف حساب</a>', obj.pk)
+    print_statement.short_description = "Statement"
 
 class BOMItemInline(admin.TabularInline):
     model = BOMItem
@@ -57,8 +86,7 @@ class WorkOrderAdmin(admin.ModelAdmin):
     list_display = ('order_no', 'bom', 'warehouse', 'planned_qty', 'actual_qty_produced', 'status', 'unit_cost')
     list_filter = ('status', 'warehouse')
     def response_change(self, request, obj):
-        obj.execute_production_completion()
-        return super().response_change(request, obj)
+        obj.execute_production_completion(); return super().response_change(request, obj)
 
 class JournalEntryLineInline(admin.TabularInline):
     model = JournalEntryLine
@@ -118,10 +146,6 @@ class PaymentVoucherAdmin(admin.ModelAdmin):
     def response_add(self, request, obj, post_url_continue=None):
         obj.post_accounting(); return super().response_add(request, obj, post_url_continue)
 
-@admin.register(Supplier)
-class SupplierAdmin(admin.ModelAdmin):
-    list_display = ('name', 'phone', 'vat_number', 'company')
-
 @admin.register(PurchaseBill)
 class PurchaseBillAdmin(admin.ModelAdmin):
     list_display = ('bill_no', 'supplier', 'warehouse', 'date', 'total_amount')
@@ -140,10 +164,6 @@ class QuotationAdmin(admin.ModelAdmin):
 class AccountAdmin(admin.ModelAdmin):
     list_display = ('code', 'name', 'account_type', 'balance', 'company')
     list_filter = ('account_type',)
-
-@admin.register(Customer)
-class CustomerAdmin(admin.ModelAdmin):
-    list_display = ('name', 'phone', 'vat_number', 'company')
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):

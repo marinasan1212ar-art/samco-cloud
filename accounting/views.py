@@ -2,16 +2,16 @@ from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.models import User
-from django.contrib.auth import login
-from django.db.models import Sum
+from django.http import HttpResponse
+from django.db.models import Sum, Q
 from decimal import Decimal
 from datetime import datetime, timedelta
 from .models import (
     Account, Customer, Supplier, Product, Invoice, PurchaseBill, 
     BankAccount, ReceiptVoucher, PaymentVoucher, JournalEntry, 
     JournalEntryLine, Company, Warehouse, WarehouseStock, StockTransfer, 
-    UserProfile, BillOfMaterials, WorkOrder, SubscriptionPlan, CompanySubscription, PaymentTransaction
+    UserProfile, BillOfMaterials, WorkOrder, Employee, MonthlyPayroll, 
+    PayrollItem, CostCenter, FixedAsset, StockAdjustment, CompanySettings
 )
 from .serializers import (
     AccountSerializer, CustomerSerializer, SupplierSerializer, ProductSerializer,
@@ -21,112 +21,20 @@ from .serializers import (
 )
 from .zatca import generate_qr_image_base64
 
-# --- Helper: Get Tenant/Company for current user ---
 def get_user_company(request):
     if request.user.is_authenticated and hasattr(request.user, 'profile') and request.user.profile.company:
         return request.user.profile.company
     comp, _ = Company.objects.get_or_create(id=1, defaults={"name": "SECOND ADVANCE MEDICAL COMPANY (SAMCO)", "vat_number": "310122456700003"})
     return comp
 
-# --- 🏢 SAAS REGISTRATION & COMPANY ONBOARDING ---
-def company_signup_view(request):
-    if request.method == 'POST':
-        comp_name = request.POST.get('company_name', '').strip()
-        vat_no = request.POST.get('vat_number', '').strip()
-        username = request.POST.get('username', '').strip()
-        email = request.POST.get('email', '').strip()
-        password = request.POST.get('password', '').strip()
-
-        if not comp_name or not username or not password:
-            return render(request, 'accounting/signup.html', {'error': 'Company Name, Username and Password are required!'})
-
-        # ১. কোম্পানি তৈরি
-        company = Company.objects.create(name=comp_name, vat_number=vat_no, phone=request.POST.get('phone', ''))
-
-        # ২. ডিফল্ট চার্ট অফ অ্যাকাউন্টস তৈরি
-        default_accounts = [
-            ("1010", "Cash & Bank (الخزينة والبنوك)", "Asset"),
-            ("1200", "Accounts Receivable (العملاء)", "Asset"),
-            ("1300", "Inventory Asset (المخزون السلعي)", "Asset"),
-            ("1400", "VAT Input Tax 15% (ضريبة المدخلات)", "Asset"),
-            ("2000", "Accounts Payable (الموردين)", "Liability"),
-            ("2100", "VAT Output Tax 15% (ضريبة المخرجات)", "Liability"),
-            ("4000", "Sales Revenue (المبيعات)", "Revenue"),
-            ("5000", "Cost of Goods Sold (تكلفة المبيعات)", "Expense"),
-        ]
-        for c_code, c_name, c_type in default_accounts:
-            Account.objects.create(company=company, code=c_code, name=c_name, account_type=c_type)
-
-        # ৩. ডিফল্ট ওয়্যারহাউজ ও ব্যাংক
-        wh = Warehouse.objects.create(company=company, code="MAIN-01", name_en="Main Warehouse", name_ar="المستودع الرئيسي")
-        BankAccount.objects.create(company=company, name="Al Rajhi Bank (مصرف الراجحي)", balance=0.00)
-
-        # ৪. ইউজার তৈরি ও লিঙ্ক
-        user = User.objects.create_user(username=username, email=email, password=password)
-        user.profile.company = company
-        user.profile.role = 'ADMIN'
-        user.profile.save()
-
-        # ৫. ১৪ দিনের ফ্রি ট্রায়াল সাবস্ক্রিপশন চালু
-        default_plan, _ = SubscriptionPlan.objects.get_or_create(slug="pro", defaults={"name": "Professional Plan (باقة المحترفين)", "price_monthly_sar": 199.00})
-        CompanySubscription.objects.create(
-            company=company, plan=default_plan, status='TRIAL',
-            start_date=datetime.now(), expiry_date=datetime.now() + timedelta(days=14)
-        )
-
-        login(request, user)
-        return redirect('/pricing/')
-
-    return render(request, 'accounting/signup.html')
-
-# --- 💳 MADA / APPLE PAY SAUDI CHECKOUT VIEW ---
-def pricing_checkout_view(request):
-    company = get_user_company(request)
-    plans = SubscriptionPlan.objects.all()
-    if not plans.exists():
-        SubscriptionPlan.objects.create(name="Basic Plan (باقة الأعمال)", slug="basic", price_monthly_sar=99.00, price_yearly_sar=999.00)
-        SubscriptionPlan.objects.create(name="Enterprise Manufacturing (باقة المصانع)", slug="enterprise", price_monthly_sar=299.00, price_yearly_sar=2990.00)
-        plans = SubscriptionPlan.objects.all()
-
-    if request.method == 'POST':
-        plan_id = request.POST.get('plan_id')
-        pay_method = request.POST.get('payment_method', 'Mada')
-        plan = get_object_or_404(SubscriptionPlan, pk=plan_id)
-
-        # পেমেন্ট ট্রানজেকশন রেকর্ড ও সাবস্ক্রিপশন অ্যাক্টিভেট
-        PaymentTransaction.objects.create(
-            company=company, amount_sar=plan.price_monthly_sar,
-            payment_method=pay_method, status='PAID'
-        )
-
-        sub, _ = CompanySubscription.objects.get_or_create(company=company)
-        sub.plan = plan
-        sub.status = 'ACTIVE'
-        sub.start_date = datetime.now()
-        sub.expiry_date = datetime.now() + timedelta(days=30)
-        sub.save()
-
-        return redirect('/')
-
-    return render(request, 'accounting/pricing.html', {'company': company, 'plans': plans})
-
-
-# --- 🌟 DASHBOARD VIEW (TENANT FILTERED) ---
+# --- 🌟 QUYOD A TO Z DASHBOARD ---
 def dashboard_view(request):
-    lang = request.session.get('lang', 'en')
-    is_ar = (lang == 'ar')
-    lang_dir = 'rtl' if is_ar else 'ltr'
+    lang = request.session.get('lang', 'en'); is_ar = (lang == 'ar'); lang_dir = 'rtl' if is_ar else 'ltr'
     company = get_user_company(request)
 
     total_sales = sum(inv.total_amount for inv in Invoice.objects.filter(company=company))
     total_purchases = sum(bill.total_amount for bill in PurchaseBill.objects.filter(company=company))
     total_bank_balance = sum(b.balance for b in BankAccount.objects.filter(company=company))
-    total_work_orders = WorkOrder.objects.filter(company=company).count()
-    active_work_orders = WorkOrder.objects.filter(company=company, status='IN_PROGRESS').count()
-
-    user_role = 'ADMIN'
-    if request.user.is_authenticated and hasattr(request.user, 'profile'):
-        user_role = request.user.profile.role
 
     summary = {
         "total_sales_sar": total_sales,
@@ -135,27 +43,120 @@ def dashboard_view(request):
         "net_profit_sar": total_sales - total_purchases,
         "total_products": Product.objects.filter(company=company).count(),
         "total_customers": Customer.objects.filter(company=company).count(),
-        "total_work_orders": total_work_orders,
-        "active_work_orders": active_work_orders,
+        "total_suppliers": Supplier.objects.filter(company=company).count(),
+        "total_employees": Employee.objects.filter(company=company).count(),
+        "total_work_orders": WorkOrder.objects.filter(company=company).count(),
     }
     invoices = Invoice.objects.filter(company=company).order_by('-id')[:6]
-    work_orders = WorkOrder.objects.filter(company=company).order_by('-id')[:6]
+    purchases = PurchaseBill.objects.filter(company=company).order_by('-id')[:6]
     warehouses = Warehouse.objects.filter(company=company).order_by('code')
 
-    sub = CompanySubscription.objects.filter(company=company).first()
+    user_role = 'ADMIN'
+    if request.user.is_authenticated and hasattr(request.user, 'profile'):
+        user_role = request.user.profile.role
 
     return render(request, 'accounting/dashboard.html', {
+        'company': company, 'summary': summary, 'invoices': invoices,
+        'purchases': purchases, 'warehouses': warehouses, 'lang': lang,
+        'is_ar': is_ar, 'lang_dir': lang_dir, 'user_role': user_role
+    })
+
+# --- 📋 كشف حساب عميل ومورد (CUSTOMER & SUPPLIER STATEMENT OF ACCOUNT) ---
+def statement_of_account_view(request, party_type, pk):
+    lang = request.session.get('lang', 'en'); is_ar = (lang == 'ar'); lang_dir = 'rtl' if is_ar else 'ltr'
+    company = get_user_company(request)
+
+    ledger_lines = []
+    running_balance = Decimal('0.00')
+
+    if party_type == 'customer':
+        party = get_object_or_404(Customer, pk=pk)
+        title_en = "Customer Statement of Account"
+        title_ar = "كشف حساب عميل تفصيلي"
+        
+        # ইনভয়েস ও রসিদ
+        invoices = Invoice.objects.filter(customer=party).order_by('date')
+        receipts = ReceiptVoucher.objects.filter(customer=party).order_by('date')
+
+        for inv in invoices:
+            running_balance += inv.total_amount
+            ledger_lines.append({
+                'date': inv.date.strftime("%Y-%m-%d"),
+                'ref': f"Invoice #{inv.invoice_no}",
+                'desc': "Tax Sales Invoice",
+                'debit': inv.total_amount,
+                'credit': Decimal('0.00'),
+                'balance': running_balance
+            })
+        for rc in receipts:
+            running_balance -= rc.amount
+            ledger_lines.append({
+                'date': str(rc.date),
+                'ref': f"Receipt #{rc.voucher_no}",
+                'desc': f"Payment received via {rc.payment_method}",
+                'debit': Decimal('0.00'),
+                'credit': rc.amount,
+                'balance': running_balance
+            })
+    else:
+        party = get_object_or_404(Supplier, pk=pk)
+        title_en = "Supplier Statement of Account"
+        title_ar = "كشف حساب مورد تفصيلي"
+        
+        bills = PurchaseBill.objects.filter(supplier=party).order_by('date')
+        payments = PaymentVoucher.objects.filter(supplier=party).order_by('date')
+
+        for b in bills:
+            running_balance += b.total_amount
+            ledger_lines.append({
+                'date': str(b.date),
+                'ref': f"Bill #{b.bill_no}",
+                'desc': "Vendor Purchase Bill",
+                'debit': Decimal('0.00'),
+                'credit': b.total_amount,
+                'balance': running_balance
+            })
+        for pv in payments:
+            running_balance -= pv.amount
+            ledger_lines.append({
+                'date': str(pv.date),
+                'ref': f"Payment #{pv.voucher_no}",
+                'desc': f"Settlement paid via {pv.payment_method}",
+                'debit': pv.amount,
+                'credit': Decimal('0.00'),
+                'balance': running_balance
+            })
+
+    ledger_lines.sort(key=lambda x: x['date'])
+
+    return render(request, 'accounting/statement.html', {
         'company': company,
-        'subscription': sub,
-        'summary': summary,
-        'invoices': invoices,
-        'work_orders': work_orders,
-        'warehouses': warehouses,
+        'party': party,
+        'party_type': party_type,
+        'title_en': title_en,
+        'title_ar': title_ar,
+        'ledger_lines': ledger_lines,
+        'final_balance': running_balance,
         'lang': lang,
         'is_ar': is_ar,
-        'lang_dir': lang_dir,
-        'user_role': user_role
+        'lang_dir': lang_dir
     })
+
+# --- 🇸🇦 SAUDI WAGE PROTECTION SYSTEM (WPS / MUDAD SIF FILE EXPORT) ---
+def wps_sif_export_view(request, payroll_id):
+    payroll = get_object_or_404(MonthlyPayroll, pk=payroll_id)
+    company = get_user_company(request)
+
+    # সৌদি মানবসম্পদ মন্ত্রণালয়ের মানসম্মত SIF ফরম্যাট
+    sif_content = f"SCR|{company.cr_number or '1010445566'}|{company.name}|{payroll.processed_date.strftime('%Y%m%d')}|{payroll.month_year.replace('-','')}|{payroll.items.count()}|{payroll.total_amount:.2f}|SAR\n"
+    
+    for idx, item in enumerate(payroll.items.all(), 1):
+        emp = item.employee
+        sif_content += f"EDR|{emp.iqama_no}|{emp.bank_iban}|{emp.name_en}|{item.basic_salary:.2f}|{item.housing:.2f}|{item.transport:.2f}|{item.deductions:.2f}|{item.net_salary:.2f}|SAR\n"
+
+    response = HttpResponse(sif_content, content_type='text/plain')
+    response['Content-Disposition'] = f'attachment; filename="WPS_SIF_{company.cr_number}_{payroll.month_year}.sif"'
+    return response
 
 def set_language_view(request, lang):
     if lang in ['ar', 'en']: request.session['lang'] = lang
@@ -275,42 +276,16 @@ def transfer_slip_print_view(request, pk):
     return render(request, 'accounting/transfer_print.html', {'transfer': transfer, 'company': comp, 'qr_image': qr_img})
 
 # API ViewSets
-class WarehouseViewSet(viewsets.ModelViewSet):
-    queryset = Warehouse.objects.all()
-    serializer_class = WarehouseSerializer
-class WarehouseStockViewSet(viewsets.ModelViewSet):
-    queryset = WarehouseStock.objects.all()
-    serializer_class = WarehouseStockSerializer
-class StockTransferViewSet(viewsets.ModelViewSet):
-    queryset = StockTransfer.objects.all()
-    serializer_class = StockTransferSerializer
-class AccountViewSet(viewsets.ModelViewSet):
-    queryset = Account.objects.all()
-    serializer_class = AccountSerializer
-class BankAccountViewSet(viewsets.ModelViewSet):
-    queryset = BankAccount.objects.all()
-    serializer_class = BankAccountSerializer
-class CustomerViewSet(viewsets.ModelViewSet):
-    queryset = Customer.objects.all()
-    serializer_class = CustomerSerializer
-class SupplierViewSet(viewsets.ModelViewSet):
-    queryset = Supplier.objects.all()
-    serializer_class = SupplierSerializer
-class ProductViewSet(viewsets.ModelViewSet):
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
-class InvoiceViewSet(viewsets.ModelViewSet):
-    queryset = Invoice.objects.all()
-    serializer_class = InvoiceSerializer
-class PurchaseBillViewSet(viewsets.ModelViewSet):
-    queryset = PurchaseBill.objects.all()
-    serializer_class = PurchaseBillSerializer
-class ReceiptVoucherViewSet(viewsets.ModelViewSet):
-    queryset = ReceiptVoucher.objects.all()
-    serializer_class = ReceiptVoucherSerializer
-class PaymentVoucherViewSet(viewsets.ModelViewSet):
-    queryset = PaymentVoucher.objects.all()
-    serializer_class = PaymentVoucherSerializer
-class JournalEntryViewSet(viewsets.ModelViewSet):
-    queryset = JournalEntry.objects.all()
-    serializer_class = JournalEntrySerializer
+class WarehouseViewSet(viewsets.ModelViewSet): queryset = Warehouse.objects.all(); serializer_class = WarehouseSerializer
+class WarehouseStockViewSet(viewsets.ModelViewSet): queryset = WarehouseStock.objects.all(); serializer_class = WarehouseStockSerializer
+class StockTransferViewSet(viewsets.ModelViewSet): queryset = StockTransfer.objects.all(); serializer_class = StockTransferSerializer
+class AccountViewSet(viewsets.ModelViewSet): queryset = Account.objects.all(); serializer_class = AccountSerializer
+class BankAccountViewSet(viewsets.ModelViewSet): queryset = BankAccount.objects.all(); serializer_class = BankAccountSerializer
+class CustomerViewSet(viewsets.ModelViewSet): queryset = Customer.objects.all(); serializer_class = CustomerSerializer
+class SupplierViewSet(viewsets.ModelViewSet): queryset = Supplier.objects.all(); serializer_class = SupplierSerializer
+class ProductViewSet(viewsets.ModelViewSet): queryset = Product.objects.all(); serializer_class = ProductSerializer
+class InvoiceViewSet(viewsets.ModelViewSet): queryset = Invoice.objects.all(); serializer_class = InvoiceSerializer
+class PurchaseBillViewSet(viewsets.ModelViewSet): queryset = PurchaseBill.objects.all(); serializer_class = PurchaseBillSerializer
+class ReceiptVoucherViewSet(viewsets.ModelViewSet): queryset = ReceiptVoucher.objects.all(); serializer_class = ReceiptVoucherSerializer
+class PaymentVoucherViewSet(viewsets.ModelViewSet): queryset = PaymentVoucher.objects.all(); serializer_class = PaymentVoucherSerializer
+class JournalEntryViewSet(viewsets.ModelViewSet): queryset = JournalEntry.objects.all(); serializer_class = JournalEntrySerializer
