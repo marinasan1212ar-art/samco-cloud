@@ -1,38 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><meta charset="UTF-8"><title>SAMCO ERP - Quyod SaaS</title><script src="https://cdn.tailwindcss.com"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex font-sans">
-    <aside class="w-64 bg-white border-r border-slate-200 flex flex-col justify-between hidden md:flex">
+<head>
+    <meta charset="UTF-8"><title>SAMCO ERP - Quyod Cloud</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex font-sans antialiased">
+
+    <!-- 🌟 QUYOD OFFICIAL SIDEBAR -->
+    <aside class="w-64 bg-white border-r border-slate-200 flex flex-col justify-between hidden md:flex shrink-0 shadow-sm">
         <div>
-            <div class="h-16 flex items-center px-6 border-b border-slate-200 gap-3">
-                <div class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-black">S</div>
-                <h1 class="font-black text-slate-900">SAMCO ERP</h1>
+            <!-- Quyod Logo Header -->
+            <div class="h-16 flex items-center px-6 border-b border-slate-100 gap-3">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 text-white flex items-center justify-center font-black text-lg shadow-md shadow-indigo-500/20">
+                    ق
+                </div>
+                <div>
+                    <h1 class="font-black text-slate-900 text-base leading-tight">SAMCO ERP</h1>
+                    <p class="text-[10px] text-indigo-600 font-bold uppercase tracking-wider">Quyod Enterprise</p>
+                </div>
             </div>
-            <nav class="p-4 space-y-1 text-xs font-bold">
-                <a href="/" class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-indigo-50 text-indigo-700"><i class="fa-solid fa-chart-pie w-4"></i> Dashboard</a>
-                <a href="/invoices/" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-100"><i class="fa-solid fa-file-invoice w-4 text-emerald-600"></i> Invoices & Sales</a>
-                <a href="/pos/" target="_blank" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-100"><i class="fa-solid fa-cash-register w-4 text-amber-500"></i> Cloud POS</a>
-                <a href="/expenses/" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-100"><i class="fa-solid fa-money-bill-wave w-4 text-rose-500"></i> Direct Expenses</a>
-                <a href="/banking/reconciliation/" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-100"><i class="fa-solid fa-building-columns w-4 text-sky-600"></i> Bank Match</a>
-                <a href="/reports/" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-100"><i class="fa-solid fa-file-invoice-dollar w-4 text-indigo-500"></i> Financial Reports</a>
-                <a href="/admin/" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-100"><i class="fa-solid fa-user-shield w-4 text-slate-500"></i> Admin Panel</a>
+
+            <!-- Grouped Navigation Links -->
+            <nav class="p-4 space-y-4 text-xs">
+                <div>
+                    <span class="px-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">General (العامة)</span>
+                    <div class="mt-1 space-y-1">
+                        <a href="/" class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-indigo-50 text-indigo-700 font-bold border-l-4 border-indigo-600"><i class="fa-solid fa-chart-pie w-4"></i> Dashboard (الرئيسية)</a>
+                        <a href="/pos/" target="_blank" class="flex items-center gap-3 px-3 py-2 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-indigo-600 font-bold transition"><i class="fa-solid fa-cash-register w-4 text-emerald-500"></i> Cloud POS (نقاط البيع)</a>
+                    </div>
+                </div>
+
+                <div>
+                    <span class="px-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Sales & Billing (المبيعات)</span>
+                    <div class="mt-1 space-y-1 font-semibold">
+                        <a href="/invoices/" class="flex items-center gap-3 px-3 py-2 rounded-xl text-slate-700 hover:bg-slate-50 hover:text-indigo-600 transition"><i class="fa-solid fa-file-invoice w-4 text-indigo-500"></i> Invoices (الفواتير)</a>
+                        <a href="/sales/recurring/" class="flex items-center gap-3 px-3 py-2 rounded-xl text-slate-700 hover:bg-slate-50 hover:text-indigo-600 transition"><i class="fa-solid fa-repeat w-4 text-cyan-500"></i> Recurring (المتكررة)</a>
+                        <a href="/sales/price-lists/" class="flex items-center gap-3 px-3 py-2 rounded-xl text-slate-700 hover:bg-slate-50 hover:text-indigo-600 transition"><i class="fa-solid fa-tags w-4 text-amber-500"></i> Price Lists (قوائم الأسعار)</a>
+                    </div>
+                </div>
+
+                <div>
+                    <span class="px-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Inventory (المخزون)</span>
+                    <div class="mt-1 space-y-1 font-semibold">
+                        <a href="/inventory/bundles/" class="flex items-center gap-3 px-3 py-2 rounded-xl text-slate-700 hover:bg-slate-50 hover:text-indigo-600 transition"><i class="fa-solid fa-boxes-stacked w-4 text-amber-500"></i> Products & Bundles</a>
+                        <a href="/inventory/units/" class="flex items-center gap-3 px-3 py-2 rounded-xl text-slate-700 hover:bg-slate-50 hover:text-indigo-600 transition"><i class="fa-solid fa-ruler-combined w-4 text-indigo-400"></i> Units (وحدات القياس)</a>
+                    </div>
+                </div>
+
+                <div>
+                    <span class="px-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Finance & Banking (المالية)</span>
+                    <div class="mt-1 space-y-1 font-semibold">
+                        <a href="/expenses/" class="flex items-center gap-3 px-3 py-2 rounded-xl text-slate-700 hover:bg-slate-50 hover:text-indigo-600 transition"><i class="fa-solid fa-money-bill-wave w-4 text-rose-500"></i> Expenses (المصروفات)</a>
+                        <a href="/banking/reconciliation/" class="flex items-center gap-3 px-3 py-2 rounded-xl text-slate-700 hover:bg-slate-50 hover:text-indigo-600 transition"><i class="fa-solid fa-building-columns w-4 text-sky-500"></i> Bank Match (المطابقة)</a>
+                        <a href="/banking/transfer/" class="flex items-center gap-3 px-3 py-2 rounded-xl text-slate-700 hover:bg-slate-50 hover:text-indigo-600 transition"><i class="fa-solid fa-money-bill-transfer w-4 text-violet-500"></i> Transfers (التحويلات)</a>
+                        <a href="/reports/aging/" class="flex items-center gap-3 px-3 py-2 rounded-xl text-slate-700 hover:bg-slate-50 hover:text-indigo-600 transition"><i class="fa-solid fa-clock-rotate-left w-4 text-amber-600"></i> Debt Aging (أعمار الديون)</a>
+                        <a href="/reports/" class="flex items-center gap-3 px-3 py-2 rounded-xl text-slate-700 hover:bg-slate-50 hover:text-indigo-600 transition"><i class="fa-solid fa-chart-line w-4 text-emerald-500"></i> Reports (التقارير)</a>
+                    </div>
+                </div>
             </nav>
         </div>
+
+        <div class="p-4 border-t border-slate-100">
+            <a href="/admin/" class="flex items-center gap-3 px-3 py-2 rounded-xl text-slate-600 hover:bg-slate-100 font-bold text-xs"><i class="fa-solid fa-user-shield text-slate-400"></i> Admin Database</a>
+        </div>
     </aside>
+
+    <!-- Main Content Area -->
     <main class="flex-1 overflow-y-auto">
-        <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8">
-            <span class="text-xs font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">● ZATCA Phase-2 & SFDA Verified</span>
-            <div class="flex gap-2">
-                <a href="/invoices/create/" class="bg-indigo-600 text-white font-bold px-4 py-2 rounded-xl text-xs">+ New Tax Invoice</a>
-                <a href="/pos/" target="_blank" class="bg-emerald-600 text-white font-bold px-4 py-2 rounded-xl text-xs">Launch POS</a>
+        <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 sticky top-0 z-30">
+            <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span class="text-xs font-bold text-slate-600">ZATCA Phase-2 & SFDA Compliant</span>
+            </div>
+            <div class="flex items-center gap-3">
+                <a href="/invoices/create/" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2 rounded-xl text-xs shadow-md transition flex items-center gap-1.5"><i class="fa-solid fa-plus"></i> New Tax Invoice</a>
+                <a href="/pos/" target="_blank" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs shadow-md transition">Launch POS</a>
             </div>
         </header>
+
         <div class="p-8 space-y-6">
+            <!-- Metrics Cards -->
             <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
-                <div class="bg-white border rounded-2xl p-5 shadow-sm"><span class="text-xs text-slate-400 font-bold">TOTAL SALES</span><h2 class="text-2xl font-black text-slate-900 mt-1">{{ summary.total_sales_sar|floatformat:2 }} <span class="text-xs text-indigo-600">SAR</span></h2></div>
-                <div class="bg-white border rounded-2xl p-5 shadow-sm"><span class="text-xs text-slate-400 font-bold">TOTAL PURCHASES</span><h2 class="text-2xl font-black text-slate-900 mt-1">{{ summary.total_purchases_sar|floatformat:2 }} <span class="text-xs text-rose-500">SAR</span></h2></div>
-                <div class="bg-white border rounded-2xl p-5 shadow-sm"><span class="text-xs text-slate-400 font-bold">NET PROFIT</span><h2 class="text-2xl font-black text-emerald-600 mt-1">{{ summary.net_profit_sar|floatformat:2 }} <span class="text-xs text-slate-400">SAR</span></h2></div>
-                <div class="bg-white border rounded-2xl p-5 shadow-sm"><span class="text-xs text-slate-400 font-bold">BANK BALANCE</span><h2 class="text-2xl font-black text-sky-600 mt-1">{{ summary.total_bank_balance_sar|floatformat:2 }} <span class="text-xs text-slate-400">SAR</span></h2></div>
+                <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                    <span class="text-[11px] font-bold text-slate-400 uppercase">Total Sales (المبيعات)</span>
+                    <h2 class="text-2xl font-black text-slate-900 mt-1">{{ summary.total_sales_sar|floatformat:2 }} <span class="text-xs text-indigo-600 font-bold">SAR</span></h2>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                    <span class="text-[11px] font-bold text-slate-400 uppercase">Total Purchases (المشتريات)</span>
+                    <h2 class="text-2xl font-black text-slate-900 mt-1">{{ summary.total_purchases_sar|floatformat:2 }} <span class="text-xs text-rose-500 font-bold">SAR</span></h2>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                    <span class="text-[11px] font-bold text-slate-400 uppercase">Net Profit (صافي الربح)</span>
+                    <h2 class="text-2xl font-black text-emerald-600 mt-1">{{ summary.net_profit_sar|floatformat:2 }} <span class="text-xs text-slate-400 font-bold">SAR</span></h2>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                    <span class="text-[11px] font-bold text-slate-400 uppercase">Bank Balance (النقدية)</span>
+                    <h2 class="text-2xl font-black text-sky-600 mt-1">{{ summary.total_bank_balance_sar|floatformat:2 }} <span class="text-xs text-slate-400 font-bold">SAR</span></h2>
+                </div>
+            </div>
+
+            <!-- Overdue & Low Stock Widgets -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xs font-bold text-rose-600 uppercase flex items-center gap-1.5"><i class="fa-solid fa-clock-rotate-left"></i> Overdue Invoices (فواتير مستحقة)</h3>
+                        <a href="/invoices/?status=UNPAID" class="text-[11px] font-bold text-indigo-600 hover:underline">View All</a>
+                    </div>
+                    <div class="space-y-2">
+                        {% for inv in overdue_invoices %}
+                        <div class="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-100 text-xs">
+                            <div><p class="font-bold text-slate-900">#{{ inv.invoice_no }} - {{ inv.customer.name }}</p><p class="text-[10px] text-slate-400">{{ inv.date|date:"d M Y" }}</p></div>
+                            <div class="text-right"><p class="font-bold text-rose-600">{{ inv.remaining_due|floatformat:2 }} SAR</p><a href="/invoice/{{ inv.id }}/" class="text-[10px] text-indigo-600 font-bold">Settle ➔</a></div>
+                        </div>
+                        {% empty %}
+                        <p class="text-slate-400 text-xs italic text-center py-4">All invoices are settled! 🟢</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xs font-bold text-amber-600 uppercase flex items-center gap-1.5"><i class="fa-solid fa-triangle-exclamation"></i> Low Stock Warning (تنبيه المخزون)</h3>
+                        <a href="/inventory/bundles/" class="text-[11px] font-bold text-indigo-600 hover:underline">&lt; 10 Units</a>
+                    </div>
+                    <div class="space-y-2">
+                        {% for p in low_stock_products %}
+                        <div class="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-100 text-xs">
+                            <div><p class="font-bold text-slate-900">{{ p.name }}</p><p class="text-[10px] text-slate-400 font-mono">CAT: {{ p.cat_no }}</p></div>
+                            <span class="px-2 py-0.5 bg-amber-100 text-amber-800 rounded font-bold text-[10px]">{{ p.current_stock }} Pcs Left</span>
+                        </div>
+                        {% empty %}
+                        <p class="text-slate-400 text-xs italic text-center py-4">All stock levels optimal! 🟢</p>
+                        {% endfor %}
+                    </div>
+                </div>
             </div>
         </div>
     </main>
