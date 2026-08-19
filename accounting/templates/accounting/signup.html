@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل شركة جديدة - SAMCO SaaS Cloud ERP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex items-center justify-center p-4">
+
+    <div class="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl space-y-6">
+        <div class="text-center space-y-2">
+            <div class="inline-flex w-12 h-12 rounded-2xl bg-gradient-to-tr from-cyan-500 to-emerald-400 items-center justify-center text-black font-black text-2xl shadow-lg">
+                S
+            </div>
+            <h1 class="text-2xl font-black text-white">ابدأ تجربة نظام قيود السحابي مجاناً</h1>
+            <p class="text-xs text-slate-400">احصل على مساحة عمل محاسبية وصناعية متكاملة ومستقلة لشركتك</p>
+        </div>
+
+        {% if error %}
+        <div class="p-3 bg-rose-500/20 border border-rose-500/30 rounded-xl text-rose-400 text-xs font-bold text-center">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <form method="POST" action="/signup/" class="space-y-4 text-xs font-semibold">
+            {% csrf_token %}
+            <div>
+                <label class="block text-slate-400 mb-1">اسم المنشأة أو الشركة / Company Name *</label>
+                <input type="text" name="company_name" placeholder="مثال: شركة الرعاية الطبية للتجارة" required class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-white font-bold">
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-slate-400 mb-1">الرقم الضريبي (15 رقم)</label>
+                    <input type="text" name="vat_number" placeholder="300000000000003" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-white">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1">رقم الجوال</label>
+                    <input type="text" name="phone" placeholder="+966 50 000 0000" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-white">
+                </div>
+            </div>
+
+            <div class="border-t border-slate-800 pt-4 space-y-3">
+                <p class="text-cyan-400 font-bold text-sm">بيانات حساب المدير المشرف:</p>
+                <div>
+                    <label class="block text-slate-400 mb-1">اسم المستخدم / Username *</label>
+                    <input type="text" name="username" placeholder="admin_company" required class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-white font-mono font-bold">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1">البريد الإلكتروني / Email</label>
+                    <input type="email" name="email" placeholder="ceo@company.com" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-white">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1">كلمة المرور / Password *</label>
+                    <input type="password" name="password" placeholder="••••••••" required class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-white">
+                </div>
+            </div>
+
+            <button type="submit" class="w-full bg-gradient-to-r from-cyan-500 to-emerald-400 text-slate-950 font-black py-3.5 rounded-xl text-sm shadow-xl hover:opacity-90 transition mt-4">
+                🚀 إنشاء مساحة العمل وبدء التجربة المجانية
+            </button>
+        </form>
+    </div>
+</body>
+</html>

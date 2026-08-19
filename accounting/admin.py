@@ -3,9 +3,10 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
 from django.utils.html import format_html
 from .models import (
+    Company, SubscriptionPlan, CompanySubscription, PaymentTransaction,
     Account, BankAccount, JournalEntry, JournalEntryLine, Customer, Supplier, 
     Product, Invoice, InvoiceItem, PurchaseBill, PurchaseBillItem, Quotation, 
-    QuotationItem, ReceiptVoucher, PaymentVoucher, CompanySettings,
+    QuotationItem, ReceiptVoucher, PaymentVoucher,
     Warehouse, WarehouseStock, StockTransfer, StockTransferItem, UserProfile,
     BillOfMaterials, BOMItem, WorkOrder
 )
@@ -16,11 +17,31 @@ class UserProfileInline(admin.StackedInline):
 
 class UserAdmin(BaseUserAdmin):
     inlines = (UserProfileInline,)
-    list_display = ('username', 'email', 'get_role', 'is_staff')
+    list_display = ('username', 'email', 'get_company', 'get_role', 'is_staff')
     def get_role(self, obj): return obj.profile.get_role_display() if hasattr(obj, 'profile') else 'N/A'
+    def get_company(self, obj): return obj.profile.company.name if hasattr(obj, 'profile') and obj.profile.company else 'Global'
 
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
+
+@admin.register(Company)
+class CompanyAdmin(admin.ModelAdmin):
+    list_display = ('name', 'vat_number', 'phone', 'created_at', 'is_active')
+    search_fields = ('name', 'vat_number')
+
+@admin.register(SubscriptionPlan)
+class SubscriptionPlanAdmin(admin.ModelAdmin):
+    list_display = ('name', 'price_monthly_sar', 'price_yearly_sar', 'max_users')
+
+@admin.register(CompanySubscription)
+class CompanySubscriptionAdmin(admin.ModelAdmin):
+    list_display = ('company', 'plan', 'status', 'start_date', 'expiry_date')
+    list_filter = ('status', 'plan')
+
+@admin.register(PaymentTransaction)
+class PaymentTransactionAdmin(admin.ModelAdmin):
+    list_display = ('transaction_id', 'company', 'amount_sar', 'payment_method', 'status', 'payment_date')
+    list_filter = ('payment_method', 'status')
 
 class BOMItemInline(admin.TabularInline):
     model = BOMItem
@@ -28,14 +49,13 @@ class BOMItemInline(admin.TabularInline):
 
 @admin.register(BillOfMaterials)
 class BillOfMaterialsAdmin(admin.ModelAdmin):
-    list_display = ('bom_code', 'finished_product', 'output_qty')
+    list_display = ('bom_code', 'finished_product', 'output_qty', 'company')
     inlines = [BOMItemInline]
 
 @admin.register(WorkOrder)
 class WorkOrderAdmin(admin.ModelAdmin):
     list_display = ('order_no', 'bom', 'warehouse', 'planned_qty', 'actual_qty_produced', 'status', 'unit_cost')
     list_filter = ('status', 'warehouse')
-    
     def response_change(self, request, obj):
         obj.execute_production_completion()
         return super().response_change(request, obj)
@@ -62,13 +82,12 @@ class StockTransferItemInline(admin.TabularInline):
 
 @admin.register(Warehouse)
 class WarehouseAdmin(admin.ModelAdmin):
-    list_display = ('code', 'name_en', 'name_ar', 'location', 'manager_name')
+    list_display = ('code', 'name_en', 'name_ar', 'company')
 
 @admin.register(WarehouseStock)
 class WarehouseStockAdmin(admin.ModelAdmin):
     list_display = ('warehouse', 'product', 'stock_qty')
     list_filter = ('warehouse',)
-    search_fields = ('product__name', 'product__cat_no')
 
 @admin.register(StockTransfer)
 class StockTransferAdmin(admin.ModelAdmin):
@@ -76,17 +95,12 @@ class StockTransferAdmin(admin.ModelAdmin):
     inlines = [StockTransferItemInline]
     def print_transfer_slip(self, obj):
         return format_html('<a class="button" style="background-color: #38BDF8; color: #000; font-weight: bold; padding: 4px 10px; border-radius: 6px; text-decoration: none;" href="/transfer/{}/" target="_blank">📄 سند تحويل Print</a>', obj.pk)
-
     def response_add(self, request, obj, post_url_continue=None):
         obj.execute_transfer(); return super().response_add(request, obj, post_url_continue)
 
-@admin.register(CompanySettings)
-class CompanySettingsAdmin(admin.ModelAdmin):
-    list_display = ('company_name_en', 'vat_number', 'phone')
-
 @admin.register(BankAccount)
 class BankAccountAdmin(admin.ModelAdmin):
-    list_display = ('name', 'account_number', 'branch', 'balance')
+    list_display = ('name', 'account_number', 'balance', 'company')
 
 @admin.register(ReceiptVoucher)
 class ReceiptVoucherAdmin(admin.ModelAdmin):
@@ -106,11 +120,11 @@ class PaymentVoucherAdmin(admin.ModelAdmin):
 
 @admin.register(Supplier)
 class SupplierAdmin(admin.ModelAdmin):
-    list_display = ('name', 'phone', 'vat_number')
+    list_display = ('name', 'phone', 'vat_number', 'company')
 
 @admin.register(PurchaseBill)
 class PurchaseBillAdmin(admin.ModelAdmin):
-    list_display = ('bill_no', 'supplier', 'warehouse', 'date', 'subtotal', 'vat_amount', 'total_amount')
+    list_display = ('bill_no', 'supplier', 'warehouse', 'date', 'total_amount')
     inlines = [PurchaseBillItemInline]
     def response_add(self, request, obj, post_url_continue=None):
         obj.update_totals_and_post_accounting(); return super().response_add(request, obj, post_url_continue)
@@ -124,21 +138,21 @@ class QuotationAdmin(admin.ModelAdmin):
 
 @admin.register(Account)
 class AccountAdmin(admin.ModelAdmin):
-    list_display = ('code', 'name', 'account_type', 'balance')
+    list_display = ('code', 'name', 'account_type', 'balance', 'company')
+    list_filter = ('account_type',)
 
 @admin.register(Customer)
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ('name', 'phone', 'vat_number')
+    list_display = ('name', 'phone', 'vat_number', 'company')
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('cat_no', 'name', 'item_type', 'sale_price', 'cost_price', 'current_stock')
+    list_display = ('cat_no', 'name', 'item_type', 'sale_price', 'cost_price', 'current_stock', 'company')
     list_filter = ('item_type',)
-    search_fields = ('cat_no', 'name')
 
 @admin.register(Invoice)
 class InvoiceAdmin(admin.ModelAdmin):
-    list_display = ('invoice_no', 'customer', 'warehouse', 'date', 'subtotal', 'vat_amount', 'total_amount', 'print_tax_invoice')
+    list_display = ('invoice_no', 'customer', 'warehouse', 'date', 'total_amount', 'print_tax_invoice')
     inlines = [InvoiceItemInline]
     def print_tax_invoice(self, obj):
         return format_html('<a class="button" style="background-color: #00F0FF; color: #000; font-weight: bold; padding: 4px 10px; border-radius: 6px; text-decoration: none;" href="/invoice/{}/" target="_blank">🖨️ Print Tax Invoice</a>', obj.pk)
@@ -147,5 +161,5 @@ class InvoiceAdmin(admin.ModelAdmin):
 
 @admin.register(JournalEntry)
 class JournalEntryAdmin(admin.ModelAdmin):
-    list_display = ('reference_no', 'date', 'description')
+    list_display = ('reference_no', 'date', 'description', 'company')
     inlines = [JournalEntryLineInline]
