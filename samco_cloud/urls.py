@@ -5,7 +5,7 @@ from accounting.views import (
     reports_view, transfer_slip_print_view, set_language_view,
     custom_reports_view, manufacturing_view, scanner_view,
     company_signup_view, pricing_checkout_view, statement_of_account_view, wps_sif_export_view,
-    credit_note_detail_view, create_credit_note_view
+    credit_note_detail_view, create_credit_note_view, delivery_note_detail_view, create_delivery_note_view
 )
 from accounting.pos_views import pos_dashboard, pos_checkout, pos_receipt_print
 
@@ -26,6 +26,8 @@ urlpatterns = [
     path('invoice/<int:pk>/', invoice_detail_view, name='invoice-detail'),
     path('credit-note/<int:pk>/', credit_note_detail_view, name='credit-note-detail'),
     path('invoice/<int:invoice_id>/return/', create_credit_note_view, name='create-credit-note'),
+    path('delivery/<int:pk>/', delivery_note_detail_view, name='delivery-note-detail'),
+    path('invoice/<int:invoice_id>/delivery/', create_delivery_note_view, name='create-delivery-note'),
     path('voucher/<str:v_type>/<int:pk>/', voucher_print_view, name='voucher-print'),
     path('transfer/<int:pk>/', transfer_slip_print_view, name='transfer-slip-print'),
     path('admin/', admin.site.urls),

@@ -16,7 +16,7 @@ from .models import (
     UserProfile, BillOfMaterials, WorkOrder, Employee, MonthlyPayroll, 
     PayrollItem, CostCenter, FixedAsset, StockAdjustment, CompanySettings,
     SubscriptionPlan, CompanySubscription, PaymentTransaction,
-    CreditNote, CreditNoteItem
+    CreditNote, CreditNoteItem, DeliveryNote, DeliveryNoteItem, ProductBatch
 )
 from .serializers import (
     AccountSerializer, CustomerSerializer, SupplierSerializer, ProductSerializer,
@@ -97,6 +97,46 @@ def invoice_detail_view(request, pk):
         'bank_accounts': bank_accounts
     })
 
+# 🚚 ডেলিভারি নোট ভিউ
+def delivery_note_detail_view(request, pk):
+    delivery_note = get_object_or_404(DeliveryNote, pk=pk)
+    comp = delivery_note.company or get_user_company(request)
+    qr_payload = f"DELIVERY SLIP\nNo: {delivery_note.delivery_no}\nCustomer: {delivery_note.invoice.customer.name}\nDate: {delivery_note.date}\nDriver: {delivery_note.driver_name}"
+    qr_img = generate_qr_image_base64(qr_payload)
+    return render(request, 'accounting/delivery_note_detail.html', {
+        'dn': delivery_note, 'company': comp, 'qr_image': qr_img
+    })
+
+def create_delivery_note_view(request, invoice_id):
+    invoice = get_object_or_404(Invoice, pk=invoice_id)
+    comp = invoice.company or get_user_company(request)
+    warehouses = Warehouse.objects.filter(company=comp)
+    
+    if request.method == 'POST':
+        driver = request.POST.get('driver_name', '')
+        vehicle = request.POST.get('vehicle_no', '')
+        wh_id = request.POST.get('warehouse_id')
+        warehouse = get_object_or_404(Warehouse, id=wh_id) if wh_id else invoice.warehouse or warehouses.first()
+        dn_no = f"DN-{invoice.invoice_no}"
+        
+        dn = DeliveryNote.objects.create(
+            company=comp, delivery_no=dn_no, invoice=invoice,
+            warehouse=warehouse, driver_name=driver, vehicle_no=vehicle,
+            status="DELIVERED"
+        )
+        for item in invoice.items.all():
+            qty_del = int(request.POST.get(f'qty_{item.id}', item.qty))
+            b_no = request.POST.get(f'batch_{item.id}', item.batch_no or 'BATCH-01')
+            exp = request.POST.get(f'exp_{item.id}', item.expiry_date or '2028-12-31')
+            DeliveryNoteItem.objects.create(
+                delivery_note=dn, product=item.product, batch_no=b_no, expiry_date=exp, qty_delivered=qty_del
+            )
+        return redirect('delivery-note-detail', pk=dn.pk)
+
+    return render(request, 'accounting/delivery_note_create.html', {
+        'invoice': invoice, 'company': comp, 'warehouses': warehouses
+    })
+
 def credit_note_detail_view(request, pk):
     credit_note = get_object_or_404(CreditNote, pk=pk)
     comp = credit_note.company or get_user_company(request)
@@ -115,18 +155,15 @@ def create_credit_note_view(request, invoice_id):
     if request.method == 'POST':
         reason = request.POST.get('reason', 'Customer Return (مرتجع بضاعة)')
         cn_no = f"CN-{invoice.invoice_no}"
-        
         cn = CreditNote.objects.create(
             company=comp, credit_note_no=cn_no, invoice=invoice, reason=reason
         )
-        
         for item in invoice.items.all():
             qty_return = int(request.POST.get(f'return_qty_{item.id}', 0))
             if qty_return > 0:
                 CreditNoteItem.objects.create(
                     credit_note=cn, product=item.product, qty=qty_return, unit_price=item.unit_price
                 )
-        
         cn.update_totals_and_post_accounting()
         return redirect('credit-note-detail', pk=cn.pk)
 

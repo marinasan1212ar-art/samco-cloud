@@ -239,6 +239,17 @@ class Product(models.Model):
     def __str__(self):
         return f"[{self.cat_no}] {self.name} (Stock: {self.current_stock})"
 
+# 💊 SFDA Medical/Food Batch & Expiry Tracking Model
+class ProductBatch(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="batches")
+    batch_no = models.CharField(max_length=100, help_text="Batch / Lot Number")
+    manufacturing_date = models.DateField(default=datetime.now)
+    expiry_date = models.DateField(help_text="SFDA Expiry Date")
+    stock_qty = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"{self.product.name} [Batch: {self.batch_no} | Exp: {self.expiry_date}]"
+
 class WarehouseStock(models.Model):
     warehouse = models.ForeignKey(Warehouse, on_delete=models.CASCADE, related_name='stocks')
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='division_stocks')
@@ -365,6 +376,8 @@ class Invoice(models.Model):
 class InvoiceItem(models.Model):
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name='items')
     product = models.ForeignKey(Product, on_delete=models.PROTECT)
+    batch_no = models.CharField(max_length=100, blank=True, null=True, help_text="Batch Number")
+    expiry_date = models.DateField(blank=True, null=True, help_text="Expiry Date")
     qty = models.IntegerField(default=1)
     unit_price = models.DecimalField(max_digits=12, decimal_places=2)
     total = models.DecimalField(max_digits=12, decimal_places=2, editable=False)
@@ -379,6 +392,28 @@ class InvoiceItem(models.Model):
         self.product.current_stock = models.F('current_stock') + self.qty
         self.product.save()
         super().delete(*args, **kwargs)
+
+# 🚚 ডেলিভারি নোট ও চালান (Delivery Note / سند تسليم بضاعة)
+class DeliveryNote(models.Model):
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True, related_name="delivery_notes")
+    delivery_no = models.CharField(max_length=100, default="DN-001")
+    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name="deliveries")
+    warehouse = models.ForeignKey(Warehouse, on_delete=models.PROTECT)
+    date = models.DateField(default=datetime.now)
+    driver_name = models.CharField(max_length=150, blank=True, null=True, help_text="اسم السائق")
+    vehicle_no = models.CharField(max_length=50, blank=True, null=True, help_text="رقم اللوحة")
+    status = models.CharField(max_length=30, default="DELIVERED")
+    notes = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f"Delivery Note #{self.delivery_no} (Inv #{self.invoice.invoice_no})"
+
+class DeliveryNoteItem(models.Model):
+    delivery_note = models.ForeignKey(DeliveryNote, on_delete=models.CASCADE, related_name="items")
+    product = models.ForeignKey(Product, on_delete=models.PROTECT)
+    batch_no = models.CharField(max_length=100, blank=True, null=True)
+    expiry_date = models.DateField(blank=True, null=True)
+    qty_delivered = models.IntegerField(default=1)
 
 class CreditNote(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True, related_name="credit_notes")
@@ -497,6 +532,8 @@ class PurchaseBill(models.Model):
 class PurchaseBillItem(models.Model):
     bill = models.ForeignKey(PurchaseBill, on_delete=models.CASCADE, related_name='items')
     product = models.ForeignKey(Product, on_delete=models.PROTECT)
+    batch_no = models.CharField(max_length=100, blank=True, null=True)
+    expiry_date = models.DateField(blank=True, null=True)
     qty = models.IntegerField(default=1)
     unit_cost = models.DecimalField(max_digits=12, decimal_places=2)
     total = models.DecimalField(max_digits=12, decimal_places=2, editable=False)

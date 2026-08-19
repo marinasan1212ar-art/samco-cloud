@@ -21,6 +21,9 @@
             <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
         </a>
         <div class="flex flex-wrap items-center gap-3">
+            <a href="/invoice/{{ invoice.id }}/delivery/" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-4 py-2.5 rounded-xl font-bold text-xs shadow-lg flex items-center gap-2">
+                <i class="fa-solid fa-truck-fast"></i> Dispatch Goods / سند تسليم
+            </a>
             <a href="/invoice/{{ invoice.id }}/return/" class="bg-rose-500 hover:bg-rose-400 text-slate-950 px-4 py-2.5 rounded-xl font-bold text-xs shadow-lg flex items-center gap-2">
                 <i class="fa-solid fa-rotate-left"></i> Sales Return / إشعار دائن
             </a>
@@ -84,9 +87,10 @@
                 <tr class="bg-slate-900 text-white uppercase text-[11px] font-bold">
                     <th class="p-3">#</th>
                     <th class="p-3">Item / الصنف</th>
-                    <th class="p-3 text-center">Qty / الكمية</th>
-                    <th class="p-3 text-right">Unit Price / السعر</th>
-                    <th class="p-3 text-right">Subtotal / الإجمالي</th>
+                    <th class="p-3">SFDA Batch / Exp</th>
+                    <th class="p-3 text-center">Qty</th>
+                    <th class="p-3 text-right">Unit Price</th>
+                    <th class="p-3 text-right">Subtotal</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-slate-200">
@@ -96,6 +100,10 @@
                     <td class="p-3">
                         <p class="font-bold text-slate-900">{{ item.product.name }}</p>
                         <p class="text-[10px] text-slate-500 font-mono">CAT: {{ item.product.cat_no }}</p>
+                    </td>
+                    <td class="p-3 text-[11px] text-slate-600">
+                        {% if item.batch_no %}<span class="font-mono font-bold">{{ item.batch_no }}</span>{% else %}Standard{% endif %}
+                        {% if item.expiry_date %}<p class="text-[10px] text-rose-600">Exp: {{ item.expiry_date|date:"m/Y" }}</p>{% endif %}
                     </td>
                     <td class="p-3 text-center font-bold">{{ item.qty }}</td>
                     <td class="p-3 text-right font-medium">{{ item.unit_price|floatformat:2 }} SAR</td>
@@ -113,34 +121,33 @@
                 <div class="text-[10px] text-slate-500 leading-tight">
                     <p class="font-bold text-slate-800 text-xs mb-1">ZATCA e-Invoice (رصد)</p>
                     <p>Verified Compliant Phase-2</p>
-                    <p>Scan with ZATCA App to verify</p>
                 </div>
             </div>
 
             <div class="w-64 space-y-2 text-xs">
                 <div class="flex justify-between text-slate-600">
-                    <span>Taxable Amount (الخاضع للضريبة):</span>
+                    <span>Taxable Base:</span>
                     <span class="font-bold">{{ invoice.subtotal|floatformat:2 }} SAR</span>
                 </div>
                 <div class="flex justify-between text-amber-600 font-bold">
-                    <span>15% VAT (الضريبة):</span>
+                    <span>15% VAT:</span>
                     <span>{{ invoice.vat_amount|floatformat:2 }} SAR</span>
                 </div>
                 <div class="flex justify-between text-base font-black text-slate-900 pt-2 border-t border-slate-300">
-                    <span>Total (المجموع الكلي):</span>
+                    <span>Total (المجموع):</span>
                     <span>{{ invoice.total_amount|floatformat:2 }} SAR</span>
                 </div>
             </div>
         </div>
 
-        {% if invoice.receipts.all %}
-        <div class="mt-8 pt-4 border-t border-slate-200 text-xs">
-            <h4 class="font-black text-slate-800 mb-2">💳 Payment Receipts Log (سجل سندات القبض المستلمة):</h4>
+        {% if invoice.deliveries.all %}
+        <div class="mt-6 pt-4 border-t border-slate-200 text-xs">
+            <h4 class="font-black text-slate-800 mb-2">🚚 Delivery Notes History (سندات التسليم الصادرة):</h4>
             <div class="space-y-1">
-                {% for r in invoice.receipts.all %}
+                {% for d in invoice.deliveries.all %}
                 <div class="flex justify-between p-2 bg-slate-50 rounded border border-slate-200">
-                    <span>#{{ r.voucher_no }} ({{ r.date }}) - {{ r.payment_method }}</span>
-                    <span class="font-bold text-emerald-600">+{{ r.amount|floatformat:2 }} SAR</span>
+                    <span>#{{ d.delivery_no }} ({{ d.date }}) - Driver: {{ d.driver_name|default:"General Dispatch" }}</span>
+                    <a href="/delivery/{{ d.id }}/" target="_blank" class="font-bold text-cyan-600 hover:underline">View Slip ➔</a>
                 </div>
                 {% endfor %}
             </div>
