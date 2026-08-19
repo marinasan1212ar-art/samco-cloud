@@ -20,48 +20,33 @@ def get_user_company(request):
     comp, _ = Company.objects.get_or_create(id=1, defaults={"name": "SECOND ADVANCE MEDICAL COMPANY (SAMCO)", "vat_number": "310122456700003"})
     return comp
 
-# 🌟 ১০০% রিয়েল ডাইনামিক ড্যাশবোর্ড
 def dashboard_view(request):
     lang = request.session.get('lang', 'en'); is_ar = (lang == 'ar'); lang_dir = 'rtl' if is_ar else 'ltr'
     company = get_user_company(request)
-
     total_sales = sum(inv.total_amount for inv in Invoice.objects.filter(company=company))
     total_purchases = sum(bill.total_amount for bill in PurchaseBill.objects.filter(company=company))
     total_expenses = sum(exp.total_amount for exp in DirectExpense.objects.filter(company=company))
     total_bank_balance = sum(b.balance for b in BankAccount.objects.filter(company=company))
 
-    # Cash In vs Cash Out
     cash_in = ReceiptVoucher.objects.filter(company=company).aggregate(Sum('amount'))['amount__sum'] or Decimal('0.00')
     cash_out = (PaymentVoucher.objects.filter(company=company).aggregate(Sum('amount'))['amount__sum'] or Decimal('0.00')) + total_expenses
     net_cash_flow = cash_in - cash_out
 
-    # ZATCA VAT Summary
     vat_output = sum(inv.vat_amount for inv in Invoice.objects.filter(company=company))
     vat_input = sum(bill.vat_amount for bill in PurchaseBill.objects.filter(company=company)) + sum(exp.vat_amount for exp in DirectExpense.objects.filter(company=company))
     net_vat_due = vat_output - vat_input
 
-    # Dynamic Top Customers (Only who purchased)
     top_customers = Customer.objects.filter(company=company, invoice__isnull=False).annotate(total_spent=Sum('invoice__total_amount')).order_by('-total_spent')[:5]
-
-    # Real Invoices & Overdue
     invoices = Invoice.objects.filter(company=company).order_by('-id')[:6]
     overdue_invoices = Invoice.objects.filter(company=company, payment_status__in=['UNPAID', 'PARTIALLY_PAID']).order_by('-date')[:5]
     low_stock_products = Product.objects.filter(company=company, current_stock__lte=10).order_by('current_stock')[:5]
     banks = BankAccount.objects.filter(company=company)
-    recent_expenses = DirectExpense.objects.filter(company=company).order_by('-id')[:4]
 
     summary = {
-        "total_sales_sar": total_sales,
-        "total_purchases_sar": total_purchases,
-        "total_expenses_sar": total_expenses,
-        "total_bank_balance_sar": total_bank_balance,
-        "net_profit_sar": total_sales - (total_purchases + total_expenses),
-        "cash_in": cash_in,
-        "cash_out": cash_out,
-        "net_cash_flow": net_cash_flow,
-        "vat_output": vat_output,
-        "vat_input": vat_input,
-        "net_vat_due": net_vat_due,
+        "total_sales_sar": total_sales, "total_purchases_sar": total_purchases, "total_expenses_sar": total_expenses,
+        "total_bank_balance_sar": total_bank_balance, "net_profit_sar": total_sales - (total_purchases + total_expenses),
+        "cash_in": cash_in, "cash_out": cash_out, "net_cash_flow": net_cash_flow,
+        "vat_output": vat_output, "vat_input": vat_input, "net_vat_due": net_vat_due,
         "total_products": Product.objects.filter(company=company).count(),
         "total_customers": Customer.objects.filter(company=company).count(),
         "total_suppliers": Supplier.objects.filter(company=company).count(),
@@ -73,8 +58,58 @@ def dashboard_view(request):
         'company': company, 'summary': summary, 'invoices': invoices,
         'banks': banks, 'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir, 'user_role': user_role,
         'overdue_invoices': overdue_invoices, 'low_stock_products': low_stock_products,
-        'top_customers': top_customers, 'recent_expenses': recent_expenses
+        'top_customers': top_customers
     })
+
+# 🌟 পূর্ণাঙ্গ পেরোল ও এইচআর ভিউ
+def payroll_view(request):
+    lang = request.session.get('lang', 'en'); is_ar = (lang == 'ar'); lang_dir = 'rtl' if is_ar else 'ltr'
+    company = get_user_company(request)
+    employees = Employee.objects.filter(company=company).order_by('-id')
+    payrolls = MonthlyPayroll.objects.filter(company=company).order_by('-id')
+
+    if request.method == 'POST' and 'add_employee' in request.POST:
+        Employee.objects.create(
+            company=company, employee_no=f"EMP-{employees.count() + 1:03d}",
+            name_en=request.POST.get('name_en'), iqama_no=request.POST.get('iqama_no'),
+            bank_iban=request.POST.get('bank_iban'),
+            basic_salary=Decimal(request.POST.get('basic_salary', '4000.00')),
+            housing_allowance=Decimal(request.POST.get('housing_allowance', '1000.00')),
+            transport_allowance=Decimal(request.POST.get('transport_allowance', '500.00'))
+        )
+        return redirect('/payroll/')
+
+    if request.method == 'POST' and 'process_payroll' in request.POST:
+        month_str = request.POST.get('month_year') or datetime.now().strftime("%Y-%m")
+        active_emps = Employee.objects.filter(company=company, is_active=True)
+        if active_emps.exists():
+            total_payroll_amt = Decimal('0.00')
+            payroll = MonthlyPayroll.objects.create(company=company, month_year=month_str, total_amount=0, is_paid=True)
+            for emp in active_emps:
+                net = emp.total_monthly_salary()
+                PayrollItem.objects.create(payroll=payroll, employee=emp, basic_salary=emp.basic_salary, housing=emp.housing_allowance, transport=emp.transport_allowance, deductions=0, net_salary=net)
+                total_payroll_amt += net
+            payroll.total_amount = total_payroll_amt; payroll.save()
+        return redirect('/payroll/')
+
+    total_monthly_commitment = sum(e.total_monthly_salary() for e in employees.filter(is_active=True))
+
+    return render(request, 'accounting/payroll.html', {
+        'company': company, 'employees': employees, 'payrolls': payrolls,
+        'total_monthly_commitment': total_monthly_commitment,
+        'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir,
+        'current_month': datetime.now().strftime("%Y-%m")
+    })
+
+def wps_sif_export_view(request, payroll_id):
+    payroll = get_object_or_404(MonthlyPayroll, pk=payroll_id)
+    company = get_user_company(request)
+    sif = f"SCR|{company.cr_number or '1010445566'}|{company.name}|{payroll.processed_date.strftime('%Y%m%d')}|{payroll.month_year.replace('-','')}|{payroll.items.count()}|{payroll.total_amount:.2f}|SAR\n"
+    for item in payroll.items.all():
+        sif += f"EDR|{item.employee.iqama_no}|{item.employee.bank_iban}|{item.employee.name_en}|{item.basic_salary:.2f}|{item.housing:.2f}|{item.transport:.2f}|{item.deductions:.2f}|{item.net_salary:.2f}|SAR\n"
+    res = HttpResponse(sif, content_type='text/plain')
+    res['Content-Disposition'] = f'attachment; filename="WPS_{company.cr_number}_{payroll.month_year}.sif"'
+    return res
 
 def invoices_list_view(request):
     lang = request.session.get('lang', 'en'); is_ar = (lang == 'ar'); lang_dir = 'rtl' if is_ar else 'ltr'
@@ -82,10 +117,7 @@ def invoices_list_view(request):
     status_filter = request.GET.get('status', '')
     invoices = Invoice.objects.filter(company=company).order_by('-id')
     if status_filter: invoices = invoices.filter(payment_status=status_filter)
-    return render(request, 'accounting/invoices_list.html', {
-        'company': company, 'invoices': invoices, 'status_filter': status_filter,
-        'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir
-    })
+    return render(request, 'accounting/invoices_list.html', {'company': company, 'invoices': invoices, 'status_filter': status_filter, 'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir})
 
 def create_invoice_view(request):
     lang = request.session.get('lang', 'en'); is_ar = (lang == 'ar'); lang_dir = 'rtl' if is_ar else 'ltr'
@@ -127,19 +159,12 @@ def create_invoice_view(request):
         for p_id, desc, q_val, pr_val, d_val in zip(prod_ids, descriptions, qtys, prices, discounts):
             if p_id and q_val and pr_val:
                 prod = get_object_or_404(Product, id=p_id)
-                InvoiceItem.objects.create(
-                    invoice=invoice, product=prod, description=desc,
-                    qty=int(q_val), unit_price=Decimal(pr_val), discount_pct=Decimal(d_val or 0)
-                )
+                InvoiceItem.objects.create(invoice=invoice, product=prod, description=desc, qty=int(q_val), unit_price=Decimal(pr_val), discount_pct=Decimal(d_val or 0))
 
         invoice.update_totals_and_post_accounting()
         return redirect('invoice-detail', pk=invoice.pk)
 
-    return render(request, 'accounting/invoice_create.html', {
-        'company': company, 'customers': customers, 'warehouses': warehouses,
-        'products': products, 'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir,
-        'today': datetime.now().strftime("%Y-%m-%d")
-    })
+    return render(request, 'accounting/invoice_create.html', {'company': company, 'customers': customers, 'warehouses': warehouses, 'products': products, 'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir, 'today': datetime.now().strftime("%Y-%m-%d")})
 
 def invoice_detail_view(request, pk):
     invoice = get_object_or_404(Invoice, pk=pk)
@@ -225,52 +250,29 @@ def direct_expense_view(request):
             cost_center_id=request.POST.get('cost_center_id') or None, description=request.POST.get('description', 'Office Expense'),
             subtotal=subtotal, vat_amount=vat, total_amount=subtotal+vat, payment_method=request.POST.get('payment_method', 'Bank Transfer')
         )
-        exp.post_accounting()
-        return redirect('/expenses/')
-    return render(request, 'accounting/direct_expense.html', {
-        'company': company, 'expenses': DirectExpense.objects.filter(company=company).order_by('-id'),
-        'expense_accounts': Account.objects.filter(company=company, account_type='Expense'),
-        'banks': BankAccount.objects.filter(company=company), 'cost_centers': CostCenter.objects.filter(company=company),
-        'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir
-    })
+        exp.post_accounting(); return redirect('/expenses/')
+    return render(request, 'accounting/direct_expense.html', {'company': company, 'expenses': DirectExpense.objects.filter(company=company).order_by('-id'), 'expense_accounts': Account.objects.filter(company=company, account_type='Expense'), 'banks': BankAccount.objects.filter(company=company), 'cost_centers': CostCenter.objects.filter(company=company), 'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir})
 
 def bank_reconciliation_view(request):
     lang = request.session.get('lang', 'en'); is_ar = (lang == 'ar'); lang_dir = 'rtl' if is_ar else 'ltr'
-    company = get_user_company(request)
-    banks = BankAccount.objects.filter(company=company)
-    selected_bank_id = request.GET.get('bank_id', banks.first().id if banks.exists() else None)
-    selected_bank = BankAccount.objects.filter(id=selected_bank_id).first() if selected_bank_id else None
-
+    company = get_user_company(request); banks = BankAccount.objects.filter(company=company); selected_bank_id = request.GET.get('bank_id', banks.first().id if banks.exists() else None); selected_bank = BankAccount.objects.filter(id=selected_bank_id).first() if selected_bank_id else None
     if request.method == 'POST' and request.FILES.get('statement_file'):
-        file = request.FILES['statement_file']
-        bs = BankStatement.objects.create(company=company, bank_account=selected_bank, filename=file.name)
-        reader = csv.reader(io.StringIO(file.read().decode('utf-8')))
-        for row in reader:
+        bs = BankStatement.objects.create(company=company, bank_account=selected_bank, filename=request.FILES['statement_file'].name)
+        for row in csv.reader(io.StringIO(request.FILES['statement_file'].read().decode('utf-8'))):
             if len(row) >= 3:
-                try:
-                    amt = Decimal(row[2].strip().replace(',', ''))
-                    BankStatementLine.objects.create(statement=bs, date=row[0].strip() or datetime.now().strftime("%Y-%m-%d"), description=row[1].strip(), amount=abs(amt), transaction_type="CREDIT" if amt >= 0 else "DEBIT")
+                try: BankStatementLine.objects.create(statement=bs, date=row[0].strip() or datetime.now().strftime("%Y-%m-%d"), description=row[1].strip(), amount=abs(Decimal(row[2].strip().replace(',', ''))), transaction_type="CREDIT" if Decimal(row[2].strip().replace(',', '')) >= 0 else "DEBIT")
                 except Exception: continue
         return redirect(f'/banking/reconciliation/?bank_id={selected_bank.id}')
-
-    if request.method == 'POST' and 'reconcile_line_id' in request.POST:
-        line = get_object_or_404(BankStatementLine, id=request.POST.get('reconcile_line_id'))
-        line.is_reconciled = not line.is_reconciled; line.save()
-        return redirect(f'/banking/reconciliation/?bank_id={selected_bank.id}')
-
-    statement_lines = BankStatementLine.objects.filter(statement__bank_account=selected_bank).order_by('-date') if selected_bank else []
-    return render(request, 'accounting/bank_reconciliation.html', {'company': company, 'banks': banks, 'selected_bank': selected_bank, 'statement_lines': statement_lines, 'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir})
+    return render(request, 'accounting/bank_reconciliation.html', {'company': company, 'banks': banks, 'selected_bank': selected_bank, 'statement_lines': BankStatementLine.objects.filter(statement__bank_account=selected_bank).order_by('-date') if selected_bank else [], 'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir})
 
 def fund_transfer_view(request):
     lang = request.session.get('lang', 'en'); is_ar = (lang == 'ar'); lang_dir = 'rtl' if is_ar else 'ltr'
     company = get_user_company(request)
     if request.method == 'POST':
-        from_acc = get_object_or_404(BankAccount, id=request.POST.get('from_account'))
-        to_acc = get_object_or_404(BankAccount, id=request.POST.get('to_account'))
-        amount = Decimal(request.POST.get('amount', '0.00'))
+        from_acc = get_object_or_404(BankAccount, id=request.POST.get('from_account')); to_acc = get_object_or_404(BankAccount, id=request.POST.get('to_account')); amount = Decimal(request.POST.get('amount', '0.00'))
         if from_acc != to_acc and amount > 0:
-            ft = FundTransfer.objects.create(company=company, transfer_no=f"FT-{int(datetime.now().timestamp())}", from_account=from_acc, to_account=to_acc, amount=amount, notes=request.POST.get('notes', 'Fund Transfer'))
-            ft.post_accounting(); return redirect('/banking/transfer/')
+            FundTransfer.objects.create(company=company, transfer_no=f"FT-{int(datetime.now().timestamp())}", from_account=from_acc, to_account=to_acc, amount=amount).post_accounting()
+            return redirect('/banking/transfer/')
     return render(request, 'accounting/fund_transfer.html', {'company': company, 'banks': BankAccount.objects.filter(company=company), 'transfers': FundTransfer.objects.filter(company=company).order_by('-id')[:15], 'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir})
 
 def delivery_note_detail_view(request, pk):
@@ -278,13 +280,11 @@ def delivery_note_detail_view(request, pk):
     return render(request, 'accounting/delivery_note_detail.html', {'dn': dn, 'company': dn.company or get_user_company(request), 'qr_image': generate_qr_image_base64(f"DELIVERY: {dn.delivery_no}")})
 
 def create_delivery_note_view(request, invoice_id):
-    invoice = get_object_or_404(Invoice, pk=invoice_id)
-    comp = invoice.company or get_user_company(request)
+    invoice = get_object_or_404(Invoice, pk=invoice_id); comp = invoice.company or get_user_company(request)
     if request.method == 'POST':
         wh = get_object_or_404(Warehouse, id=request.POST.get('warehouse_id')) if request.POST.get('warehouse_id') else invoice.warehouse or Warehouse.objects.filter(company=comp).first()
         dn = DeliveryNote.objects.create(company=comp, delivery_no=f"DN-{invoice.invoice_no}", invoice=invoice, warehouse=wh, driver_name=request.POST.get('driver_name', ''), vehicle_no=request.POST.get('vehicle_no', ''), status="DELIVERED")
-        for item in invoice.items.all():
-            DeliveryNoteItem.objects.create(delivery_note=dn, product=item.product, batch_no=request.POST.get(f'batch_{item.id}', 'BATCH-01'), expiry_date=request.POST.get(f'exp_{item.id}', '2028-12-31'), qty_delivered=int(request.POST.get(f'qty_{item.id}', item.qty)))
+        for item in invoice.items.all(): DeliveryNoteItem.objects.create(delivery_note=dn, product=item.product, batch_no=request.POST.get(f'batch_{item.id}', 'BATCH-01'), expiry_date=request.POST.get(f'exp_{item.id}', '2028-12-31'), qty_delivered=int(request.POST.get(f'qty_{item.id}', item.qty)))
         return redirect('delivery-note-detail', pk=dn.pk)
     return render(request, 'accounting/delivery_note_create.html', {'invoice': invoice, 'company': comp, 'warehouses': Warehouse.objects.filter(company=comp)})
 
@@ -294,13 +294,11 @@ def credit_note_detail_view(request, pk):
     return render(request, 'accounting/credit_note_detail.html', {'credit_note': cn, 'company': cn.company or get_user_company(request), 'qr_image': generate_qr_image_base64(cn.zatca_qr_b64) if cn.zatca_qr_b64 else ""})
 
 def create_credit_note_view(request, invoice_id):
-    invoice = get_object_or_404(Invoice, pk=invoice_id)
-    comp = invoice.company or get_user_company(request)
+    invoice = get_object_or_404(Invoice, pk=invoice_id); comp = invoice.company or get_user_company(request)
     if request.method == 'POST':
         cn = CreditNote.objects.create(company=comp, credit_note_no=f"CN-{invoice.invoice_no}", invoice=invoice, reason=request.POST.get('reason', 'Customer Return'))
         for item in invoice.items.all():
-            qty_return = int(request.POST.get(f'return_qty_{item.id}', 0))
-            if qty_return > 0: CreditNoteItem.objects.create(credit_note=cn, product=item.product, qty=qty_return, unit_price=item.unit_price)
+            if int(request.POST.get(f'return_qty_{item.id}', 0)) > 0: CreditNoteItem.objects.create(credit_note=cn, product=item.product, qty=int(request.POST.get(f'return_qty_{item.id}')), unit_price=item.unit_price)
         cn.update_totals_and_post_accounting(); return redirect('credit-note-detail', pk=cn.pk)
     return render(request, 'accounting/credit_note_create.html', {'invoice': invoice, 'company': comp})
 
@@ -309,26 +307,20 @@ def debit_note_detail_view(request, pk):
     return render(request, 'accounting/debit_note_detail.html', {'debit_note': debit_note, 'company': debit_note.company or get_user_company(request)})
 
 def create_debit_note_view(request, bill_id):
-    bill = get_object_or_404(PurchaseBill, pk=bill_id)
-    comp = bill.company or get_user_company(request)
+    bill = get_object_or_404(PurchaseBill, pk=bill_id); comp = bill.company or get_user_company(request)
     if request.method == 'POST':
         dbn = DebitNote.objects.create(company=comp, debit_note_no=f"DBN-{bill.bill_no}", purchase_bill=bill, reason=request.POST.get('reason', 'Damaged return'))
         for item in bill.items.all():
-            qty_ret = int(request.POST.get(f'return_qty_{item.id}', 0))
-            if qty_ret > 0: DebitNoteItem.objects.create(debit_note=dbn, product=item.product, qty=qty_ret, unit_cost=item.unit_cost)
-        dbn.update_totals_and_post_accounting()
-        return redirect('debit-note-detail', pk=dbn.pk)
+            if int(request.POST.get(f'return_qty_{item.id}', 0)) > 0: DebitNoteItem.objects.create(debit_note=dbn, product=item.product, qty=int(request.POST.get(f'return_qty_{item.id}')), unit_cost=item.unit_cost)
+        dbn.update_totals_and_post_accounting(); return redirect('debit-note-detail', pk=dbn.pk)
     return render(request, 'accounting/debit_note_create.html', {'bill': bill, 'company': comp})
 
 def pricing_checkout_view(request):
-    company = get_user_company(request)
-    plans = SubscriptionPlan.objects.filter(is_active=True)
+    company = get_user_company(request); plans = SubscriptionPlan.objects.filter(is_active=True)
     if not plans.exists():
-        SubscriptionPlan.objects.get_or_create(slug='basic', defaults={'name': 'Basic Plan (باقة البداية)', 'price_monthly_sar': Decimal('99.00'), 'price_yearly_sar': Decimal('999.00'), 'max_users': 2})
-        SubscriptionPlan.objects.get_or_create(slug='pro', defaults={'name': 'Qoyod Pro (باقة الأعمال المتقدمة)', 'price_monthly_sar': Decimal('199.00'), 'price_yearly_sar': Decimal('1990.00'), 'max_users': 5})
-        SubscriptionPlan.objects.get_or_create(slug='enterprise', defaults={'name': 'Enterprise Plan (باقة المؤسسات الكبرى)', 'price_monthly_sar': Decimal('399.00'), 'price_yearly_sar': Decimal('3990.00'), 'max_users': 20})
+        SubscriptionPlan.objects.get_or_create(slug='basic', defaults={'name': 'Basic Plan', 'price_monthly_sar': Decimal('99.00'), 'max_users': 2})
+        SubscriptionPlan.objects.get_or_create(slug='pro', defaults={'name': 'Qoyod Pro', 'price_monthly_sar': Decimal('199.00'), 'max_users': 5})
         plans = SubscriptionPlan.objects.filter(is_active=True)
-
     if request.method == 'POST':
         plan = get_object_or_404(SubscriptionPlan, id=request.POST.get('plan_id'))
         PaymentTransaction.objects.create(company=company, amount_sar=plan.price_monthly_sar, payment_method=request.POST.get('payment_method', 'Mada'), status='PAID')
@@ -337,9 +329,7 @@ def pricing_checkout_view(request):
     return render(request, 'accounting/pricing.html', {'plans': plans, 'company': company})
 
 def statement_of_account_view(request, party_type, pk):
-    lang = request.session.get('lang', 'en'); is_ar = (lang == 'ar'); lang_dir = 'rtl' if is_ar else 'ltr'
-    company = get_user_company(request)
-    ledger_lines = []; running_balance = Decimal('0.00')
+    lang = request.session.get('lang', 'en'); is_ar = (lang == 'ar'); lang_dir = 'rtl' if is_ar else 'ltr'; company = get_user_company(request); ledger_lines = []; running_balance = Decimal('0.00')
     if party_type == 'customer':
         party = get_object_or_404(Customer, pk=pk)
         for inv in Invoice.objects.filter(customer=party).order_by('date'):
@@ -355,63 +345,28 @@ def statement_of_account_view(request, party_type, pk):
     ledger_lines.sort(key=lambda x: x['date'])
     return render(request, 'accounting/statement.html', {'company': company, 'party': party, 'party_type': party_type, 'title_en': f'{party_type.capitalize()} Statement', 'title_ar': 'كشف حساب', 'ledger_lines': ledger_lines, 'final_balance': running_balance, 'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir})
 
-def wps_sif_export_view(request, payroll_id):
-    payroll = get_object_or_404(MonthlyPayroll, pk=payroll_id); company = get_user_company(request)
-    sif = f"SCR|{company.cr_number or '1010445566'}|{company.name}|{payroll.processed_date.strftime('%Y%m%d')}|{payroll.month_year.replace('-','')}|{payroll.items.count()}|{payroll.total_amount:.2f}|SAR\n"
-    for item in payroll.items.all():
-        sif += f"EDR|{item.employee.iqama_no}|{item.employee.bank_iban}|{item.employee.name_en}|{item.basic_salary:.2f}|{item.housing:.2f}|{item.transport:.2f}|{item.deductions:.2f}|{item.net_salary:.2f}|SAR\n"
-    res = HttpResponse(sif, content_type='text/plain'); res['Content-Disposition'] = f'attachment; filename="WPS_{payroll.month_year}.sif"'
-    return res
-
 def set_language_view(request, lang):
     if lang in ['ar', 'en']: request.session['lang'] = lang
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
 def manufacturing_view(request):
-    lang = request.session.get('lang', 'en'); is_ar = (lang == 'ar'); lang_dir = 'rtl' if is_ar else 'ltr'
-    company = get_user_company(request)
-    wos = WorkOrder.objects.filter(company=company).order_by('-id')
+    lang = request.session.get('lang', 'en'); is_ar = (lang == 'ar'); lang_dir = 'rtl' if is_ar else 'ltr'; company = get_user_company(request); wos = WorkOrder.objects.filter(company=company).order_by('-id')
     return render(request, 'accounting/manufacturing.html', {'company': company, 'work_orders': wos, 'boms': BillOfMaterials.objects.filter(company=company), 'tot_produced': sum(w.actual_qty_produced for w in wos.filter(status='COMPLETED')), 'tot_mfg_cost': sum(w.total_batch_cost for w in wos.filter(status='COMPLETED')), 'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir})
 
 def scanner_view(request):
     return render(request, 'accounting/scanner.html', {'lang': request.session.get('lang', 'en'), 'is_ar': request.session.get('lang', 'en') == 'ar', 'lang_dir': 'rtl' if request.session.get('lang', 'en') == 'ar' else 'ltr'})
 
 def custom_reports_view(request):
-    lang = request.session.get('lang', 'en'); is_ar = (lang == 'ar'); lang_dir = 'rtl' if is_ar else 'ltr'
-    company = get_user_company(request)
-    return render(request, 'accounting/custom_reports.html', {'company': company, 'report_type': 'sales', 'customers': Customer.objects.filter(company=company), 'warehouses': Warehouse.objects.filter(company=company), 'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir})
+    return render(request, 'accounting/custom_reports.html', {'company': get_user_company(request), 'report_type': 'sales', 'customers': Customer.objects.filter(company=get_user_company(request)), 'warehouses': Warehouse.objects.filter(company=get_user_company(request)), 'lang': request.session.get('lang', 'en'), 'is_ar': request.session.get('lang', 'en') == 'ar', 'lang_dir': 'rtl' if request.session.get('lang', 'en') == 'ar' else 'ltr'})
 
 def reports_view(request):
-    lang = request.session.get('lang', 'en'); is_ar = (lang == 'ar'); lang_dir = 'rtl' if is_ar else 'ltr'
-    company = get_user_company(request)
-    accounts = Account.objects.filter(company=company).order_by('code')
-    trial_balance = []; tot_debit_all = Decimal('0.00'); tot_credit_all = Decimal('0.00')
+    lang = request.session.get('lang', 'en'); is_ar = (lang == 'ar'); lang_dir = 'rtl' if is_ar else 'ltr'; company = get_user_company(request); accounts = Account.objects.filter(company=company).order_by('code'); trial_balance = []; tot_debit_all = Decimal('0.00'); tot_credit_all = Decimal('0.00')
     for acc in accounts:
-        debit_sum = JournalEntryLine.objects.filter(account=acc).aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
-        credit_sum = JournalEntryLine.objects.filter(account=acc).aggregate(Sum('credit'))['credit__sum'] or Decimal('0.00')
-        tot_debit_all += debit_sum; tot_credit_all += credit_sum
-        trial_balance.append({'code': acc.code, 'name': acc.name, 'type': acc.account_type, 'debit_total': debit_sum, 'credit_total': credit_sum, 'net_balance': debit_sum - credit_sum})
-
-    total_sales = sum(inv.subtotal for inv in Invoice.objects.filter(company=company))
-    total_cogs = sum(b.subtotal for b in PurchaseBill.objects.filter(company=company))
-    expenses = JournalEntryLine.objects.filter(account__company=company, account__account_type='Expense').aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
-    ar = sum(inv.total_amount for inv in Invoice.objects.filter(company=company)) - sum(rv.amount for rv in ReceiptVoucher.objects.filter(company=company))
-    ap = sum(b.total_amount for b in PurchaseBill.objects.filter(company=company)) - sum(pv.amount for pv in PaymentVoucher.objects.filter(company=company))
-    bank_cash = sum(b.balance for b in BankAccount.objects.filter(company=company))
-    inv_val = sum(p.current_stock * Decimal('15.00') for p in Product.objects.filter(company=company))
-    vat_in = sum(b.vat_amount for b in PurchaseBill.objects.filter(company=company)) + sum(e.vat_amount for e in DirectExpense.objects.filter(company=company))
-    vat_out = sum(inv.vat_amount for inv in Invoice.objects.filter(company=company))
-    tot_assets = bank_cash + max(Decimal('0.00'), ar) + inv_val + vat_in
-    tot_liab = max(Decimal('0.00'), ap) + vat_out
-
-    return render(request, 'accounting/reports.html', {
-        'company': company, 'trial_balance': trial_balance, 'tot_debit_all': tot_debit_all, 'tot_credit_all': tot_credit_all,
-        'pnl': {'revenue': total_sales, 'cogs': total_cogs, 'gross_profit': total_sales - total_cogs, 'expenses': expenses, 'net_profit': total_sales - total_cogs - expenses},
-        'bs': {'bank_cash': bank_cash, 'ar': max(Decimal('0.00'), ar), 'inventory': inv_val, 'vat_input': vat_in, 'total_assets': tot_assets, 'ap': max(Decimal('0.00'), ap), 'vat_output': vat_out, 'total_liabilities': tot_liab, 'equity': tot_assets - tot_liab},
-        'vat': {'sales_base': total_sales, 'sales_vat': vat_out, 'pur_base': total_cogs, 'pur_vat': vat_in, 'net_due': vat_out - vat_in},
-        'ledger_entries': JournalEntryLine.objects.filter(account__company=company).select_related('journal_entry', 'account').order_by('-id')[:30],
-        'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir
-    })
+        debit_sum = JournalEntryLine.objects.filter(account=acc).aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00'); credit_sum = JournalEntryLine.objects.filter(account=acc).aggregate(Sum('credit'))['credit__sum'] or Decimal('0.00')
+        tot_debit_all += debit_sum; tot_credit_all += credit_sum; trial_balance.append({'code': acc.code, 'name': acc.name, 'type': acc.account_type, 'debit_total': debit_sum, 'credit_total': credit_sum, 'net_balance': debit_sum - credit_sum})
+    total_sales = sum(inv.subtotal for inv in Invoice.objects.filter(company=company)); total_cogs = sum(b.subtotal for b in PurchaseBill.objects.filter(company=company)); expenses = JournalEntryLine.objects.filter(account__company=company, account__account_type='Expense').aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
+    ar = sum(inv.total_amount for inv in Invoice.objects.filter(company=company)) - sum(rv.amount for rv in ReceiptVoucher.objects.filter(company=company)); ap = sum(b.total_amount for b in PurchaseBill.objects.filter(company=company)) - sum(pv.amount for pv in PaymentVoucher.objects.filter(company=company)); bank_cash = sum(b.balance for b in BankAccount.objects.filter(company=company)); inv_val = sum(p.current_stock * Decimal('15.00') for p in Product.objects.filter(company=company)); vat_in = sum(b.vat_amount for b in PurchaseBill.objects.filter(company=company)) + sum(e.vat_amount for e in DirectExpense.objects.filter(company=company)); vat_out = sum(inv.vat_amount for inv in Invoice.objects.filter(company=company))
+    return render(request, 'accounting/reports.html', {'company': company, 'trial_balance': trial_balance, 'tot_debit_all': tot_debit_all, 'tot_credit_all': tot_credit_all, 'pnl': {'revenue': total_sales, 'cogs': total_cogs, 'gross_profit': total_sales - total_cogs, 'expenses': expenses, 'net_profit': total_sales - total_cogs - expenses}, 'bs': {'bank_cash': bank_cash, 'ar': max(Decimal('0.00'), ar), 'inventory': inv_val, 'vat_input': vat_in, 'total_assets': bank_cash + max(Decimal('0.00'), ar) + inv_val + vat_in, 'ap': max(Decimal('0.00'), ap), 'vat_output': vat_out, 'total_liabilities': max(Decimal('0.00'), ap) + vat_out, 'equity': (bank_cash + max(Decimal('0.00'), ar) + inv_val + vat_in) - (max(Decimal('0.00'), ap) + vat_out)}, 'vat': {'sales_base': total_sales, 'sales_vat': vat_out, 'pur_base': total_cogs, 'pur_vat': vat_in, 'net_due': vat_out - vat_in}, 'ledger_entries': JournalEntryLine.objects.filter(account__company=company).select_related('journal_entry', 'account').order_by('-id')[:30], 'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir})
 
 def voucher_print_view(request, v_type, pk):
     voucher = get_object_or_404(ReceiptVoucher if v_type == 'receipt' else PaymentVoucher, pk=pk)
