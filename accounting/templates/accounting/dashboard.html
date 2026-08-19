@@ -12,10 +12,10 @@
 </head>
 <body class="bg-[#f8fafc] text-slate-800 min-h-screen flex font-sans antialiased">
 
-    <!-- 🌟 1. QOYOD OFFICIAL INTERACTIVE DARK NAVY SIDEBAR -->
+    <!-- 🌟 1. QOYOD OFFICIAL DARK NAVY SIDEBAR -->
     <aside id="qoyod-sidebar" class="w-64 bg-[#0b132b] text-slate-300 flex flex-col justify-between hidden md:flex shrink-0 sidebar-transition select-none">
         <div>
-            <!-- Header with Functional Hamburger Button (☰) -->
+            <!-- Header with Hamburger Button (☰) -->
             <div class="h-16 flex items-center justify-between px-5 border-b border-slate-800/80">
                 <div class="flex items-center gap-2 overflow-hidden">
                     <span id="logo-text" class="font-black text-2xl tracking-wider text-white">QOYOD</span>
@@ -27,7 +27,6 @@
 
             <!-- Navigation Links -->
             <nav class="p-3 space-y-1 text-xs font-semibold overflow-y-auto max-h-[calc(100vh-14rem)]">
-                <!-- Dashboard Active -->
                 <a href="/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-[#4338ca] text-white font-bold shadow-lg shadow-indigo-900/30">
                     <i class="fa-solid fa-gauge-high w-4 text-sm text-center"></i> 
                     <span class="nav-label">Dashboard</span>
@@ -135,26 +134,54 @@
     <!-- 🌟 2. MAIN WORKSPACE WITH QOYOD HEADER -->
     <main class="flex-1 flex flex-col min-w-0 overflow-y-auto">
         <header class="h-16 bg-white border-b border-slate-200/90 flex items-center justify-between px-6 sticky top-0 z-30">
-            <!-- Search Bar with ⌘ K -->
             <div onclick="openSearchModal()" class="relative w-80 cursor-pointer">
                 <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-xs"></i>
                 <input type="text" readonly placeholder="Search in Qoyod" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 pl-9 pr-12 text-xs text-slate-800 cursor-pointer focus:outline-none">
                 <span class="absolute right-2.5 top-2 px-1.5 py-0.5 bg-slate-200/80 text-slate-600 text-[10px] font-mono font-bold rounded">⌘ K</span>
             </div>
 
-            <!-- Right Actions Bar -->
-            <div class="flex items-center gap-4">
-                <a href="/invoices/create/" class="w-8 h-8 rounded-full bg-[#3b82f6] hover:bg-blue-600 text-white flex items-center justify-center shadow-sm font-black text-sm transition" title="Quick Create Invoice">
+            <!-- Right Actions Bar with Interactive Notifications -->
+            <div class="flex items-center gap-4 relative">
+                <a href="/invoices/create/" class="w-8 h-8 rounded-full bg-[#3b82f6] hover:bg-blue-600 text-white flex items-center justify-center shadow-sm font-black text-sm transition" title="Quick Create">
                     <i class="fa-solid fa-plus"></i>
                 </a>
                 
-                <button onclick="alert('No unread notifications')" class="text-slate-500 hover:text-slate-800 text-sm">
-                    <i class="fa-regular fa-bell"></i>
-                </button>
+                <!-- 🔔 Interactive Notification Button -->
+                <div class="relative">
+                    <button onclick="toggleNotifications()" class="text-slate-500 hover:text-slate-800 text-sm relative p-1.5">
+                        <i class="fa-regular fa-bell text-base"></i>
+                        {% if overdue_invoices or low_stock_products %}
+                        <span class="w-2 h-2 rounded-full bg-rose-500 absolute top-1 right-1 animate-pulse"></span>
+                        {% endif %}
+                    </button>
 
-                <a href="https://qoyod.com" target="_blank" class="text-slate-500 hover:text-slate-800 text-sm">
-                    <i class="fa-regular fa-circle-question"></i>
-                </a>
+                    <!-- Notifications Dropdown Panel -->
+                    <div id="notif-dropdown" class="hidden absolute right-0 mt-2 w-80 bg-white border border-slate-200 rounded-2xl shadow-2xl p-4 space-y-3 z-50 text-xs">
+                        <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                            <span class="font-black text-slate-900">Notifications (التنبيهات)</span>
+                            <span class="text-[10px] text-indigo-600 font-bold">ZATCA Real-time</span>
+                        </div>
+                        <div class="space-y-2 max-h-64 overflow-y-auto">
+                            {% for inv in overdue_invoices %}
+                            <div class="p-2.5 bg-rose-50 border border-rose-100 rounded-xl">
+                                <p class="font-bold text-rose-800">Unpaid Invoice #{{ inv.invoice_no }}</p>
+                                <p class="text-[10px] text-rose-600 mt-0.5">{{ inv.customer.name }} - SAR {{ inv.remaining_due|floatformat:2 }} due</p>
+                            </div>
+                            {% endfor %}
+
+                            {% for p in low_stock_products %}
+                            <div class="p-2.5 bg-amber-50 border border-amber-100 rounded-xl">
+                                <p class="font-bold text-amber-800">Low Stock: {{ p.name }}</p>
+                                <p class="text-[10px] text-amber-600 mt-0.5">{{ p.current_stock }} units left in warehouse</p>
+                            </div>
+                            {% endfor %}
+
+                            {% if not overdue_invoices and not low_stock_products %}
+                            <p class="text-slate-400 italic text-center py-4">No unread notifications! 🟢</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
 
                 <a href="/admin/" class="text-slate-500 hover:text-slate-800 text-sm">
                     <i class="fa-solid fa-gear"></i>
@@ -230,7 +257,7 @@
                 </div>
             </div>
 
-            <!-- Middle Row -->
+            <!-- Middle Row: Sales Wave Chart, Top Customers & 6 Quick Links -->
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
                 <div class="lg:col-span-6 bg-white border border-slate-200/90 rounded-2xl p-5 shadow-sm">
                     <div class="flex justify-between items-center mb-3">
@@ -299,7 +326,7 @@
         </div>
     </main>
 
-    <!-- Search / Command Palette Modal -->
+    <!-- Search Modal -->
     <div id="search-modal" class="fixed inset-0 bg-slate-900/60 z-50 flex items-start justify-center pt-24 hidden p-4">
         <div class="bg-white rounded-2xl p-4 w-full max-w-lg shadow-2xl border border-slate-200 space-y-3">
             <div class="relative">
@@ -316,23 +343,20 @@
         </div>
     </div>
 
-    <!-- JavaScript Interactive Handlers -->
+    <!-- JavaScript Handlers -->
     <script>
         function toggleSidebar() {
             const sb = document.getElementById('qoyod-sidebar');
             const logo = document.getElementById('logo-text');
             const labels = document.querySelectorAll('.nav-label');
             const plan = document.getElementById('plan-section');
-            
             if (sb.classList.contains('w-64')) {
-                sb.classList.remove('w-64');
-                sb.classList.add('w-20');
+                sb.classList.remove('w-64'); sb.classList.add('w-20');
                 logo.innerText = 'Q';
                 labels.forEach(l => l.classList.add('hidden'));
                 plan.classList.add('hidden');
             } else {
-                sb.classList.remove('w-20');
-                sb.classList.add('w-64');
+                sb.classList.remove('w-20'); sb.classList.add('w-64');
                 logo.innerText = 'QOYOD';
                 labels.forEach(l => l.classList.remove('hidden'));
                 plan.classList.remove('hidden');
@@ -340,10 +364,12 @@
         }
 
         function toggleMenu(menuId, iconId) {
-            const m = document.getElementById(menuId);
-            const icon = document.getElementById(iconId);
-            m.classList.toggle('hidden');
-            icon.classList.toggle('rotate-180');
+            document.getElementById(menuId).classList.toggle('hidden');
+            document.getElementById(iconId).classList.toggle('rotate-180');
+        }
+
+        function toggleNotifications() {
+            document.getElementById('notif-dropdown').classList.toggle('hidden');
         }
 
         function openSearchModal() { document.getElementById('search-modal').classList.remove('hidden'); }
@@ -353,7 +379,6 @@
             if (e.key === 'Escape') { closeSearchModal(); }
         });
 
-        // Chart.js initialization
         const ctx = document.getElementById('salesChart').getContext('2d');
         new Chart(ctx, {
             type: 'line',
@@ -364,14 +389,11 @@
                     borderColor: '#4338ca',
                     backgroundColor: 'rgba(67, 56, 202, 0.08)',
                     tension: 0.4,
-                    fill: true,
-                    pointRadius: 3,
-                    pointBackgroundColor: '#4338ca'
+                    fill: true, pointRadius: 3, pointBackgroundColor: '#4338ca'
                 }]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
+                responsive: true, maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
                 scales: { x: { grid: { display: false } }, y: { grid: { color: '#f1f5f9' } } }
             }

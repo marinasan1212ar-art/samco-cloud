@@ -2,66 +2,75 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>باقات الاشتراك والدفع - SAMCO SaaS Platform</title>
+    <title>باقات الاشتراك السحابية - Qoyod SaaS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen p-4 md:p-8 flex flex-col items-center">
+<body class="bg-[#f8fafc] text-slate-800 min-h-screen p-6 font-sans antialiased flex flex-col items-center">
 
-    <div class="w-full max-w-4xl space-y-8 text-center my-6">
-        <div class="space-y-2">
-            <span class="px-3 py-1 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-xs font-bold rounded-full">
-                باقات الاشتراك السحابية المتوافقة مع هيئة الزكاة
+    <div class="w-full max-w-5xl space-y-8 text-center my-6">
+        <div class="space-y-3">
+            <span class="px-3.5 py-1 bg-indigo-50 text-indigo-700 border border-indigo-200 text-xs font-black rounded-full uppercase tracking-wider">
+                باقات الاشتراك السحابية المتوافقة مع هيئة الزكاة والضريبة
             </span>
-            <h1 class="text-3xl font-black text-white">اختر الباقة المناسبة لمنشأتك</h1>
-            <p class="text-xs text-slate-400">ادفع بأمان عبر وسائل الدفع السعودية المعتمدة (مدى، أبل باي، فيزا)</p>
+            <h1 class="text-3xl md:text-4xl font-black text-slate-900">اختر الباقة المناسبة لمنشأتك</h1>
+            <p class="text-xs text-slate-500 max-w-lg mx-auto">ادفع بأمان عبر وسائل الدفع السعودية المعتمدة (مدى، أبل باي، فيزا) وفعل اشتراكك فورياً</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-right">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-right">
             {% for plan in plans %}
-            <div class="bg-slate-900 border-2 {% if forloop.first %}border-cyan-500/40{% else %}border-emerald-500/60 shadow-emerald-500/10{% endif %} rounded-3xl p-8 shadow-2xl flex flex-col justify-between space-y-6">
+            <div class="bg-white border-2 {% if forloop.counter == 2 %}border-indigo-600 shadow-xl shadow-indigo-100 relative{% else %}border-slate-200 shadow-sm{% endif %} rounded-3xl p-6 flex flex-col justify-between space-y-6">
+                {% if forloop.counter == 2 %}
+                <span class="absolute -top-3.5 left-1/2 transform -translate-x-1/2 bg-indigo-600 text-white font-black text-[10px] px-3 py-1 rounded-full uppercase tracking-wider">
+                    الأكثر طلباً (Most Popular)
+                </span>
+                {% endif %}
+
                 <div>
-                    <h3 class="text-xl font-black text-white">{{ plan.name }}</h3>
+                    <h3 class="text-lg font-black text-slate-900">{{ plan.name }}</h3>
                     <div class="my-4">
-                        <span class="text-4xl font-black text-white">{{ plan.price_monthly_sar }}</span>
-                        <span class="text-xs text-slate-400 font-bold">ريال / شهرياً</span>
+                        <span class="text-3xl font-black text-indigo-600">{{ plan.price_monthly_sar }}</span>
+                        <span class="text-xs text-slate-500 font-bold">ريال / شهرياً</span>
                     </div>
-                    <ul class="space-y-3 text-xs text-slate-300 font-semibold border-t border-slate-800 pt-4">
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> فوترة إلكترونية معتمدة (المرحلة الثانية)</li>
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> إدارة المخزون والمشتريات والموردين</li>
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> تقارير القوائم المالية والإقرار الضريبي</li>
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> ربط الفروع والتحويل المخزني</li>
+                    
+                    <ul class="space-y-2.5 text-xs text-slate-600 font-semibold border-t border-slate-100 pt-4">
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-emerald-500 text-sm"></i> فوترة إلكترونية معتمدة (المرحلة الثانية)</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-emerald-500 text-sm"></i> إدارة المخزون والمشتريات والموردين</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-emerald-500 text-sm"></i> تقارير القوائم المالية والإقرار الضريبي</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-emerald-500 text-sm"></i> حتى {{ plan.max_users }} مستخدمين للنظام</li>
                     </ul>
                 </div>
 
-                <form method="POST" action="/pricing/" class="space-y-3 border-t border-slate-800 pt-4">
+                <form method="POST" action="/pricing/" class="space-y-3 border-t border-slate-100 pt-4">
                     {% csrf_token %}
                     <input type="hidden" name="plan_id" value="{{ plan.id }}">
                     
-                    <label class="block text-xs font-bold text-slate-400">اختر وسيلة الدفع السريعة:</label>
+                    <label class="block text-[11px] font-bold text-slate-700">اختر وسيلة الدفع:</label>
                     <div class="grid grid-cols-3 gap-2">
-                        <label class="p-2 border border-slate-700 rounded-xl flex items-center justify-center gap-1.5 cursor-pointer hover:bg-slate-800 text-[11px] font-bold">
+                        <label class="p-2 border border-slate-200 rounded-xl flex items-center justify-center gap-1 cursor-pointer hover:bg-slate-50 text-[11px] font-bold">
                             <input type="radio" name="payment_method" value="Mada" checked>
                             <span>مدى</span>
                         </label>
-                        <label class="p-2 border border-slate-700 rounded-xl flex items-center justify-center gap-1.5 cursor-pointer hover:bg-slate-800 text-[11px] font-bold">
+                        <label class="p-2 border border-slate-200 rounded-xl flex items-center justify-center gap-1 cursor-pointer hover:bg-slate-50 text-[11px] font-bold">
                             <input type="radio" name="payment_method" value="Apple Pay">
-                            <i class="fa-brands fa-apple text-base"></i>
+                            <i class="fa-brands fa-apple text-sm"></i>
                         </label>
-                        <label class="p-2 border border-slate-700 rounded-xl flex items-center justify-center gap-1.5 cursor-pointer hover:bg-slate-800 text-[11px] font-bold">
+                        <label class="p-2 border border-slate-200 rounded-xl flex items-center justify-center gap-1 cursor-pointer hover:bg-slate-50 text-[11px] font-bold">
                             <input type="radio" name="payment_method" value="Visa/Mastercard">
-                            <i class="fa-brands fa-cc-visa text-base"></i>
+                            <i class="fa-brands fa-cc-visa text-sm"></i>
                         </label>
                     </div>
 
-                    <button type="submit" class="w-full bg-gradient-to-r from-emerald-400 to-cyan-500 text-slate-950 font-black py-3 rounded-xl text-xs shadow-xl hover:opacity-90 transition mt-2">
-                        💳 تفعيل الاشتراك الآن والدخول للنظام
+                    <button type="submit" class="w-full {% if forloop.counter == 2 %}bg-indigo-600 hover:bg-indigo-700 text-white{% else %}bg-slate-900 hover:bg-slate-800 text-white{% endif %} font-black py-3 rounded-xl text-xs shadow-md transition mt-2">
+                        ✓ تفعيل الاشتراك والدخول
                     </button>
                 </form>
             </div>
             {% endfor %}
         </div>
+
+        <a href="/" class="inline-block text-xs font-bold text-slate-500 hover:text-indigo-600">← العودة للرئيسية (Back to Dashboard)</a>
     </div>
+
 </body>
 </html>

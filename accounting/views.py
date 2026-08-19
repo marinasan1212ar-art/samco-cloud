@@ -10,7 +10,6 @@ from decimal import Decimal
 from datetime import datetime, timedelta
 import csv, io
 
-# 🌟 ALL MODELS IMPORT (Fixed)
 from .models import *
 from .serializers import *
 from .zatca import generate_qr_image_base64
@@ -111,6 +110,29 @@ def create_invoice_view(request):
         'products': products, 'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir,
         'today': datetime.now().strftime("%Y-%m-%d")
     })
+
+# 🌟 PRICING & AUTO-SEED PLANS (Fixed)
+def pricing_checkout_view(request):
+    lang = request.session.get('lang', 'en'); is_ar = (lang == 'ar'); lang_dir = 'rtl' if is_ar else 'ltr'
+    company = get_user_company(request)
+    
+    plans = SubscriptionPlan.objects.filter(is_active=True)
+    if not plans.exists():
+        SubscriptionPlan.objects.get_or_create(slug='basic', defaults={'name': 'Basic Plan (باقة البداية)', 'price_monthly_sar': Decimal('99.00'), 'price_yearly_sar': Decimal('999.00'), 'max_users': 2})
+        SubscriptionPlan.objects.get_or_create(slug='pro', defaults={'name': 'Qoyod Pro (باقة الأعمال المتقدمة)', 'price_monthly_sar': Decimal('199.00'), 'price_yearly_sar': Decimal('1990.00'), 'max_users': 5})
+        SubscriptionPlan.objects.get_or_create(slug='enterprise', defaults={'name': 'Enterprise Plan (باقة المؤسسات الكبرى)', 'price_monthly_sar': Decimal('399.00'), 'price_yearly_sar': Decimal('3990.00'), 'max_users': 20})
+        plans = SubscriptionPlan.objects.filter(is_active=True)
+
+    if request.method == 'POST':
+        plan = get_object_or_404(SubscriptionPlan, id=request.POST.get('plan_id'))
+        PaymentTransaction.objects.create(company=company, amount_sar=plan.price_monthly_sar, payment_method=request.POST.get('payment_method', 'Mada'), status='PAID')
+        sub, _ = CompanySubscription.objects.get_or_create(company=company)
+        sub.plan = plan
+        sub.status = 'ACTIVE'
+        sub.save()
+        return redirect('/')
+
+    return render(request, 'accounting/pricing.html', {'plans': plans, 'company': company, 'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir})
 
 def invoice_detail_view(request, pk):
     invoice = get_object_or_404(Invoice, pk=pk)
@@ -301,14 +323,6 @@ def company_signup_view(request):
         login(request, user); return redirect('/')
     return render(request, 'accounting/signup.html')
 
-def pricing_checkout_view(request):
-    if request.method == 'POST':
-        plan = get_object_or_404(SubscriptionPlan, id=request.POST.get('plan_id'))
-        PaymentTransaction.objects.create(company=get_user_company(request), amount_sar=plan.price_monthly_sar, payment_method=request.POST.get('payment_method', 'Mada'), status='PAID')
-        sub, _ = CompanySubscription.objects.get_or_create(company=get_user_company(request)); sub.plan = plan; sub.status = 'ACTIVE'; sub.save()
-        return redirect('/')
-    return render(request, 'accounting/pricing.html', {'plans': SubscriptionPlan.objects.filter(is_active=True), 'company': get_user_company(request)})
-
 def statement_of_account_view(request, party_type, pk):
     lang = request.session.get('lang', 'en'); is_ar = (lang == 'ar'); lang_dir = 'rtl' if is_ar else 'ltr'
     company = get_user_company(request)
@@ -394,7 +408,6 @@ def transfer_slip_print_view(request, pk):
     t = get_object_or_404(StockTransfer, pk=pk)
     return render(request, 'accounting/transfer_print.html', {'transfer': t, 'company': get_user_company(request), 'qr_image': generate_qr_image_base64(f"TR: {t.transfer_no}")})
 
-# 🌟 DRF API VIEWSETS
 class WarehouseViewSet(viewsets.ModelViewSet): queryset = Warehouse.objects.all(); serializer_class = WarehouseSerializer
 class WarehouseStockViewSet(viewsets.ModelViewSet): queryset = WarehouseStock.objects.all(); serializer_class = WarehouseStockSerializer
 class StockTransferViewSet(viewsets.ModelViewSet): queryset = StockTransfer.objects.all(); serializer_class = StockTransferSerializer
