@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Debit Note #{{ debit_note.debit_note_no }} - {{ company.company_name_en }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white; color: black; }
+            .print-border { border: 1px solid #cbd5e1 !important; }
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 p-4 md:p-10 font-sans">
+
+    <div class="max-w-4xl mx-auto mb-6 flex justify-between items-center no-print">
+        <a href="/" class="text-sm font-semibold text-slate-400 hover:text-white flex items-center gap-2">
+            <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+        </a>
+        <button onclick="window.print()" class="bg-indigo-500 hover:bg-indigo-400 text-slate-950 px-5 py-2.5 rounded-xl font-bold text-xs shadow-lg flex items-center gap-2">
+            <i class="fa-solid fa-print"></i> Print Debit Note (طباعة الإشعار المدين)
+        </button>
+    </div>
+
+    <div class="max-w-4xl mx-auto bg-white text-slate-900 rounded-2xl shadow-2xl p-8 md:p-12 print-border">
+        <div class="flex justify-between items-start border-b-2 border-indigo-600 pb-6">
+            <div>
+                <h1 class="text-xl md:text-2xl font-black text-slate-900">{{ company.company_name_en }}</h1>
+                <p class="text-base font-bold text-slate-700 mt-1" dir="rtl">{{ company.company_name_ar }}</p>
+                <p class="text-xs text-slate-500 mt-2">VAT: <span class="font-bold text-slate-800">{{ company.vat_number }}</span></p>
+            </div>
+            
+            <div class="text-right">
+                <span class="inline-block px-3 py-1 bg-indigo-600 text-white font-extrabold text-xs tracking-wider uppercase rounded-md mb-2">
+                    Debit Note / إشعار مدين للمورد
+                </span>
+                <p class="text-lg font-black text-indigo-600">#{{ debit_note.debit_note_no }}</p>
+                <p class="text-xs text-slate-500 font-semibold mt-1">Ref Bill: #{{ debit_note.purchase_bill.bill_no }}</p>
+                <p class="text-xs text-slate-500">Date: {{ debit_note.date|date:"d-m-Y" }}</p>
+            </div>
+        </div>
+
+        <div class="my-6 p-4 bg-indigo-50 rounded-xl border border-indigo-200 text-xs flex justify-between items-center">
+            <div>
+                <p class="font-bold text-indigo-800 uppercase">Reason for Purchase Return / سبب الإرجاع:</p>
+                <p class="text-sm font-bold text-slate-900 mt-0.5">{{ debit_note.reason }}</p>
+            </div>
+            <div class="text-right">
+                <p class="font-bold text-indigo-800 uppercase">Supplier / المورد:</p>
+                <p class="text-sm font-bold text-slate-900">{{ debit_note.purchase_bill.supplier.name }}</p>
+            </div>
+        </div>
+
+        <table class="w-full text-left text-xs mb-6 border-collapse">
+            <thead>
+                <tr class="bg-slate-900 text-white uppercase text-[11px] font-bold">
+                    <th class="p-3">#</th>
+                    <th class="p-3">Returned Product / الصنف المرتجع</th>
+                    <th class="p-3 text-center">Returned Qty</th>
+                    <th class="p-3 text-right">Unit Cost</th>
+                    <th class="p-3 text-right">Total Debit Adjustment</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200">
+                {% for item in debit_note.items.all %}
+                <tr class="text-slate-800">
+                    <td class="p-3 font-semibold text-slate-400">{{ forloop.counter }}</td>
+                    <td class="p-3 font-bold text-slate-900">{{ item.product.name }}</td>
+                    <td class="p-3 text-center font-bold text-indigo-600">-{{ item.qty }}</td>
+                    <td class="p-3 text-right">{{ item.unit_cost|floatformat:2 }} SAR</td>
+                    <td class="p-3 text-right font-black text-indigo-600">-{{ item.total|floatformat:2 }} SAR</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="flex justify-end pt-4 border-t-2 border-slate-800">
+            <div class="w-64 space-y-2 text-xs">
+                <div class="flex justify-between text-slate-600">
+                    <span>Taxable Base:</span>
+                    <span class="font-bold text-indigo-600">-{{ debit_note.subtotal|floatformat:2 }} SAR</span>
+                </div>
+                <div class="flex justify-between text-slate-600">
+                    <span>15% Input VAT Reversal:</span>
+                    <span class="font-bold text-indigo-600">-{{ debit_note.vat_amount|floatformat:2 }} SAR</span>
+                </div>
+                <div class="flex justify-between text-base font-black text-slate-900 pt-2 border-t border-slate-300">
+                    <span>Total Supplier Debit:</span>
+                    <span class="text-indigo-600">-{{ debit_note.total_amount|floatformat:2 }} SAR</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -18,7 +18,8 @@ from .models import (
     PayrollItem, CostCenter, FixedAsset, StockAdjustment, CompanySettings,
     SubscriptionPlan, CompanySubscription, PaymentTransaction,
     CreditNote, CreditNoteItem, DeliveryNote, DeliveryNoteItem, ProductBatch,
-    FundTransfer, BankStatement, BankStatementLine
+    FundTransfer, BankStatement, BankStatementLine,
+    GoodsReceiptNote, GoodsReceiptItem, DebitNote, DebitNoteItem, DirectExpense
 )
 from .serializers import (
     AccountSerializer, CustomerSerializer, SupplierSerializer, ProductSerializer,
@@ -34,16 +35,14 @@ def get_user_company(request):
     comp, _ = Company.objects.get_or_create(id=1, defaults={"name": "SECOND ADVANCE MEDICAL COMPANY (SAMCO)", "vat_number": "310122456700003"})
     return comp
 
-# --- 🌟 QUYOD ADVANCED DASHBOARD ---
 def dashboard_view(request):
     lang = request.session.get('lang', 'en'); is_ar = (lang == 'ar'); lang_dir = 'rtl' if is_ar else 'ltr'
     company = get_user_company(request)
 
     total_sales = sum(inv.total_amount for inv in Invoice.objects.filter(company=company))
-    total_purchases = sum(bill.total_amount for bill in PurchaseBill.objects.filter(company=company))
+    total_purchases = sum(bill.total_amount for bill in PurchaseBill.objects.filter(company=company)) + sum(exp.total_amount for exp in DirectExpense.objects.filter(company=company))
     total_bank_balance = sum(b.balance for b in BankAccount.objects.filter(company=company))
 
-    # Overdue/Unpaid invoices and Low stock alerts
     overdue_invoices = Invoice.objects.filter(company=company, payment_status__in=['UNPAID', 'PARTIALLY_PAID']).order_by('-date')[:5]
     low_stock_products = Product.objects.filter(company=company, current_stock__lte=10).order_by('current_stock')[:5]
 
@@ -73,7 +72,59 @@ def dashboard_view(request):
         'overdue_invoices': overdue_invoices, 'low_stock_products': low_stock_products
     })
 
-# --- 🏦 BANK RECONCILIATION & STATEMENT MATCHING ---
+# 📄 ডেবিট নোট ও গুডস রিসিট ভিউ
+def debit_note_detail_view(request, pk):
+    debit_note = get_object_or_404(DebitNote, pk=pk)
+    comp = debit_note.company or get_user_company(request)
+    return render(request, 'accounting/debit_note_detail.html', {'debit_note': debit_note, 'company': comp})
+
+def create_debit_note_view(request, bill_id):
+    bill = get_object_or_404(PurchaseBill, pk=bill_id)
+    comp = bill.company or get_user_company(request)
+    if request.method == 'POST':
+        reason = request.POST.get('reason', 'Damaged goods return to supplier')
+        dbn = DebitNote.objects.create(company=comp, debit_note_no=f"DBN-{bill.bill_no}", purchase_bill=bill, reason=reason)
+        for item in bill.items.all():
+            qty_ret = int(request.POST.get(f'return_qty_{item.id}', 0))
+            if qty_ret > 0:
+                DebitNoteItem.objects.create(debit_note=dbn, product=item.product, qty=qty_ret, unit_cost=item.unit_cost)
+        dbn.update_totals_and_post_accounting()
+        return redirect('debit-note-detail', pk=dbn.pk)
+    return render(request, 'accounting/debit_note_create.html', {'bill': bill, 'company': comp})
+
+# 💸 ডিরেক্ট এক্সপেন্স ভিউ
+def direct_expense_view(request):
+    lang = request.session.get('lang', 'en'); is_ar = (lang == 'ar'); lang_dir = 'rtl' if is_ar else 'ltr'
+    company = get_user_company(request)
+    expenses = DirectExpense.objects.filter(company=company).order_by('-id')
+    expense_accounts = Account.objects.filter(company=company, account_type='Expense')
+    banks = BankAccount.objects.filter(company=company)
+    cost_centers = CostCenter.objects.filter(company=company)
+
+    if request.method == 'POST':
+        acc_id = request.POST.get('account_id')
+        bank_id = request.POST.get('bank_id')
+        cc_id = request.POST.get('cost_center_id')
+        desc = request.POST.get('description', 'Office Expense')
+        subtotal = Decimal(request.POST.get('subtotal', '0.00'))
+        has_vat = request.POST.get('has_vat') == '1'
+        vat = subtotal * Decimal('0.15') if has_vat else Decimal('0.00')
+        total = subtotal + vat
+        pay_method = request.POST.get('payment_method', 'Bank Transfer')
+
+        exp = DirectExpense.objects.create(
+            company=company, expense_no=f"EXP-{int(datetime.now().timestamp())}",
+            expense_account_id=acc_id, bank_account_id=bank_id, cost_center_id=cc_id if cc_id else None,
+            description=desc, subtotal=subtotal, vat_amount=vat, total_amount=total, payment_method=pay_method
+        )
+        exp.post_accounting()
+        return redirect('/expenses/')
+
+    return render(request, 'accounting/direct_expense.html', {
+        'company': company, 'expenses': expenses, 'expense_accounts': expense_accounts,
+        'banks': banks, 'cost_centers': cost_centers, 'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir
+    })
+
 def bank_reconciliation_view(request):
     lang = request.session.get('lang', 'en'); is_ar = (lang == 'ar'); lang_dir = 'rtl' if is_ar else 'ltr'
     company = get_user_company(request)
@@ -81,15 +132,12 @@ def bank_reconciliation_view(request):
     selected_bank_id = request.GET.get('bank_id', banks.first().id if banks.exists() else None)
     selected_bank = BankAccount.objects.filter(id=selected_bank_id).first() if selected_bank_id else None
 
-    # Handle Bank Statement CSV Upload
     if request.method == 'POST' and request.FILES.get('statement_file'):
         file = request.FILES['statement_file']
         bs = BankStatement.objects.create(company=company, bank_account=selected_bank, filename=file.name)
-        
         decoded_file = file.read().decode('utf-8')
         io_string = io.StringIO(decoded_file)
         reader = csv.reader(io_string)
-        
         for row in reader:
             if len(row) >= 3:
                 try:
@@ -104,7 +152,6 @@ def bank_reconciliation_view(request):
                     continue
         return redirect(f'/banking/reconciliation/?bank_id={selected_bank.id}')
 
-    # Handle Line Item Reconciliation Action
     if request.method == 'POST' and 'reconcile_line_id' in request.POST:
         line_id = request.POST.get('reconcile_line_id')
         line = get_object_or_404(BankStatementLine, id=line_id)
@@ -122,7 +169,6 @@ def bank_reconciliation_view(request):
         'payments': recent_payments, 'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir
     })
 
-# --- 💸 FUND TRANSFER VIEW ---
 def fund_transfer_view(request):
     lang = request.session.get('lang', 'en'); is_ar = (lang == 'ar'); lang_dir = 'rtl' if is_ar else 'ltr'
     company = get_user_company(request)
@@ -156,7 +202,6 @@ def invoice_detail_view(request, pk):
     if not invoice.zatca_qr_b64:
         invoice.update_totals_and_post_accounting()
         invoice.refresh_from_db()
-    
     qr_img = generate_qr_image_base64(invoice.zatca_qr_b64) if invoice.zatca_qr_b64 else ""
     bank_accounts = BankAccount.objects.filter(company=comp)
     
@@ -178,8 +223,7 @@ def invoice_detail_view(request, pk):
             return redirect('invoice-detail', pk=invoice.pk)
 
     return render(request, 'accounting/invoice_detail.html', {
-        'invoice': invoice, 'company': comp, 'qr_image': qr_img,
-        'bank_accounts': bank_accounts
+        'invoice': invoice, 'company': comp, 'qr_image': qr_img, 'bank_accounts': bank_accounts
     })
 
 def delivery_note_detail_view(request, pk):
@@ -187,39 +231,25 @@ def delivery_note_detail_view(request, pk):
     comp = delivery_note.company or get_user_company(request)
     qr_payload = f"DELIVERY SLIP\nNo: {delivery_note.delivery_no}\nCustomer: {delivery_note.invoice.customer.name}\nDate: {delivery_note.date}\nDriver: {delivery_note.driver_name}"
     qr_img = generate_qr_image_base64(qr_payload)
-    return render(request, 'accounting/delivery_note_detail.html', {
-        'dn': delivery_note, 'company': comp, 'qr_image': qr_img
-    })
+    return render(request, 'accounting/delivery_note_detail.html', {'dn': delivery_note, 'company': comp, 'qr_image': qr_img})
 
 def create_delivery_note_view(request, invoice_id):
     invoice = get_object_or_404(Invoice, pk=invoice_id)
     comp = invoice.company or get_user_company(request)
-    warehouses = Warehouse.objects.filter(company=company)
-    
+    warehouses = Warehouse.objects.filter(company=comp)
     if request.method == 'POST':
         driver = request.POST.get('driver_name', '')
         vehicle = request.POST.get('vehicle_no', '')
         wh_id = request.POST.get('warehouse_id')
         warehouse = get_object_or_404(Warehouse, id=wh_id) if wh_id else invoice.warehouse or warehouses.first()
-        dn_no = f"DN-{invoice.invoice_no}"
-        
-        dn = DeliveryNote.objects.create(
-            company=comp, delivery_no=dn_no, invoice=invoice,
-            warehouse=warehouse, driver_name=driver, vehicle_no=vehicle,
-            status="DELIVERED"
-        )
+        dn = DeliveryNote.objects.create(company=comp, delivery_no=f"DN-{invoice.invoice_no}", invoice=invoice, warehouse=warehouse, driver_name=driver, vehicle_no=vehicle, status="DELIVERED")
         for item in invoice.items.all():
             qty_del = int(request.POST.get(f'qty_{item.id}', item.qty))
             b_no = request.POST.get(f'batch_{item.id}', item.batch_no or 'BATCH-01')
             exp = request.POST.get(f'exp_{item.id}', item.expiry_date or '2028-12-31')
-            DeliveryNoteItem.objects.create(
-                delivery_note=dn, product=item.product, batch_no=b_no, expiry_date=exp, qty_delivered=qty_del
-            )
+            DeliveryNoteItem.objects.create(delivery_note=dn, product=item.product, batch_no=b_no, expiry_date=exp, qty_delivered=qty_del)
         return redirect('delivery-note-detail', pk=dn.pk)
-
-    return render(request, 'accounting/delivery_note_create.html', {
-        'invoice': invoice, 'company': comp, 'warehouses': warehouses
-    })
+    return render(request, 'accounting/delivery_note_create.html', {'invoice': invoice, 'company': comp, 'warehouses': warehouses})
 
 def credit_note_detail_view(request, pk):
     credit_note = get_object_or_404(CreditNote, pk=pk)
@@ -228,32 +258,21 @@ def credit_note_detail_view(request, pk):
         credit_note.update_totals_and_post_accounting()
         credit_note.refresh_from_db()
     qr_img = generate_qr_image_base64(credit_note.zatca_qr_b64) if credit_note.zatca_qr_b64 else ""
-    return render(request, 'accounting/credit_note_detail.html', {
-        'credit_note': credit_note, 'company': comp, 'qr_image': qr_img
-    })
+    return render(request, 'accounting/credit_note_detail.html', {'credit_note': credit_note, 'company': comp, 'qr_image': qr_img})
 
 def create_credit_note_view(request, invoice_id):
     invoice = get_object_or_404(Invoice, pk=invoice_id)
     comp = invoice.company or get_user_company(request)
-    
     if request.method == 'POST':
         reason = request.POST.get('reason', 'Customer Return (مرتجع بضاعة)')
-        cn_no = f"CN-{invoice.invoice_no}"
-        cn = CreditNote.objects.create(
-            company=comp, credit_note_no=cn_no, invoice=invoice, reason=reason
-        )
+        cn = CreditNote.objects.create(company=comp, credit_note_no=f"CN-{invoice.invoice_no}", invoice=invoice, reason=reason)
         for item in invoice.items.all():
             qty_return = int(request.POST.get(f'return_qty_{item.id}', 0))
             if qty_return > 0:
-                CreditNoteItem.objects.create(
-                    credit_note=cn, product=item.product, qty=qty_return, unit_price=item.unit_price
-                )
+                CreditNoteItem.objects.create(credit_note=cn, product=item.product, qty=qty_return, unit_price=item.unit_price)
         cn.update_totals_and_post_accounting()
         return redirect('credit-note-detail', pk=cn.pk)
-
-    return render(request, 'accounting/credit_note_create.html', {
-        'invoice': invoice, 'company': comp
-    })
+    return render(request, 'accounting/credit_note_create.html', {'invoice': invoice, 'company': comp})
 
 def company_signup_view(request):
     error = None
@@ -264,9 +283,8 @@ def company_signup_view(request):
         username = request.POST.get('username')
         email = request.POST.get('email', '')
         password = request.POST.get('password')
-
         if User.objects.filter(username=username).exists():
-            error = "اسم المستخدم موجود بالفعل / Username already exists."
+            error = "Username already exists."
         else:
             user = User.objects.create_user(username=username, email=email, password=password)
             company = Company.objects.create(name=comp_name, vat_number=vat_number, phone=phone)
@@ -274,15 +292,10 @@ def company_signup_view(request):
             profile.company = company
             profile.role = 'ADMIN'
             profile.save()
-
-            default_plan, _ = SubscriptionPlan.objects.get_or_create(
-                slug='standard-plan',
-                defaults={'name': 'Standard Enterprise Plan', 'price_monthly_sar': Decimal('199.00')}
-            )
+            default_plan, _ = SubscriptionPlan.objects.get_or_create(slug='standard-plan', defaults={'name': 'Standard Enterprise Plan', 'price_monthly_sar': Decimal('199.00')})
             CompanySubscription.objects.create(company=company, plan=default_plan, status='ACTIVE')
             login(request, user)
             return redirect('/')
-
     return render(request, 'accounting/signup.html', {'error': error})
 
 def pricing_checkout_view(request):
@@ -303,56 +316,31 @@ def pricing_checkout_view(request):
 def statement_of_account_view(request, party_type, pk):
     lang = request.session.get('lang', 'en'); is_ar = (lang == 'ar'); lang_dir = 'rtl' if is_ar else 'ltr'
     company = get_user_company(request)
-    ledger_lines = []
-    running_balance = Decimal('0.00')
-
+    ledger_lines = []; running_balance = Decimal('0.00')
     if party_type == 'customer':
         party = get_object_or_404(Customer, pk=pk)
         title_en, title_ar = "Customer Statement of Account", "كشف حساب عميل تفصيلي"
         invoices = Invoice.objects.filter(customer=party).order_by('date')
         receipts = ReceiptVoucher.objects.filter(customer=party).order_by('date')
-
         for inv in invoices:
             running_balance += inv.total_amount
-            ledger_lines.append({
-                'date': inv.date.strftime("%Y-%m-%d"), 'ref': f"Invoice #{inv.invoice_no}",
-                'desc': f"Tax Sales Invoice ({inv.get_payment_status_display()})",
-                'debit': inv.total_amount, 'credit': Decimal('0.00'), 'balance': running_balance
-            })
+            ledger_lines.append({'date': inv.date.strftime("%Y-%m-%d"), 'ref': f"Invoice #{inv.invoice_no}", 'desc': f"Tax Sales Invoice ({inv.get_payment_status_display()})", 'debit': inv.total_amount, 'credit': Decimal('0.00'), 'balance': running_balance})
         for rc in receipts:
             running_balance -= rc.amount
-            ledger_lines.append({
-                'date': str(rc.date), 'ref': f"Receipt #{rc.voucher_no}",
-                'desc': f"Payment received via {rc.payment_method}",
-                'debit': Decimal('0.00'), 'credit': rc.amount, 'balance': running_balance
-            })
+            ledger_lines.append({'date': str(rc.date), 'ref': f"Receipt #{rc.voucher_no}", 'desc': f"Payment received via {rc.payment_method}", 'debit': Decimal('0.00'), 'credit': rc.amount, 'balance': running_balance})
     else:
         party = get_object_or_404(Supplier, pk=pk)
         title_en, title_ar = "Supplier Statement of Account", "كشف حساب مورد تفصيلي"
         bills = PurchaseBill.objects.filter(supplier=party).order_by('date')
         payments = PaymentVoucher.objects.filter(supplier=party).order_by('date')
-
         for b in bills:
             running_balance += b.total_amount
-            ledger_lines.append({
-                'date': str(b.date), 'ref': f"Bill #{b.bill_no}",
-                'desc': "Vendor Purchase Bill",
-                'debit': Decimal('0.00'), 'credit': b.total_amount, 'balance': running_balance
-            })
+            ledger_lines.append({'date': str(b.date), 'ref': f"Bill #{b.bill_no}", 'desc': "Vendor Purchase Bill", 'debit': Decimal('0.00'), 'credit': b.total_amount, 'balance': running_balance})
         for pv in payments:
             running_balance -= pv.amount
-            ledger_lines.append({
-                'date': str(pv.date), 'ref': f"Payment #{pv.voucher_no}",
-                'desc': f"Settlement paid via {pv.payment_method}",
-                'debit': pv.amount, 'credit': Decimal('0.00'), 'balance': running_balance
-            })
-
+            ledger_lines.append({'date': str(pv.date), 'ref': f"Payment #{pv.voucher_no}", 'desc': f"Settlement paid via {pv.payment_method}", 'debit': pv.amount, 'credit': Decimal('0.00'), 'balance': running_balance})
     ledger_lines.sort(key=lambda x: x['date'])
-    return render(request, 'accounting/statement.html', {
-        'company': company, 'party': party, 'party_type': party_type,
-        'title_en': title_en, 'title_ar': title_ar, 'ledger_lines': ledger_lines,
-        'final_balance': running_balance, 'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir
-    })
+    return render(request, 'accounting/statement.html', {'company': company, 'party': party, 'party_type': party_type, 'title_en': title_en, 'title_ar': title_ar, 'ledger_lines': ledger_lines, 'final_balance': running_balance, 'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir})
 
 def wps_sif_export_view(request, payroll_id):
     payroll = get_object_or_404(MonthlyPayroll, pk=payroll_id)
@@ -432,7 +420,7 @@ def reports_view(request):
     total_bank_cash = sum(b.balance for b in BankAccount.objects.filter(company=company))
     accounts_receivable = sum(inv.total_amount for inv in Invoice.objects.filter(company=company)) - sum(rv.amount for rv in ReceiptVoucher.objects.filter(company=company))
     inventory_valuation = sum(p.current_stock * Decimal('15.00') for p in Product.objects.filter(company=company))
-    vat_input_tax = sum(bill.vat_amount for bill in PurchaseBill.objects.filter(company=company))
+    vat_input_tax = sum(bill.vat_amount for bill in PurchaseBill.objects.filter(company=company)) + sum(exp.vat_amount for exp in DirectExpense.objects.filter(company=company))
     total_assets = total_bank_cash + max(Decimal('0.00'), accounts_receivable) + inventory_valuation + vat_input_tax
 
     accounts_payable = sum(bill.total_amount for bill in PurchaseBill.objects.filter(company=company)) - sum(pv.amount for pv in PaymentVoucher.objects.filter(company=company))
@@ -442,8 +430,8 @@ def reports_view(request):
 
     vat_sales_subtotal = sum(inv.subtotal for inv in Invoice.objects.filter(company=company))
     vat_sales_tax = sum(inv.vat_amount for inv in Invoice.objects.filter(company=company))
-    vat_purchase_subtotal = sum(bill.subtotal for bill in PurchaseBill.objects.filter(company=company))
-    vat_purchase_tax = sum(bill.vat_amount for bill in PurchaseBill.objects.filter(company=company))
+    vat_purchase_subtotal = sum(bill.subtotal for bill in PurchaseBill.objects.filter(company=company)) + sum(exp.subtotal for exp in DirectExpense.objects.filter(company=company))
+    vat_purchase_tax = sum(bill.vat_amount for bill in PurchaseBill.objects.filter(company=company)) + sum(exp.vat_amount for exp in DirectExpense.objects.filter(company=company))
     net_vat_due = vat_sales_tax - vat_purchase_tax
 
     recent_ledger_entries = JournalEntryLine.objects.filter(account__company=company).select_related('journal_entry', 'account').order_by('-id')[:30]

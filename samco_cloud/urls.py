@@ -6,7 +6,7 @@ from accounting.views import (
     custom_reports_view, manufacturing_view, scanner_view,
     company_signup_view, pricing_checkout_view, statement_of_account_view, wps_sif_export_view,
     credit_note_detail_view, create_credit_note_view, delivery_note_detail_view, create_delivery_note_view,
-    bank_reconciliation_view, fund_transfer_view
+    bank_reconciliation_view, fund_transfer_view, debit_note_detail_view, create_debit_note_view, direct_expense_view
 )
 from accounting.pos_views import pos_dashboard, pos_checkout, pos_receipt_print
 
@@ -15,6 +15,7 @@ urlpatterns = [
     path('pos/', pos_dashboard, name='pos-dashboard'),
     path('pos/checkout/', pos_checkout, name='pos-checkout'),
     path('pos/receipt/<int:pk>/', pos_receipt_print, name='pos-receipt'),
+    path('expenses/', direct_expense_view, name='direct-expenses'),
     path('banking/reconciliation/', bank_reconciliation_view, name='bank-reconciliation'),
     path('banking/transfer/', fund_transfer_view, name='fund-transfer'),
     path('signup/', company_signup_view, name='saas-signup'),
@@ -29,6 +30,8 @@ urlpatterns = [
     path('invoice/<int:pk>/', invoice_detail_view, name='invoice-detail'),
     path('credit-note/<int:pk>/', credit_note_detail_view, name='credit-note-detail'),
     path('invoice/<int:invoice_id>/return/', create_credit_note_view, name='create-credit-note'),
+    path('debit-note/<int:pk>/', debit_note_detail_view, name='debit-note-detail'),
+    path('bill/<int:bill_id>/return/', create_debit_note_view, name='create-debit-note'),
     path('delivery/<int:pk>/', delivery_note_detail_view, name='delivery-note-detail'),
     path('invoice/<int:invoice_id>/delivery/', create_delivery_note_view, name='create-delivery-note'),
     path('voucher/<str:v_type>/<int:pk>/', voucher_print_view, name='voucher-print'),

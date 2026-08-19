@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="{% if is_ar %}ar{% else %}en{% endif %}" dir="{{ lang_dir }}">
+<head>
+    <meta charset="UTF-8">
+    <title>Direct Expenses & Claims - {{ company.company_name_en }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen p-4 md:p-8 font-sans antialiased">
+
+    <div class="max-w-6xl mx-auto mb-6 flex justify-between items-center">
+        <a href="/" class="text-xs md:text-sm font-semibold text-slate-400 hover:text-white flex items-center gap-2">
+            <i class="fa-solid fa-arrow-left"></i> {% if is_ar %}العودة للرئيسية{% else %}Back to Dashboard{% endif %}
+        </a>
+    </div>
+
+    <div class="max-w-6xl mx-auto space-y-6">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl">
+            <h1 class="text-lg font-black text-white mb-1">💸 {% if is_ar %}سندات صرف المصروفات العامة{% else %}Direct Operational Expense Claims (Quyod Engine){% endif %}</h1>
+            <p class="text-xs text-slate-400 mb-6">Record corporate rent, utilities, fuel, and supplies with automatic 15% VAT claimable deduction.</p>
+
+            <form method="POST" class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+                {% csrf_token %}
+                <div>
+                    <label class="block text-slate-400 mb-1">Expense Account (حساب المصروف) *</label>
+                    <select name="account_id" required class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-white font-bold">
+                        {% for acc in expense_accounts %}
+                        <option value="{{ acc.id }}">{{ acc.code }} - {{ acc.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1">Paid From (من حساب بنك/خزينة) *</label>
+                    <select name="bank_id" required class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-white font-bold">
+                        {% for b in banks %}
+                        <option value="{{ b.id }}">{{ b.name }} ({{ b.balance|floatformat:2 }} SAR)</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1">Cost Center (مركز التكلفة)</label>
+                    <select name="cost_center_id" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-white">
+                        <option value="">General (عام)</option>
+                        {% for cc in cost_centers %}
+                        <option value="{{ cc.id }}">{{ cc.name_en }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="sm:col-span-2">
+                    <label class="block text-slate-400 mb-1">Expense Description / البيان *</label>
+                    <input type="text" name="description" placeholder="e.g. Factory Electricity Bill - SEP 2026" required class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-white font-bold">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1">Base Amount (SAR) *</label>
+                    <input type="number" step="0.01" name="subtotal" placeholder="0.00" required class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-white font-bold">
+                </div>
+
+                <div class="sm:col-span-3 flex items-center justify-between border-t border-slate-800 pt-4">
+                    <label class="flex items-center gap-2 cursor-pointer text-amber-400 font-bold">
+                        <input type="checkbox" name="has_vat" value="1" checked class="w-4 h-4 rounded">
+                        <span>Includes 15% ZATCA Claimable VAT (خاضع لضريبة القيمة المضافة 15%)</span>
+                    </label>
+                    <button type="submit" class="bg-gradient-to-r from-emerald-400 to-cyan-500 text-slate-950 font-black px-6 py-3 rounded-xl text-xs shadow-xl transition">
+                        ✓ Post Direct Expense
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Expenses List -->
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl overflow-hidden">
+            <h3 class="text-sm font-bold text-white mb-4">📋 Direct Expense Vouchers Ledger</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                    <thead>
+                        <tr class="bg-slate-800 text-slate-300 uppercase font-bold border-b border-slate-700">
+                            <th class="p-3">Ref No</th>
+                            <th class="p-3">Expense Category</th>
+                            <th class="p-3">Description</th>
+                            <th class="p-3">Date</th>
+                            <th class="p-3 text-right">Net Base</th>
+                            <th class="p-3 text-right">15% VAT</th>
+                            <th class="p-3 text-right">Total (SAR)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800">
+                        {% for e in expenses %}
+                        <tr class="hover:bg-slate-800/40 text-slate-200">
+                            <td class="p-3 font-mono font-bold text-cyan-400">#{{ e.expense_no }}</td>
+                            <td class="p-3 text-white font-bold">{{ e.expense_account.name }}</td>
+                            <td class="p-3 text-slate-300">{{ e.description }}</td>
+                            <td class="p-3 text-slate-400">{{ e.date }}</td>
+                            <td class="p-3 text-right font-mono">{{ e.subtotal|floatformat:2 }}</td>
+                            <td class="p-3 text-right font-mono text-amber-400">{{ e.vat_amount|floatformat:2 }}</td>
+                            <td class="p-3 text-right font-mono font-bold text-emerald-400">{{ e.total_amount|floatformat:2 }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="7" class="p-6 text-center text-slate-500 italic">No direct expenses recorded yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
