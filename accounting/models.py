@@ -8,17 +8,15 @@ from datetime import datetime
 from .zatca import generate_zatca_qr_base64, generate_qr_image_base64
 
 class Company(models.Model):
-    name = models.CharField(max_length=255, help_text="Company Name (English)")
-    name_ar = models.CharField(max_length=255, blank=True, null=True, help_text="اسم الشركة بالعربية")
-    vat_number = models.CharField(max_length=50, default="310122456700003", help_text="Saudi 15-Digit VAT ID")
-    cr_number = models.CharField(max_length=50, default="1010445566", help_text="Commercial Registration No")
+    name = models.CharField(max_length=255)
+    name_ar = models.CharField(max_length=255, blank=True, null=True)
+    vat_number = models.CharField(max_length=50, default="310122456700003")
+    cr_number = models.CharField(max_length=50, default="1010445566")
     address = models.TextField(default="Riyadh Industrial City, Saudi Arabia")
     phone = models.CharField(max_length=50, default="+966 11 000 0000")
     created_at = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
-
-    def __str__(self):
-        return self.name
+    def __str__(self): return self.name
 
 class CompanySettings(models.Model):
     company_name_en = models.CharField(max_length=255, default="SECOND ADVANCE MEDICAL COMPANY")
@@ -28,9 +26,7 @@ class CompanySettings(models.Model):
     address_en = models.TextField(default="Riyadh Industrial City, Saudi Arabia")
     address_ar = models.TextField(default="المنطقة الصناعية، الرياض، المملكة العربية السعودية")
     phone = models.CharField(max_length=50, default="+966 11 000 0000")
-
-    def __str__(self):
-        return self.company_name_en
+    def __str__(self): return self.company_name_en
 
 class SubscriptionPlan(models.Model):
     name = models.CharField(max_length=100)
@@ -39,9 +35,7 @@ class SubscriptionPlan(models.Model):
     price_yearly_sar = models.DecimalField(max_digits=10, decimal_places=2, default=999.00)
     max_users = models.IntegerField(default=5)
     is_active = models.BooleanField(default=True)
-
-    def __str__(self):
-        return self.name
+    def __str__(self): return self.name
 
 class CompanySubscription(models.Model):
     company = models.OneToOneField(Company, on_delete=models.CASCADE, related_name='subscription')
@@ -49,9 +43,6 @@ class CompanySubscription(models.Model):
     status = models.CharField(max_length=20, default='ACTIVE')
     start_date = models.DateField(default=datetime.now)
     expiry_date = models.DateField(default=datetime.now)
-
-    def __str__(self):
-        return f"{self.company.name} ({self.status})"
 
 class PaymentTransaction(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='payments')
@@ -63,18 +54,15 @@ class PaymentTransaction(models.Model):
 
 class UserProfile(models.Model):
     ROLE_CHOICES = [
-        ('ADMIN', 'Admin / General Manager (المدير العام)'),
-        ('ACCOUNTANT', 'Accountant (المحاسب)'),
-        ('SALESMAN', 'Salesman (مندوب مبيعات)'),
-        ('WAREHOUSE_KEEPER', 'Warehouse Keeper (أمين المستودع)'),
+        ('ADMIN', 'Admin / General Manager'),
+        ('ACCOUNTANT', 'Accountant'),
+        ('SALESMAN', 'Salesman'),
+        ('WAREHOUSE_KEEPER', 'Warehouse Keeper'),
     ]
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True, related_name='users')
     role = models.CharField(max_length=30, choices=ROLE_CHOICES, default='ADMIN')
     phone = models.CharField(max_length=50, blank=True, null=True)
-
-    def __str__(self):
-        return f"{self.user.username} ({self.role})"
 
 @receiver(post_save, sender=User)
 def create_or_save_user_profile(sender, instance, created, **kwargs):
@@ -82,8 +70,7 @@ def create_or_save_user_profile(sender, instance, created, **kwargs):
         comp, _ = Company.objects.get_or_create(id=1, defaults={"name": "SECOND ADVANCE MEDICAL COMPANY (SAMCO)", "vat_number": "310122456700003"})
         UserProfile.objects.create(user=instance, company=comp)
     else:
-        try:
-            instance.profile.save()
+        try: instance.profile.save()
         except UserProfile.DoesNotExist:
             comp, _ = Company.objects.get_or_create(id=1, defaults={"name": "SECOND ADVANCE MEDICAL COMPANY (SAMCO)", "vat_number": "310122456700003"})
             UserProfile.objects.create(user=instance, company=comp)
@@ -93,26 +80,16 @@ class CostCenter(models.Model):
     code = models.CharField(max_length=50)
     name_en = models.CharField(max_length=150)
     name_ar = models.CharField(max_length=150, blank=True, null=True)
-
-    def __str__(self):
-        return f"[{self.code}] {self.name_en}"
+    def __str__(self): return f"[{self.code}] {self.name_en}"
 
 class Account(models.Model):
-    ACCOUNT_TYPES = [
-        ('Asset', 'Asset (الأصول)'),
-        ('Liability', 'Liability (الخصوم)'),
-        ('Equity', 'Equity (حقوق الملكية)'),
-        ('Revenue', 'Revenue (الإيرادات)'),
-        ('Expense', 'Expense (المصروفات)'),
-    ]
+    ACCOUNT_TYPES = [('Asset', 'Asset'), ('Liability', 'Liability'), ('Equity', 'Equity'), ('Revenue', 'Revenue'), ('Expense', 'Expense')]
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True, related_name="accounts")
     code = models.CharField(max_length=20)
     name = models.CharField(max_length=255)
     account_type = models.CharField(max_length=20, choices=ACCOUNT_TYPES)
     balance = models.DecimalField(max_digits=15, decimal_places=2, default=0.00)
-
-    def __str__(self):
-        return f"{self.code} - {self.name} ({self.account_type})"
+    def __str__(self): return f"{self.code} - {self.name}"
 
 class FixedAsset(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True, related_name="fixed_assets")
@@ -126,21 +103,15 @@ class FixedAsset(models.Model):
     accumulated_depreciation = models.DecimalField(max_digits=15, decimal_places=2, default=0.00)
     cost_center = models.ForeignKey(CostCenter, on_delete=models.SET_NULL, null=True, blank=True)
 
-    def current_book_value(self):
-        return self.purchase_cost - self.accumulated_depreciation
-
-    def __str__(self):
-        return f"{self.name} ({self.current_book_value():.2f} SAR)"
-
 class Employee(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True, related_name="employees")
     employee_no = models.CharField(max_length=50, default="EMP-001")
     name_en = models.CharField(max_length=255)
     name_ar = models.CharField(max_length=255, blank=True, null=True)
-    iqama_no = models.CharField(max_length=50, help_text="Saudi National ID / Iqama")
+    iqama_no = models.CharField(max_length=50)
     iqama_expiry = models.DateField(blank=True, null=True)
     nationality = models.CharField(max_length=100, default="Saudi")
-    bank_iban = models.CharField(max_length=50, help_text="Saudi IBAN")
+    bank_iban = models.CharField(max_length=50)
     bank_name = models.CharField(max_length=100, default="Al Rajhi Bank")
     joining_date = models.DateField(default=datetime.now)
     basic_salary = models.DecimalField(max_digits=10, decimal_places=2, default=3000.00)
@@ -148,12 +119,7 @@ class Employee(models.Model):
     transport_allowance = models.DecimalField(max_digits=10, decimal_places=2, default=500.00)
     other_allowance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     is_active = models.BooleanField(default=True)
-
-    def total_monthly_salary(self):
-        return self.basic_salary + self.housing_allowance + self.transport_allowance + self.other_allowance
-
-    def __str__(self):
-        return f"{self.name_en} ({self.employee_no})"
+    def __str__(self): return self.name_en
 
 class MonthlyPayroll(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True, related_name="payrolls")
@@ -161,9 +127,6 @@ class MonthlyPayroll(models.Model):
     processed_date = models.DateField(default=datetime.now)
     total_amount = models.DecimalField(max_digits=15, decimal_places=2, default=0.00)
     is_paid = models.BooleanField(default=False)
-
-    def __str__(self):
-        return f"Payroll {self.month_year} - {self.total_amount:.2f} SAR"
 
 class PayrollItem(models.Model):
     payroll = models.ForeignKey(MonthlyPayroll, on_delete=models.CASCADE, related_name="items")
@@ -181,9 +144,7 @@ class Warehouse(models.Model):
     name_ar = models.CharField(max_length=150)
     location = models.CharField(max_length=255, default="Riyadh, KSA")
     manager_name = models.CharField(max_length=150, blank=True, null=True)
-
-    def __str__(self):
-        return f"{self.name_en} ({self.name_ar})"
+    def __str__(self): return self.name_en
 
 class BankAccount(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True, related_name="banks")
@@ -192,9 +153,7 @@ class BankAccount(models.Model):
     branch = models.CharField(max_length=150, blank=True, null=True)
     balance = models.DecimalField(max_digits=15, decimal_places=2, default=0.00)
     chart_account = models.ForeignKey(Account, on_delete=models.SET_NULL, null=True, blank=True, related_name="bank_records")
-
-    def __str__(self):
-        return f"{self.name} ({self.balance:.2f} SAR)"
+    def __str__(self): return self.name
 
 class FundTransfer(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True, related_name="fund_transfers")
@@ -235,6 +194,12 @@ class BankStatementLine(models.Model):
     transaction_type = models.CharField(max_length=20, default="DEBIT")
     is_reconciled = models.BooleanField(default=False)
 
+class PriceList(models.Model):
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True, related_name="price_lists")
+    name = models.CharField(max_length=150)
+    is_active = models.BooleanField(default=True)
+    def __str__(self): return self.name
+
 class Customer(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True, related_name="customers")
     name = models.CharField(max_length=255)
@@ -242,10 +207,9 @@ class Customer(models.Model):
     phone = models.CharField(max_length=50, blank=True, null=True)
     vat_number = models.CharField(max_length=50, blank=True, null=True)
     credit_limit = models.DecimalField(max_digits=12, decimal_places=2, default=50000.00)
+    price_list = models.ForeignKey(PriceList, on_delete=models.SET_NULL, null=True, blank=True, related_name="customers")
     address = models.TextField(blank=True, null=True)
-
-    def __str__(self):
-        return self.name
+    def __str__(self): return self.name
 
 class Supplier(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True, related_name="suppliers")
@@ -254,17 +218,10 @@ class Supplier(models.Model):
     phone = models.CharField(max_length=50, blank=True, null=True)
     vat_number = models.CharField(max_length=50, blank=True, null=True)
     address = models.TextField(blank=True, null=True)
-
-    def __str__(self):
-        return self.name
+    def __str__(self): return self.name
 
 class Product(models.Model):
-    ITEM_TYPES = [
-        ('FINISHED_GOOD', 'Finished Good (منتج نهائي)'),
-        ('RAW_MATERIAL', 'Raw Material (مادة خام)'),
-        ('PACKAGING', 'Packaging Material (مواد تعبئة)'),
-        ('SERVICE', 'Service (خدمة)'),
-    ]
+    ITEM_TYPES = [('FINISHED_GOOD', 'Finished Good'), ('RAW_MATERIAL', 'Raw Material'), ('PACKAGING', 'Packaging'), ('SERVICE', 'Service')]
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True, related_name="products")
     cat_no = models.CharField(max_length=100)
     name = models.CharField(max_length=255)
@@ -274,9 +231,12 @@ class Product(models.Model):
     cost_price = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     current_stock = models.IntegerField(default=0)
     barcode = models.CharField(max_length=100, blank=True, null=True)
+    def __str__(self): return f"[{self.cat_no}] {self.name}"
 
-    def __str__(self):
-        return f"[{self.cat_no}] {self.name} (Stock: {self.current_stock})"
+class PriceListItem(models.Model):
+    price_list = models.ForeignKey(PriceList, on_delete=models.CASCADE, related_name="items")
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    custom_price = models.DecimalField(max_digits=12, decimal_places=2)
 
 class ProductBatch(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="batches")
@@ -289,9 +249,6 @@ class WarehouseStock(models.Model):
     warehouse = models.ForeignKey(Warehouse, on_delete=models.CASCADE, related_name='stocks')
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='division_stocks')
     stock_qty = models.IntegerField(default=0)
-
-    def __str__(self):
-        return f"{self.warehouse.name_en} - {self.product.name} ({self.stock_qty} Pcs)"
 
 class StockAdjustment(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True, related_name="stock_adjustments")
@@ -320,9 +277,6 @@ class Quotation(models.Model):
     vat_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0.00, editable=False)
     total_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0.00, editable=False)
 
-    def __str__(self):
-        return f"Quote #{self.quote_no} - {self.customer.name}"
-
     def update_totals(self):
         sub = sum(item.total for item in self.items.all())
         vat = sub * Decimal('0.15')
@@ -349,11 +303,7 @@ class SalesOrder(models.Model):
     total_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
 
 class Invoice(models.Model):
-    PAYMENT_STATUS_CHOICES = [
-        ('UNPAID', 'Unpaid (غير مدفوع) 🔴'),
-        ('PARTIALLY_PAID', 'Partially Paid (مدفوع جزئياً) 🟡'),
-        ('PAID', 'Paid (مدفوع) 🟢'),
-    ]
+    PAYMENT_STATUS_CHOICES = [('UNPAID', 'Unpaid 🔴'), ('PARTIALLY_PAID', 'Partially Paid 🟡'), ('PAID', 'Paid 🟢')]
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True, related_name="invoices")
     invoice_no = models.CharField(max_length=100)
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
@@ -369,21 +319,12 @@ class Invoice(models.Model):
     payment_status = models.CharField(max_length=30, choices=PAYMENT_STATUS_CHOICES, default='UNPAID')
     zatca_qr_b64 = models.TextField(blank=True, null=True, editable=False)
 
-    def remaining_due(self):
-        return max(Decimal('0.00'), self.total_amount - self.amount_paid)
-
-    def __str__(self):
-        return f"Invoice #{self.invoice_no} - {self.customer.name}"
+    def remaining_due(self): return max(Decimal('0.00'), self.total_amount - self.amount_paid)
 
     def recalculate_payment_status(self):
         paid = sum(rv.amount for rv in self.receipts.all())
         self.amount_paid = paid
-        if paid >= self.total_amount and self.total_amount > 0:
-            self.payment_status = 'PAID'
-        elif paid > 0:
-            self.payment_status = 'PARTIALLY_PAID'
-        else:
-            self.payment_status = 'UNPAID'
+        self.payment_status = 'PAID' if paid >= self.total_amount and self.total_amount > 0 else ('PARTIALLY_PAID' if paid > 0 else 'UNPAID')
         Invoice.objects.filter(pk=self.pk).update(amount_paid=self.amount_paid, payment_status=self.payment_status)
 
     def update_totals_and_post_accounting(self):
@@ -398,11 +339,11 @@ class Invoice(models.Model):
             ar_acc, _ = Account.objects.get_or_create(company=comp, code="1200", defaults={"name": "Accounts Receivable", "account_type": "Asset"})
             sales_acc, _ = Account.objects.get_or_create(company=comp, code="4000", defaults={"name": "Sales Revenue", "account_type": "Revenue"})
             vat_acc, _ = Account.objects.get_or_create(company=comp, code="2100", defaults={"name": "VAT Output Tax (15%)", "account_type": "Liability"})
-            je, _ = JournalEntry.objects.get_or_create(company=comp, reference_no=f"INV-{self.invoice_no}", defaults={"description": f"Sales Tax Invoice #{self.invoice_no} to {self.customer.name}"})
+            je, _ = JournalEntry.objects.get_or_create(company=comp, reference_no=f"INV-{self.invoice_no}", defaults={"description": f"Sales Invoice #{self.invoice_no}"})
             je.lines.all().delete()
-            JournalEntryLine.objects.create(journal_entry=je, account=ar_acc, debit=tot, credit=0, description=f"Receivable from {self.customer.name}")
-            JournalEntryLine.objects.create(journal_entry=je, account=sales_acc, debit=0, credit=sub, description=f"Revenue for Inv #{self.invoice_no}")
-            JournalEntryLine.objects.create(journal_entry=je, account=vat_acc, debit=0, credit=vat, description="15% ZATCA Output VAT")
+            JournalEntryLine.objects.create(journal_entry=je, account=ar_acc, debit=tot, credit=0, description="Receivable")
+            JournalEntryLine.objects.create(journal_entry=je, account=sales_acc, debit=0, credit=sub, description="Revenue")
+            JournalEntryLine.objects.create(journal_entry=je, account=vat_acc, debit=0, credit=vat, description="Output VAT 15%")
             self.recalculate_payment_status()
 
 class InvoiceItem(models.Model):
@@ -424,6 +365,24 @@ class InvoiceItem(models.Model):
         self.product.current_stock = models.F('current_stock') + self.qty
         self.product.save()
         super().delete(*args, **kwargs)
+
+class RecurringInvoice(models.Model):
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True, related_name="recurring_invoices")
+    customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
+    frequency = models.CharField(max_length=20, default='MONTHLY')
+    start_date = models.DateField(default=datetime.now)
+    next_issue_date = models.DateField(default=datetime.now)
+    status = models.CharField(max_length=20, default='ACTIVE')
+    subtotal = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    vat_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    total_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+
+class RecurringInvoiceItem(models.Model):
+    recurring_invoice = models.ForeignKey(RecurringInvoice, on_delete=models.CASCADE, related_name="items")
+    product = models.ForeignKey(Product, on_delete=models.PROTECT)
+    qty = models.IntegerField(default=1)
+    unit_price = models.DecimalField(max_digits=12, decimal_places=2)
+    total = models.DecimalField(max_digits=12, decimal_places=2)
 
 class DeliveryNote(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True, related_name="delivery_notes")
@@ -448,7 +407,7 @@ class CreditNote(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name="credit_notes")
     date = models.DateTimeField(auto_now_add=True)
-    reason = models.CharField(max_length=255, default="Goods Returned by Customer (مرتجع بضاعة)")
+    reason = models.CharField(max_length=255, default="Goods Returned by Customer")
     subtotal = models.DecimalField(max_digits=12, decimal_places=2, default=0.00, editable=False)
     vat_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0.00, editable=False)
     total_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0.00, editable=False)
@@ -466,11 +425,11 @@ class CreditNote(models.Model):
             sales_acc, _ = Account.objects.get_or_create(company=comp, code="4000", defaults={"name": "Sales Revenue", "account_type": "Revenue"})
             vat_acc, _ = Account.objects.get_or_create(company=comp, code="2100", defaults={"name": "VAT Output Tax (15%)", "account_type": "Liability"})
             ar_acc, _ = Account.objects.get_or_create(company=comp, code="1200", defaults={"name": "Accounts Receivable", "account_type": "Asset"})
-            je, _ = JournalEntry.objects.get_or_create(company=comp, reference_no=f"CN-{self.credit_note_no}", defaults={"description": f"Credit Note #{self.credit_note_no} for Inv #{self.invoice.invoice_no}"})
+            je, _ = JournalEntry.objects.get_or_create(company=comp, reference_no=f"CN-{self.credit_note_no}", defaults={"description": f"Credit Note #{self.credit_note_no}"})
             je.lines.all().delete()
-            JournalEntryLine.objects.create(journal_entry=je, account=sales_acc, debit=sub, credit=0, description=f"Sales Return #{self.credit_note_no}")
-            JournalEntryLine.objects.create(journal_entry=je, account=vat_acc, debit=vat, credit=0, description="Reversal of Output VAT 15%")
-            JournalEntryLine.objects.create(journal_entry=je, account=ar_acc, debit=0, credit=tot, description=f"Credit Adjust for {self.invoice.customer.name}")
+            JournalEntryLine.objects.create(journal_entry=je, account=sales_acc, debit=sub, credit=0, description="Sales Return")
+            JournalEntryLine.objects.create(journal_entry=je, account=vat_acc, debit=vat, credit=0, description="Output VAT Reversal")
+            JournalEntryLine.objects.create(journal_entry=je, account=ar_acc, debit=0, credit=tot, description="Credit Customer")
 
 class CreditNoteItem(models.Model):
     credit_note = models.ForeignKey(CreditNote, on_delete=models.CASCADE, related_name='items')
@@ -498,15 +457,8 @@ class PurchaseOrder(models.Model):
     status = models.CharField(max_length=20, default='ISSUED')
     total_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
 
-    def __str__(self):
-        return f"PO #{self.po_number} - {self.supplier.name}"
-
 class PurchaseBill(models.Model):
-    PAYMENT_STATUS_CHOICES = [
-        ('UNPAID', 'Unpaid (غير مدفوع) 🔴'),
-        ('PARTIALLY_PAID', 'Partially Paid (مدفوع جزئياً) 🟡'),
-        ('PAID', 'Paid (مدفوع) 🟢'),
-    ]
+    PAYMENT_STATUS_CHOICES = [('UNPAID', 'Unpaid 🔴'), ('PARTIALLY_PAID', 'Partially Paid 🟡'), ('PAID', 'Paid 🟢')]
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True, related_name="purchases")
     bill_no = models.CharField(max_length=100)
     supplier = models.ForeignKey(Supplier, on_delete=models.PROTECT)
@@ -519,18 +471,12 @@ class PurchaseBill(models.Model):
     amount_paid = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     payment_status = models.CharField(max_length=30, choices=PAYMENT_STATUS_CHOICES, default='UNPAID')
 
-    def remaining_due(self):
-        return max(Decimal('0.00'), self.total_amount - self.amount_paid)
+    def remaining_due(self): return max(Decimal('0.00'), self.total_amount - self.amount_paid)
 
     def recalculate_payment_status(self):
         paid = sum(pv.amount for pv in self.payments.all())
         self.amount_paid = paid
-        if paid >= self.total_amount and self.total_amount > 0:
-            self.payment_status = 'PAID'
-        elif paid > 0:
-            self.payment_status = 'PARTIALLY_PAID'
-        else:
-            self.payment_status = 'UNPAID'
+        self.payment_status = 'PAID' if paid >= self.total_amount and self.total_amount > 0 else ('PARTIALLY_PAID' if paid > 0 else 'UNPAID')
         PurchaseBill.objects.filter(pk=self.pk).update(amount_paid=self.amount_paid, payment_status=self.payment_status)
 
     def update_totals_and_post_accounting(self):
@@ -542,12 +488,12 @@ class PurchaseBill(models.Model):
             PurchaseBill.objects.filter(pk=self.pk).update(subtotal=sub, vat_amount=vat, total_amount=tot)
             inv_acc, _ = Account.objects.get_or_create(company=comp, code="1300", defaults={"name": "Inventory Asset", "account_type": "Asset"})
             vat_in_acc, _ = Account.objects.get_or_create(company=comp, code="1400", defaults={"name": "VAT Input Tax (15%)", "account_type": "Asset"})
-            ap_acc, _ = Account.objects.get_or_create(company=comp, code="2000", defaults={"name": "Accounts Payable (Suppliers)", "account_type": "Liability"})
-            je, _ = JournalEntry.objects.get_or_create(company=comp, reference_no=f"BILL-{self.bill_no}", defaults={"description": f"Purchase Bill #{self.bill_no} from {self.supplier.name}"})
+            ap_acc, _ = Account.objects.get_or_create(company=comp, code="2000", defaults={"name": "Accounts Payable", "account_type": "Liability"})
+            je, _ = JournalEntry.objects.get_or_create(company=comp, reference_no=f"BILL-{self.bill_no}", defaults={"description": f"Purchase Bill #{self.bill_no}"})
             je.lines.all().delete()
-            JournalEntryLine.objects.create(journal_entry=je, account=inv_acc, debit=sub, credit=0, description=f"Stock In from {self.supplier.name}")
-            JournalEntryLine.objects.create(journal_entry=je, account=vat_in_acc, debit=vat, credit=0, description="15% Input VAT Paid")
-            JournalEntryLine.objects.create(journal_entry=je, account=ap_acc, debit=0, credit=tot, description=f"Payable to {self.supplier.name}")
+            JournalEntryLine.objects.create(journal_entry=je, account=inv_acc, debit=sub, credit=0, description="Stock In")
+            JournalEntryLine.objects.create(journal_entry=je, account=vat_in_acc, debit=vat, credit=0, description="Input VAT Paid")
+            JournalEntryLine.objects.create(journal_entry=je, account=ap_acc, debit=0, credit=tot, description="Payable to Supplier")
             self.recalculate_payment_status()
 
 class PurchaseBillItem(models.Model):
@@ -571,7 +517,6 @@ class PurchaseBillItem(models.Model):
         self.product.save()
         super().delete(*args, **kwargs)
 
-# 🚚 গুডস রিসিট নোট (Goods Receipt Note / سند استلام بضاعة)
 class GoodsReceiptNote(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True, related_name="goods_receipts")
     grn_no = models.CharField(max_length=100, default="GRN-001")
@@ -579,7 +524,6 @@ class GoodsReceiptNote(models.Model):
     warehouse = models.ForeignKey(Warehouse, on_delete=models.PROTECT)
     date = models.DateField(default=datetime.now)
     received_by = models.CharField(max_length=150, blank=True, null=True)
-    notes = models.TextField(blank=True, null=True)
 
 class GoodsReceiptItem(models.Model):
     grn = models.ForeignKey(GoodsReceiptNote, on_delete=models.CASCADE, related_name="items")
@@ -588,13 +532,12 @@ class GoodsReceiptItem(models.Model):
     expiry_date = models.DateField(blank=True, null=True)
     qty_received = models.IntegerField(default=1)
 
-# 📄 ডেবিট নোট / পারচেজ রিটার্ন (Debit Note / إشعار مدين / مرتجع مشتريات)
 class DebitNote(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True, related_name="debit_notes")
     debit_note_no = models.CharField(max_length=100, default="DN-001")
     purchase_bill = models.ForeignKey(PurchaseBill, on_delete=models.CASCADE, related_name="debit_notes")
     date = models.DateTimeField(auto_now_add=True)
-    reason = models.CharField(max_length=255, default="Goods Returned to Vendor (مرتجع مشتريات للمورد)")
+    reason = models.CharField(max_length=255, default="Goods Returned to Vendor")
     subtotal = models.DecimalField(max_digits=12, decimal_places=2, default=0.00, editable=False)
     vat_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0.00, editable=False)
     total_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0.00, editable=False)
@@ -606,14 +549,14 @@ class DebitNote(models.Model):
             tot = sub + vat
             comp = self.company or Company.objects.get_or_create(id=1)[0]
             DebitNote.objects.filter(pk=self.pk).update(subtotal=sub, vat_amount=vat, total_amount=tot)
-            ap_acc, _ = Account.objects.get_or_create(company=comp, code="2000", defaults={"name": "Accounts Payable (Suppliers)", "account_type": "Liability"})
+            ap_acc, _ = Account.objects.get_or_create(company=comp, code="2000", defaults={"name": "Accounts Payable", "account_type": "Liability"})
             inv_acc, _ = Account.objects.get_or_create(company=comp, code="1300", defaults={"name": "Inventory Asset", "account_type": "Asset"})
             vat_in_acc, _ = Account.objects.get_or_create(company=comp, code="1400", defaults={"name": "VAT Input Tax (15%)", "account_type": "Asset"})
-            je, _ = JournalEntry.objects.get_or_create(company=comp, reference_no=f"DBN-{self.debit_note_no}", defaults={"description": f"Debit Note #{self.debit_note_no} for Bill #{self.purchase_bill.bill_no}"})
+            je, _ = JournalEntry.objects.get_or_create(company=comp, reference_no=f"DBN-{self.debit_note_no}", defaults={"description": f"Debit Note #{self.debit_note_no}"})
             je.lines.all().delete()
-            JournalEntryLine.objects.create(journal_entry=je, account=ap_acc, debit=tot, credit=0, description=f"Debit Adjust for {self.purchase_bill.supplier.name}")
-            JournalEntryLine.objects.create(journal_entry=je, account=inv_acc, debit=0, credit=sub, description=f"Stock Returned to Supplier")
-            JournalEntryLine.objects.create(journal_entry=je, account=vat_in_acc, debit=0, credit=vat, description="Reversal of Input VAT 15%")
+            JournalEntryLine.objects.create(journal_entry=je, account=ap_acc, debit=tot, credit=0, description="Debit Adjust Supplier")
+            JournalEntryLine.objects.create(journal_entry=je, account=inv_acc, debit=0, credit=sub, description="Stock Returned")
+            JournalEntryLine.objects.create(journal_entry=je, account=vat_in_acc, debit=0, credit=vat, description="Input VAT Reversal")
 
 class DebitNoteItem(models.Model):
     debit_note = models.ForeignKey(DebitNote, on_delete=models.CASCADE, related_name='items')
@@ -633,7 +576,6 @@ class DebitNoteItem(models.Model):
         self.product.save()
         super().delete(*args, **kwargs)
 
-# 💸 ডিরেক্ট এক্সপেন্স ভাউচার (Direct Expense Claim / سند صرف مصروفات)
 class DirectExpense(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True, related_name="direct_expenses")
     expense_no = models.CharField(max_length=100, default="EXP-001")
@@ -641,7 +583,7 @@ class DirectExpense(models.Model):
     bank_account = models.ForeignKey(BankAccount, on_delete=models.PROTECT)
     cost_center = models.ForeignKey(CostCenter, on_delete=models.SET_NULL, null=True, blank=True)
     date = models.DateField(default=datetime.now)
-    description = models.CharField(max_length=255, help_text="e.g. Office Rent, Factory Electricity, Fuel")
+    description = models.CharField(max_length=255)
     subtotal = models.DecimalField(max_digits=12, decimal_places=2)
     vat_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     total_amount = models.DecimalField(max_digits=12, decimal_places=2)
@@ -654,7 +596,7 @@ class DirectExpense(models.Model):
             comp = self.company or Company.objects.get_or_create(id=1)[0]
             bank_chart_acc = self.bank_account.chart_account or Account.objects.get_or_create(company=comp, code="1010", defaults={"name": "Cash & Bank Asset", "account_type": "Asset"})[0]
             vat_in_acc, _ = Account.objects.get_or_create(company=comp, code="1400", defaults={"name": "VAT Input Tax (15%)", "account_type": "Asset"})
-            je, _ = JournalEntry.objects.get_or_create(company=comp, reference_no=f"EXP-{self.expense_no}", defaults={"description": f"Direct Expense #{self.expense_no} - {self.description}"})
+            je, _ = JournalEntry.objects.get_or_create(company=comp, reference_no=f"EXP-{self.expense_no}", defaults={"description": f"Direct Expense #{self.expense_no}"})
             je.lines.all().delete()
             JournalEntryLine.objects.create(journal_entry=je, account=self.expense_account, debit=self.subtotal, credit=0, description=self.description)
             if self.vat_amount > 0:
@@ -704,12 +646,11 @@ class ReceiptVoucher(models.Model):
             comp = self.company or Company.objects.get_or_create(id=1)[0]
             bank_chart_acc = self.bank_account.chart_account or Account.objects.get_or_create(company=comp, code="1010", defaults={"name": "Cash & Bank Asset", "account_type": "Asset"})[0]
             ar_acc, _ = Account.objects.get_or_create(company=comp, code="1200", defaults={"name": "Accounts Receivable", "account_type": "Asset"})
-            je, _ = JournalEntry.objects.get_or_create(company=comp, reference_no=f"RV-{self.voucher_no}", defaults={"description": f"Receipt Voucher #{self.voucher_no} from {self.customer.name}"})
+            je, _ = JournalEntry.objects.get_or_create(company=comp, reference_no=f"RV-{self.voucher_no}", defaults={"description": f"Receipt Voucher #{self.voucher_no}"})
             je.lines.all().delete()
             JournalEntryLine.objects.create(journal_entry=je, account=bank_chart_acc, debit=self.amount, credit=0, description=f"Received via {self.payment_method}")
-            JournalEntryLine.objects.create(journal_entry=je, account=ar_acc, debit=0, credit=self.amount, description=f"Payment from {self.customer.name}")
-            if self.invoice:
-                self.invoice.recalculate_payment_status()
+            JournalEntryLine.objects.create(journal_entry=je, account=ar_acc, debit=0, credit=self.amount, description="Payment Received")
+            if self.invoice: self.invoice.recalculate_payment_status()
 
 class PaymentVoucher(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True, related_name="payments_vouchers")
@@ -729,14 +670,13 @@ class PaymentVoucher(models.Model):
             self.bank_account.save()
             comp = self.company or Company.objects.get_or_create(id=1)[0]
             bank_chart_acc = self.bank_account.chart_account or Account.objects.get_or_create(company=comp, code="1010", defaults={"name": "Cash & Bank Asset", "account_type": "Asset"})[0]
-            debit_acc = Account.objects.get_or_create(company=comp, code="2000", defaults={"name": "Accounts Payable (Suppliers)", "account_type": "Liability"})[0] if self.supplier else Account.objects.get_or_create(code="5000", defaults={"name": "Operating Expense", "account_type": "Expense"})[0]
+            debit_acc = Account.objects.get_or_create(company=comp, code="2000", defaults={"name": "Accounts Payable", "account_type": "Liability"})[0] if self.supplier else Account.objects.get_or_create(code="5000", defaults={"name": "Operating Expense", "account_type": "Expense"})[0]
             desc = f"Payment to supplier {self.supplier.name}" if self.supplier else self.expense_reason or "General Expense"
-            je, _ = JournalEntry.objects.get_or_create(company=comp, reference_no=f"PV-{self.voucher_no}", defaults={"description": f"Payment Voucher #{self.voucher_no} - {desc}"})
+            je, _ = JournalEntry.objects.get_or_create(company=comp, reference_no=f"PV-{self.voucher_no}", defaults={"description": desc})
             je.lines.all().delete()
             JournalEntryLine.objects.create(journal_entry=je, account=debit_acc, debit=self.amount, credit=0, description=desc)
             JournalEntryLine.objects.create(journal_entry=je, account=bank_chart_acc, debit=0, credit=self.amount, description=f"Paid via {self.payment_method}")
-            if self.purchase_bill:
-                self.purchase_bill.recalculate_payment_status()
+            if self.purchase_bill: self.purchase_bill.recalculate_payment_status()
 
 class BillOfMaterials(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True, related_name="boms")
@@ -744,9 +684,7 @@ class BillOfMaterials(models.Model):
     finished_product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="boms")
     output_qty = models.IntegerField(default=1)
     notes = models.TextField(blank=True, null=True)
-
-    def __str__(self):
-        return f"{self.bom_code} - {self.finished_product.name}"
+    def __str__(self): return f"{self.bom_code} - {self.finished_product.name}"
 
 class BOMItem(models.Model):
     bom = models.ForeignKey(BillOfMaterials, on_delete=models.CASCADE, related_name="components")
@@ -797,9 +735,7 @@ class JournalEntry(models.Model):
     date = models.DateField(auto_now_add=True)
     reference_no = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
-
-    def __str__(self):
-        return f"{self.reference_no} | {self.date}"
+    def __str__(self): return self.reference_no
 
 class JournalEntryLine(models.Model):
     journal_entry = models.ForeignKey(JournalEntry, on_delete=models.CASCADE, related_name='lines')

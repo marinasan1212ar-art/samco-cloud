@@ -6,7 +6,8 @@ from accounting.views import (
     custom_reports_view, manufacturing_view, scanner_view,
     company_signup_view, pricing_checkout_view, statement_of_account_view, wps_sif_export_view,
     credit_note_detail_view, create_credit_note_view, delivery_note_detail_view, create_delivery_note_view,
-    bank_reconciliation_view, fund_transfer_view, debit_note_detail_view, create_debit_note_view, direct_expense_view
+    bank_reconciliation_view, fund_transfer_view, debit_note_detail_view, create_debit_note_view, direct_expense_view,
+    aging_report_view, recurring_invoice_view, price_list_view
 )
 from accounting.pos_views import pos_dashboard, pos_checkout, pos_receipt_print
 
@@ -15,6 +16,9 @@ urlpatterns = [
     path('pos/', pos_dashboard, name='pos-dashboard'),
     path('pos/checkout/', pos_checkout, name='pos-checkout'),
     path('pos/receipt/<int:pk>/', pos_receipt_print, name='pos-receipt'),
+    path('sales/recurring/', recurring_invoice_view, name='recurring-invoices'),
+    path('sales/price-lists/', price_list_view, name='price-lists'),
+    path('reports/aging/', aging_report_view, name='aging-report'),
     path('expenses/', direct_expense_view, name='direct-expenses'),
     path('banking/reconciliation/', bank_reconciliation_view, name='bank-reconciliation'),
     path('banking/transfer/', fund_transfer_view, name='fund-transfer'),
