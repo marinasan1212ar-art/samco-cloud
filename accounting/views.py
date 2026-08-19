@@ -20,7 +20,8 @@ from .models import (
     CreditNote, CreditNoteItem, DeliveryNote, DeliveryNoteItem, ProductBatch,
     FundTransfer, BankStatement, BankStatementLine,
     GoodsReceiptNote, GoodsReceiptItem, DebitNote, DebitNoteItem, DirectExpense,
-    PriceList, PriceListItem, RecurringInvoice, RecurringInvoiceItem
+    PriceList, PriceListItem, RecurringInvoice, RecurringInvoiceItem,
+    UnitOfMeasure, ProductBundleItem
 )
 from .serializers import (
     AccountSerializer, CustomerSerializer, SupplierSerializer, ProductSerializer,
@@ -60,6 +61,48 @@ def dashboard_view(request):
         'company': company, 'summary': summary, 'invoices': invoices, 'purchases': purchases,
         'warehouses': warehouses, 'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir, 'user_role': user_role,
         'overdue_invoices': overdue_invoices, 'low_stock_products': low_stock_products
+    })
+
+# 📦 প্রোডাক্ট বান্ডেল ও কম্বো প্যাক ভিউ
+def product_bundle_view(request):
+    lang = request.session.get('lang', 'en'); is_ar = (lang == 'ar'); lang_dir = 'rtl' if is_ar else 'ltr'
+    company = get_user_company(request)
+    bundle_products = Product.objects.filter(company=company, item_type='BUNDLE')
+    individual_products = Product.objects.filter(company=company).exclude(item_type='BUNDLE')
+
+    if request.method == 'POST' and 'create_bundle' in request.POST:
+        name = request.POST.get('name')
+        cat_no = request.POST.get('cat_no')
+        price = Decimal(request.POST.get('sale_price', '0.00'))
+        Product.objects.create(company=company, name=name, cat_no=cat_no, sale_price=price, item_type='BUNDLE')
+        return redirect('/inventory/bundles/')
+
+    if request.method == 'POST' and 'add_component' in request.POST:
+        b_id = request.POST.get('bundle_id')
+        c_id = request.POST.get('component_id')
+        qty = int(request.POST.get('qty', 1))
+        ProductBundleItem.objects.create(bundle_product_id=b_id, component_product_id=c_id, quantity=qty)
+        return redirect('/inventory/bundles/')
+
+    return render(request, 'accounting/product_bundles.html', {
+        'company': company, 'bundle_products': bundle_products, 'individual_products': individual_products,
+        'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir
+    })
+
+# 📏 মাল্টি-ইউনিট (UOM) ভিউ
+def uom_view(request):
+    lang = request.session.get('lang', 'en'); is_ar = (lang == 'ar'); lang_dir = 'rtl' if is_ar else 'ltr'
+    company = get_user_company(request)
+    units = UnitOfMeasure.objects.filter(company=company)
+
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        sym = request.POST.get('symbol')
+        UnitOfMeasure.objects.create(company=company, name=name, symbol=sym)
+        return redirect('/inventory/units/')
+
+    return render(request, 'accounting/uom_manage.html', {
+        'company': company, 'units': units, 'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir
     })
 
 def aging_report_view(request):

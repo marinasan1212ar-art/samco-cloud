@@ -194,6 +194,13 @@ class BankStatementLine(models.Model):
     transaction_type = models.CharField(max_length=20, default="DEBIT")
     is_reconciled = models.BooleanField(default=False)
 
+# 📏 মাল্টি-ইউনিট অফ মেজারমেন্ট (UOM)
+class UnitOfMeasure(models.Model):
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True, related_name="units")
+    name = models.CharField(max_length=50, help_text="e.g. Piece, Box, Carton, Dozen")
+    symbol = models.CharField(max_length=20, help_text="e.g. Pcs, Ctn, Dz")
+    def __str__(self): return f"{self.name} ({self.symbol})"
+
 class PriceList(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True, related_name="price_lists")
     name = models.CharField(max_length=150)
@@ -221,7 +228,12 @@ class Supplier(models.Model):
     def __str__(self): return self.name
 
 class Product(models.Model):
-    ITEM_TYPES = [('FINISHED_GOOD', 'Finished Good'), ('RAW_MATERIAL', 'Raw Material'), ('PACKAGING', 'Packaging'), ('SERVICE', 'Service')]
+    ITEM_TYPES = [
+        ('FINISHED_GOOD', 'Finished Good (منتج نهائي)'),
+        ('RAW_MATERIAL', 'Raw Material (مادة خام)'),
+        ('BUNDLE', 'Product Bundle / Kit (منتج مجمع)'),
+        ('SERVICE', 'Service (خدمة)')
+    ]
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True, related_name="products")
     cat_no = models.CharField(max_length=100)
     name = models.CharField(max_length=255)
@@ -231,7 +243,13 @@ class Product(models.Model):
     cost_price = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     current_stock = models.IntegerField(default=0)
     barcode = models.CharField(max_length=100, blank=True, null=True)
-    def __str__(self): return f"[{self.cat_no}] {self.name}"
+    def __str__(self): return f"[{self.cat_no}] {self.name} ({self.get_item_type_display()})"
+
+# 📦 প্রোডাক্ট বান্ডেল আইটেম (Bundle Component Link)
+class ProductBundleItem(models.Model):
+    bundle_product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="bundle_components")
+    component_product = models.ForeignKey(Product, on_delete=models.PROTECT, related_name="used_in_bundles")
+    quantity = models.IntegerField(default=1)
 
 class PriceListItem(models.Model):
     price_list = models.ForeignKey(PriceList, on_delete=models.CASCADE, related_name="items")
@@ -358,12 +376,23 @@ class InvoiceItem(models.Model):
     def save(self, *args, **kwargs):
         self.total = Decimal(self.qty) * Decimal(self.unit_price)
         super().save(*args, **kwargs)
-        self.product.current_stock = models.F('current_stock') - self.qty
-        self.product.save()
+        # 📦 বান্ডেল প্রোডাক্ট বিক্রি হলে ভেতরের প্রতিটা পণ্যের স্টক কাটবে
+        if self.product.item_type == 'BUNDLE':
+            for comp in self.product.bundle_components.all():
+                comp.component_product.current_stock = models.F('current_stock') - (comp.quantity * self.qty)
+                comp.component_product.save()
+        else:
+            self.product.current_stock = models.F('current_stock') - self.qty
+            self.product.save()
 
     def delete(self, *args, **kwargs):
-        self.product.current_stock = models.F('current_stock') + self.qty
-        self.product.save()
+        if self.product.item_type == 'BUNDLE':
+            for comp in self.product.bundle_components.all():
+                comp.component_product.current_stock = models.F('current_stock') + (comp.quantity * self.qty)
+                comp.component_product.save()
+        else:
+            self.product.current_stock = models.F('current_stock') + self.qty
+            self.product.save()
         super().delete(*args, **kwargs)
 
 class RecurringInvoice(models.Model):

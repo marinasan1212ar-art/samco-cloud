@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="{% if is_ar %}ar{% else %}en{% endif %}" dir="{{ lang_dir }}">
+<head>
+    <meta charset="UTF-8">
+    <title>Units of Measure (UOM) - {{ company.company_name_en }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen p-4 md:p-8 font-sans antialiased">
+
+    <div class="max-w-4xl mx-auto mb-6 flex justify-between items-center">
+        <a href="/inventory/bundles/" class="text-xs md:text-sm font-semibold text-slate-400 hover:text-white flex items-center gap-2">
+            <i class="fa-solid fa-arrow-left"></i> Back to Product Bundles
+        </a>
+    </div>
+
+    <div class="max-w-4xl mx-auto space-y-6">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl">
+            <h1 class="text-lg font-black text-white mb-1">📏 {% if is_ar %}وحدات القياس (Units of Measure / UOM){% else %}Units of Measure Management{% endif %}</h1>
+            <p class="text-xs text-slate-400 mb-6">Manage packaging units (Cartons, Boxes, Dozens, Pieces) for sales and purchasing.</p>
+
+            <form method="POST" class="flex gap-3 text-xs mb-6">
+                {% csrf_token %}
+                <input type="text" name="name" placeholder="Unit Name (e.g. Master Carton / علبة)" required class="flex-1 bg-slate-800 border border-slate-700 rounded-xl p-3 text-white font-bold">
+                <input type="text" name="symbol" placeholder="Symbol (e.g. Ctn / Box)" required class="w-32 bg-slate-800 border border-slate-700 rounded-xl p-3 text-white font-mono font-bold text-center">
+                <button type="submit" class="bg-indigo-500 hover:bg-indigo-400 text-slate-950 font-black px-6 py-3 rounded-xl transition">
+                    + Add Unit
+                </button>
+            </form>
+
+            <div class="space-y-2 border-t border-slate-800 pt-4">
+                <h3 class="text-xs font-bold text-slate-400 uppercase mb-2">Configured Packaging Units:</h3>
+                {% for u in units %}
+                <div class="flex justify-between items-center p-3 bg-slate-800/60 rounded-xl border border-slate-700 text-xs">
+                    <span class="font-bold text-white">{{ u.name }}</span>
+                    <span class="px-3 py-1 bg-slate-900 text-cyan-400 font-mono font-bold rounded-lg border border-slate-700">{{ u.symbol }}</span>
+                </div>
+                {% empty %}
+                <p class="text-slate-500 text-xs italic text-center py-4">No units added yet. Standard base unit is Pieces (Pcs).</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

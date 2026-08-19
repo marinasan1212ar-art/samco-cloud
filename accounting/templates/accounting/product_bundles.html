@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="{% if is_ar %}ar{% else %}en{% endif %}" dir="{{ lang_dir }}">
+<head>
+    <meta charset="UTF-8">
+    <title>Product Bundles & Assembly Kits - {{ company.company_name_en }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen p-4 md:p-8 font-sans antialiased">
+
+    <div class="max-w-6xl mx-auto mb-6 flex justify-between items-center">
+        <a href="/" class="text-xs md:text-sm font-semibold text-slate-400 hover:text-white flex items-center gap-2">
+            <i class="fa-solid fa-arrow-left"></i> {% if is_ar %}العودة للرئيسية{% else %}Back to Dashboard{% endif %}
+        </a>
+        <a href="/inventory/units/" class="bg-indigo-500 hover:bg-indigo-400 text-slate-950 px-4 py-2 rounded-xl font-bold text-xs shadow-lg flex items-center gap-2">
+            <i class="fa-solid fa-ruler-combined"></i> Units of Measure (UOM)
+        </a>
+    </div>
+
+    <div class="max-w-6xl mx-auto space-y-6">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl">
+            <h1 class="text-lg font-black text-white mb-1">📦 {% if is_ar %}المنتجات المجمعة والباقات (Combo Kits / Bundles){% else %}Product Bundles & Combo Kits (Quyod Engine){% endif %}</h1>
+            <p class="text-xs text-slate-400 mb-6">Create promotional bundles that automatically deduct individual component stocks upon sale.</p>
+
+            <!-- Create Bundle Form -->
+            <form method="POST" class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs mb-6">
+                {% csrf_token %}
+                <input type="hidden" name="create_bundle" value="1">
+                <div>
+                    <label class="block text-slate-400 mb-1">Bundle Name (اسم الباقة)</label>
+                    <input type="text" name="name" placeholder="e.g. VIP Diagnostic Combo Kit" required class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-white font-bold">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1">CAT / SKU Number</label>
+                    <input type="text" name="cat_no" placeholder="KIT-001" required class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-white font-mono font-bold">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1">Combo Price (SAR)</label>
+                    <input type="number" step="0.01" name="sale_price" placeholder="0.00" required class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-white font-bold">
+                </div>
+                <div class="flex items-end">
+                    <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black p-3.5 rounded-xl transition">
+                        + Create Bundle
+                    </button>
+                </div>
+            </form>
+
+            <!-- Assign Component Products -->
+            {% if bundle_products %}
+            <div class="border-t border-slate-800 pt-4">
+                <h3 class="text-xs font-bold text-cyan-400 mb-3">Add Product Component to Bundle:</h3>
+                <form method="POST" class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
+                    {% csrf_token %}
+                    <input type="hidden" name="add_component" value="1">
+                    <div>
+                        <select name="bundle_id" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-white font-bold">
+                            {% for b in bundle_products %}
+                            <option value="{{ b.id }}">{{ b.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <select name="component_id" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-white">
+                            {% for p in individual_products %}
+                            <option value="{{ p.id }}">{{ p.name }} (Stock: {{ p.current_stock }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <input type="number" min="1" name="qty" value="1" placeholder="Quantity in Pack" required class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-white font-bold">
+                    </div>
+                    <div>
+                        <button type="submit" class="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black p-2.5 rounded-xl transition">
+                            Include in Bundle
+                        </button>
+                    </div>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Bundle Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {% for b in bundle_products %}
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-xl space-y-3">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h3 class="font-black text-sm text-white">{{ b.name }}</h3>
+                        <span class="text-[10px] font-mono text-cyan-400">#{{ b.cat_no }}</span>
+                    </div>
+                    <span class="text-sm font-black text-emerald-400">{{ b.sale_price }} SAR</span>
+                </div>
+                <div class="space-y-1.5 text-xs text-slate-300 border-t border-slate-800 pt-3">
+                    <p class="text-[10px] font-bold text-slate-500 uppercase">Pack Components:</p>
+                    {% for comp in b.bundle_components.all %}
+                    <div class="flex justify-between py-1 border-b border-slate-800/60">
+                        <span class="truncate w-40 text-slate-300">{{ comp.component_product.name }}</span>
+                        <span class="font-bold text-cyan-400">x{{ comp.quantity }}</span>
+                    </div>
+                    {% empty %}
+                    <p class="text-slate-500 italic py-2 text-center text-[11px]">No component items added yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-span-full bg-slate-900 border border-slate-800 rounded-3xl p-8 text-center text-slate-500 italic text-xs">
+                No product bundles created yet. Create a combo kit above!
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>
