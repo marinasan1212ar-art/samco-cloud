@@ -1,166 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Create Tax Invoice - {{ company.company_name_en }}</title>
+    <meta charset="UTF-8"><title>Create Tax Invoice</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
-        function addRow() {
-            const table = document.getElementById('items-tbody');
-            const row = document.createElement('tr');
-            row.className = 'border-b border-slate-800';
-            row.innerHTML = `
-                <td class="p-2">
-                    <select name="product_id[]" onchange="updatePrice(this)" required class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white">
-                        <option value="">Select Product...</option>
-                        {% for p in products %}
-                        <option value="{{ p.id }}" data-price="{{ p.sale_price }}">{{ p.name }} (Stock: {{ p.current_stock }})</option>
-                        {% endfor %}
-                    </select>
-                </td>
-                <td class="p-2">
-                    <input type="number" min="1" name="qty[]" value="1" oninput="calcTotals()" required class="w-20 bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-center text-white font-bold">
-                </td>
-                <td class="p-2">
-                    <input type="number" step="0.01" name="price[]" value="0.00" oninput="calcTotals()" required class="w-28 bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-right text-white font-bold">
-                </td>
-                <td class="p-2 text-right font-mono font-bold text-cyan-400 row-total">0.00 SAR</td>
-                <td class="p-2 text-center">
-                    <button type="button" onclick="removeRow(this)" class="text-rose-400 hover:text-rose-300"><i class="fa-solid fa-trash"></i></button>
-                </td>
+        function openModal(){ document.getElementById('c-modal').classList.remove('hidden'); }
+        function closeModal(){ document.getElementById('c-modal').classList.add('hidden'); }
+        function addRow(){
+            const tr = document.createElement('tr');
+            tr.className = 'border-b border-slate-200';
+            tr.innerHTML = `
+                <td class="p-2"><select name="product_id[]" onchange="updatePr(this)" required class="w-full border border-slate-300 rounded p-2 text-xs font-bold">
+                    <option value="">Select Item...</option>{% for p in products %}<option value="{{ p.id }}" data-p="{{ p.sale_price }}">{{ p.name }}</option>{% endfor %}
+                </select></td>
+                <td class="p-2"><input type="text" name="description[]" placeholder="Description / الوصف" class="w-full border border-slate-300 rounded p-2 text-xs"></td>
+                <td class="p-2"><input type="number" min="1" name="qty[]" value="1" oninput="calc()" class="w-16 border border-slate-300 rounded p-2 text-center text-xs font-bold"></td>
+                <td class="p-2"><input type="number" step="0.01" name="price[]" value="0.00" oninput="calc()" class="w-24 border border-slate-300 rounded p-2 text-right text-xs font-bold"></td>
+                <td class="p-2"><input type="number" min="0" max="100" name="discount_pct[]" value="0" oninput="calc()" class="w-16 border border-slate-300 rounded p-2 text-center text-xs"></td>
+                <td class="p-2 text-right font-bold text-slate-900 line-tot">0.00 SAR</td>
+                <td class="p-2 text-center"><button type="button" onclick="this.closest('tr').remove();calc()" class="text-rose-500"><i class="fa-solid fa-trash"></i></button></td>
             `;
-            table.appendChild(row);
+            document.getElementById('tb').appendChild(tr);
         }
-
-        function updatePrice(select) {
-            const price = select.options[select.selectedIndex].getAttribute('data-price') || '0.00';
-            const row = select.closest('tr');
-            row.querySelector('input[name="price[]"]').value = parseFloat(price).toFixed(2);
-            calcTotals();
+        function updatePr(s){
+            const pr = s.options[s.selectedIndex].getAttribute('data-p') || '0.00';
+            s.closest('tr').querySelector('input[name="price[]"]').value = parseFloat(pr).toFixed(2);
+            calc();
         }
-
-        function removeRow(btn) {
-            btn.closest('tr').remove();
-            calcTotals();
-        }
-
-        function calcTotals() {
-            let subtotal = 0;
-            document.querySelectorAll('#items-tbody tr').forEach(row => {
-                const qty = parseFloat(row.querySelector('input[name="qty[]"]').value) || 0;
-                const price = parseFloat(row.querySelector('input[name="price[]"]').value) || 0;
-                const total = qty * price;
-                row.querySelector('.row-total').innerText = total.toFixed(2) + ' SAR';
-                subtotal += total;
+        function calc(){
+            let sub = 0;
+            document.querySelectorAll('#tb tr').forEach(r => {
+                const q = parseFloat(r.querySelector('input[name="qty[]"]').value) || 0;
+                const p = parseFloat(r.querySelector('input[name="price[]"]').value) || 0;
+                const d = parseFloat(r.querySelector('input[name="discount_pct[]"]').value) || 0;
+                const net = (q * p) * (1 - d/100);
+                r.querySelector('.line-tot').innerText = net.toFixed(2) + ' SAR';
+                sub += net;
             });
-            const vat = subtotal * 0.15;
-            const grand = subtotal + vat;
-            document.getElementById('display-subtotal').innerText = subtotal.toFixed(2) + ' SAR';
-            document.getElementById('display-vat').innerText = vat.toFixed(2) + ' SAR';
-            document.getElementById('display-grand').innerText = grand.toFixed(2) + ' SAR';
+            const disc = parseFloat(document.getElementById('extra-d').value) || 0;
+            const tax = Math.max(0, sub - disc);
+            const vat = tax * 0.15;
+            document.getElementById('sub-txt').innerText = sub.toFixed(2) + ' SAR';
+            document.getElementById('vat-txt').innerText = vat.toFixed(2) + ' SAR';
+            document.getElementById('gr-txt').innerText = (tax + vat).toFixed(2) + ' SAR';
         }
     </script>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen p-4 md:p-8 font-sans antialiased">
-
-    <div class="max-w-4xl mx-auto mb-6 flex justify-between items-center">
-        <a href="/invoices/" class="text-xs md:text-sm font-semibold text-slate-400 hover:text-white flex items-center gap-2">
-            <i class="fa-solid fa-arrow-left"></i> Back to Invoices
-        </a>
-    </div>
-
-    <div class="max-w-4xl mx-auto bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl space-y-6">
-        <div class="flex justify-between items-center border-b border-slate-800 pb-4">
-            <div>
-                <h1 class="text-lg font-black text-white">➕ Create ZATCA Tax Invoice (إنشاء فاتورة ضريبية)</h1>
-                <p class="text-xs text-slate-400 mt-0.5">Issue standard electronic tax invoice with automatic Phase-2 QR & Accounting</p>
-            </div>
+<body class="bg-slate-50 text-slate-800 p-6">
+    <div class="max-w-5xl mx-auto bg-white border border-slate-200 rounded-2xl shadow-xl p-8 space-y-6">
+        <div class="flex justify-between items-center border-b pb-4">
+            <h1 class="text-xl font-black text-slate-900">إنشاء فاتورة ضريبية جديدة (New Tax Invoice)</h1>
+            <a href="/invoices/" class="text-xs font-bold text-slate-500 hover:text-indigo-600">Back</a>
         </div>
-
         <form method="POST" class="space-y-6 text-xs">
             {% csrf_token %}
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                    <label class="block font-bold text-slate-300 mb-1">Customer / العميل *</label>
-                    <select name="customer_id" required class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-white font-bold">
-                        {% for c in customers %}
-                        <option value="{{ c.id }}">{{ c.name }} (VAT: {{ c.vat_number|default:"N/A" }})</option>
-                        {% endfor %}
+            <input type="hidden" name="create_invoice" value="1">
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 bg-slate-50 p-4 border rounded-xl">
+                <div class="sm:col-span-2">
+                    <div class="flex justify-between"><label class="font-bold text-slate-700">Customer / العميل *</label><button type="button" onclick="openModal()" class="text-indigo-600 font-bold">+ New Customer (عميل جديد)</button></div>
+                    <select name="customer_id" required class="w-full border rounded-lg p-2.5 bg-white font-bold">
+                        <option value="">Select Customer...</option>{% for c in customers %}<option value="{{ c.id }}">{{ c.name }} {% if c.vat_number %}[الرقم الضريبي: {{ c.vat_number }}]{% endif %}</option>{% endfor %}
                     </select>
                 </div>
-                <div>
-                    <label class="block font-bold text-slate-300 mb-1">Dispatching Warehouse / المستودع</label>
-                    <select name="warehouse_id" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-white font-bold">
-                        {% for wh in warehouses %}
-                        <option value="{{ wh.id }}">{{ wh.name_en }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
+                <div><label class="font-bold text-slate-700">Issue Date (تاريخ الإصدار)</label><input type="date" name="issue_date" value="{{ today }}" required class="w-full border rounded-lg p-2 bg-white font-bold"></div>
+                <div><label class="font-bold text-slate-700">Supply Date (تاريخ التوريد)</label><input type="date" name="supply_date" value="{{ today }}" required class="w-full border rounded-lg p-2 bg-white font-bold"></div>
             </div>
-
-            <!-- Line Items Table -->
-            <div class="border border-slate-800 rounded-2xl overflow-hidden">
+            <div class="border rounded-xl overflow-hidden">
                 <table class="w-full text-left text-xs">
-                    <thead>
-                        <tr class="bg-slate-800 text-slate-300 font-bold border-b border-slate-700">
-                            <th class="p-3">Product / الصنف</th>
-                            <th class="p-3 text-center">Qty</th>
-                            <th class="p-3 text-right">Unit Price (SAR)</th>
-                            <th class="p-3 text-right">Line Total</th>
-                            <th class="p-3 text-center"></th>
-                        </tr>
-                    </thead>
-                    <tbody id="items-tbody">
-                        <tr class="border-b border-slate-800">
-                            <td class="p-2">
-                                <select name="product_id[]" onchange="updatePrice(this)" required class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white">
-                                    <option value="">Select Product...</option>
-                                    {% for p in products %}
-                                    <option value="{{ p.id }}" data-price="{{ p.sale_price }}">{{ p.name }} (Stock: {{ p.current_stock }})</option>
-                                    {% endfor %}
-                                </select>
-                            </td>
-                            <td class="p-2">
-                                <input type="number" min="1" name="qty[]" value="1" oninput="calcTotals()" required class="w-20 bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-center text-white font-bold">
-                            </td>
-                            <td class="p-2">
-                                <input type="number" step="0.01" name="price[]" value="0.00" oninput="calcTotals()" required class="w-28 bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-right text-white font-bold">
-                            </td>
-                            <td class="p-2 text-right font-mono font-bold text-cyan-400 row-total">0.00 SAR</td>
+                    <thead><tr class="bg-slate-100 font-bold"><th class="p-3">Product / الصنف</th><th class="p-3">Description</th><th class="p-3 text-center">Qty</th><th class="p-3 text-right">Price</th><th class="p-3 text-center">Disc%</th><th class="p-3 text-right">Total</th><th class="p-3"></th></tr></thead>
+                    <tbody id="tb">
+                        <tr class="border-b border-slate-200">
+                            <td class="p-2"><select name="product_id[]" onchange="updatePr(this)" required class="w-full border rounded p-2 text-xs font-bold"><option value="">Select Item...</option>{% for p in products %}<option value="{{ p.id }}" data-p="{{ p.sale_price }}">{{ p.name }}</option>{% endfor %}</select></td>
+                            <td class="p-2"><input type="text" name="description[]" placeholder="Description / الوصف" class="w-full border rounded p-2 text-xs"></td>
+                            <td class="p-2"><input type="number" min="1" name="qty[]" value="1" oninput="calc()" class="w-16 border rounded p-2 text-center text-xs font-bold"></td>
+                            <td class="p-2"><input type="number" step="0.01" name="price[]" value="0.00" oninput="calc()" class="w-24 border rounded p-2 text-right text-xs font-bold"></td>
+                            <td class="p-2"><input type="number" min="0" max="100" name="discount_pct[]" value="0" oninput="calc()" class="w-16 border rounded p-2 text-center text-xs"></td>
+                            <td class="p-2 text-right font-bold line-tot">0.00 SAR</td>
                             <td class="p-2 text-center"></td>
                         </tr>
                     </tbody>
                 </table>
-                <div class="p-3 bg-slate-800/40 border-t border-slate-800">
-                    <button type="button" onclick="addRow()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-cyan-400 font-bold rounded-lg text-xs">
-                        + Add Another Item Line
-                    </button>
+                <div class="p-2 bg-slate-50"><button type="button" onclick="addRow()" class="px-3 py-1 bg-white border rounded font-bold text-indigo-600 text-xs">+ Add Line Item</button></div>
+            </div>
+            <div class="flex justify-end">
+                <div class="w-72 p-4 bg-slate-50 border rounded-xl space-y-2">
+                    <div class="flex justify-between"><span>Subtotal:</span><span id="sub-txt" class="font-bold">0.00 SAR</span></div>
+                    <div class="flex justify-between items-center"><span>Extra Discount:</span><input type="number" step="0.01" id="extra-d" name="discount_amount" value="0.00" oninput="calc()" class="w-24 border rounded p-1 text-right text-xs font-bold"></div>
+                    <div class="flex justify-between text-amber-600 font-bold border-t pt-2"><span>15% ZATCA VAT:</span><span id="vat-txt">0.00 SAR</span></div>
+                    <div class="flex justify-between text-base font-black text-slate-900 border-t-2 pt-2"><span>Grand Total:</span><span id="gr-txt" class="text-indigo-600">0.00 SAR</span></div>
                 </div>
             </div>
-
-            <!-- Totals Summary -->
-            <div class="flex justify-end text-xs">
-                <div class="w-64 space-y-2 p-4 bg-slate-800/60 rounded-2xl border border-slate-700">
-                    <div class="flex justify-between text-slate-400">
-                        <span>Subtotal (Excl. VAT):</span>
-                        <span id="display-subtotal" class="font-bold text-white font-mono">0.00 SAR</span>
-                    </div>
-                    <div class="flex justify-between text-amber-400">
-                        <span>15% ZATCA VAT:</span>
-                        <span id="display-vat" class="font-bold font-mono">0.00 SAR</span>
-                    </div>
-                    <div class="flex justify-between text-sm font-black text-emerald-400 pt-2 border-t border-slate-700">
-                        <span>Grand Total:</span>
-                        <span id="display-grand" class="font-mono">0.00 SAR</span>
-                    </div>
-                </div>
-            </div>
-
-            <button type="submit" class="w-full bg-gradient-to-r from-cyan-500 to-emerald-400 text-slate-950 font-black py-4 rounded-xl text-sm shadow-xl transition">
-                ✓ Issue Official ZATCA Tax Invoice
-            </button>
+            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black py-3.5 rounded-xl text-sm shadow">✓ Issue Official ZATCA Tax Invoice</button>
         </form>
+    </div>
+    <div id="c-modal" class="fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl space-y-3">
+            <div class="flex justify-between border-b pb-2"><h3 class="font-bold text-sm">👤 Add New Customer (إضافة عميل)</h3><button onclick="closeModal()" class="text-slate-400">✕</button></div>
+            <form method="POST" class="space-y-2 text-xs">
+                {% csrf_token %}<input type="hidden" name="create_quick_customer" value="1">
+                <input type="text" name="c_name" required placeholder="Customer Name (English) *" class="w-full border rounded-lg p-2 font-bold">
+                <input type="text" name="c_name_ar" placeholder="اسم العميل بالعربية" dir="rtl" class="w-full border rounded-lg p-2 font-bold">
+                <input type="text" name="c_vat_number" placeholder="15-Digit VAT ID (الرقم الضريبي)" class="w-full border rounded-lg p-2 font-mono">
+                <input type="text" name="c_phone" placeholder="Phone Number" class="w-full border rounded-lg p-2">
+                <button type="submit" class="w-full bg-emerald-600 text-white font-bold py-2.5 rounded-xl">✓ Save Customer</button>
+            </form>
+        </div>
     </div>
 </body>
 </html>

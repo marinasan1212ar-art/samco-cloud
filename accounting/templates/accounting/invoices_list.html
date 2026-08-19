@@ -1,90 +1,30 @@
 <!DOCTYPE html>
-<html lang="{% if is_ar %}ar{% else %}en{% endif %}" dir="{{ lang_dir }}">
-<head>
-    <meta charset="UTF-8">
-    <title>Invoices & Sales Management - {{ company.company_name_en }}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body class="bg-slate-950 text-slate-100 min-h-screen p-4 md:p-8 font-sans antialiased">
-
-    <div class="max-w-6xl mx-auto mb-6 flex justify-between items-center">
-        <a href="/" class="text-xs md:text-sm font-semibold text-slate-400 hover:text-white flex items-center gap-2">
-            <i class="fa-solid fa-arrow-left"></i> {% if is_ar %}العودة للرئيسية{% else %}Back to Dashboard{% endif %}
-        </a>
-        <div class="flex items-center gap-3">
-            <a href="/invoices/create/" class="bg-gradient-to-r from-cyan-500 to-emerald-400 text-slate-950 font-black px-5 py-2.5 rounded-xl text-xs shadow-lg flex items-center gap-2">
-                <i class="fa-solid fa-plus"></i> {% if is_ar %}إنشاء فاتورة ضريبية جديدة{% else %}+ Create Tax Invoice{% endif %}
-            </a>
-        </div>
-    </div>
-
+<html lang="en">
+<head><meta charset="UTF-8"><title>Invoices List</title><script src="https://cdn.tailwindcss.com"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></head>
+<body class="bg-slate-50 text-slate-800 min-h-screen p-6 font-sans">
     <div class="max-w-6xl mx-auto space-y-6">
-        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <div>
-                <h1 class="text-xl md:text-2xl font-black text-white">📑 {% if is_ar %}إدارة الفواتير والمبيعات الضريبية{% else %}Sales Tax Invoices Ledger (Quyod Engine){% endif %}</h1>
-                <p class="text-xs text-slate-400 mt-1">ZATCA Phase-2 Electronic Tax Invoices & Partial Payment Tracking</p>
-            </div>
-            
-            <!-- Filter Tabs -->
-            <div class="flex gap-2 text-xs">
-                <a href="/invoices/" class="px-3 py-1.5 rounded-xl {% if not status_filter %}bg-cyan-500 text-slate-950 font-black{% else %}bg-slate-800 text-slate-300{% endif %}">All Invoices</a>
-                <a href="/invoices/?status=PAID" class="px-3 py-1.5 rounded-xl {% if status_filter == 'PAID' %}bg-emerald-500 text-slate-950 font-black{% else %}bg-slate-800 text-emerald-400{% endif %}">Paid 🟢</a>
-                <a href="/invoices/?status=PARTIALLY_PAID" class="px-3 py-1.5 rounded-xl {% if status_filter == 'PARTIALLY_PAID' %}bg-amber-500 text-slate-950 font-black{% else %}bg-slate-800 text-amber-400{% endif %}">Partial 🟡</a>
-                <a href="/invoices/?status=UNPAID" class="px-3 py-1.5 rounded-xl {% if status_filter == 'UNPAID' %}bg-rose-500 text-slate-950 font-black{% else %}bg-slate-800 text-rose-400{% endif %}">Unpaid 🔴</a>
-            </div>
+        <div class="flex justify-between items-center">
+            <div><h1 class="text-2xl font-black text-slate-900">📑 Sales Tax Invoices (الفواتير الضريبية)</h1><p class="text-xs text-slate-500">ZATCA Phase-2 Electronic Tax Invoices</p></div>
+            <a href="/invoices/create/" class="bg-indigo-600 hover:bg-indigo-500 text-white font-black px-4 py-2.5 rounded-xl text-xs shadow flex items-center gap-1"><i class="fa-solid fa-plus"></i> + Create Tax Invoice</a>
         </div>
-
-        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs border-collapse">
-                    <thead>
-                        <tr class="bg-slate-800 text-slate-300 uppercase font-bold border-b border-slate-700">
-                            <th class="p-3"># Invoice No</th>
-                            <th class="p-3">Customer / العميل</th>
-                            <th class="p-3">Date</th>
-                            <th class="p-3 text-right">Total (SAR)</th>
-                            <th class="p-3 text-right">Paid (SAR)</th>
-                            <th class="p-3 text-right">Due (SAR)</th>
-                            <th class="p-3 text-center">Status</th>
-                            <th class="p-3 text-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-800">
-                        {% for inv in invoices %}
-                        <tr class="hover:bg-slate-800/40 text-slate-200">
-                            <td class="p-3 font-mono font-bold text-cyan-400">#{{ inv.invoice_no }}</td>
-                            <td class="p-3 font-bold text-white">{{ inv.customer.name }}</td>
-                            <td class="p-3 text-slate-400">{{ inv.date|date:"d M Y" }}</td>
-                            <td class="p-3 text-right font-mono font-bold text-white">{{ inv.total_amount|floatformat:2 }}</td>
-                            <td class="p-3 text-right font-mono text-emerald-400">{{ inv.amount_paid|floatformat:2 }}</td>
-                            <td class="p-3 text-right font-mono font-bold {% if inv.remaining_due > 0 %}text-rose-400{% else %}text-slate-400{% endif %}">
-                                {{ inv.remaining_due|floatformat:2 }}
-                            </td>
-                            <td class="p-3 text-center">
-                                {% if inv.payment_status == 'PAID' %}
-                                <span class="px-2.5 py-1 bg-emerald-500/20 text-emerald-400 font-bold rounded-md text-[10px]">● PAID</span>
-                                {% elif inv.payment_status == 'PARTIALLY_PAID' %}
-                                <span class="px-2.5 py-1 bg-amber-500/20 text-amber-400 font-bold rounded-md text-[10px]">◐ PARTIAL</span>
-                                {% else %}
-                                <span class="px-2.5 py-1 bg-rose-500/20 text-rose-400 font-bold rounded-md text-[10px]">○ UNPAID</span>
-                                {% endif %}
-                            </td>
-                            <td class="p-3 text-right space-x-2">
-                                <a href="/invoice/{{ inv.id }}/" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-cyan-400 font-bold rounded-lg text-[11px]">
-                                    <i class="fa-solid fa-print"></i> View
-                                </a>
-                                <a href="/invoice/{{ inv.id }}/delivery/" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-emerald-400 font-bold rounded-lg text-[11px]">
-                                    <i class="fa-solid fa-truck"></i> Dispatch
-                                </a>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr><td colspan="8" class="p-8 text-center text-slate-500 italic">No invoices found. Click "+ Create Tax Invoice" to issue your first invoice!</td></tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+        <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+            <table class="w-full text-left text-xs border-collapse">
+                <thead><tr class="bg-slate-100 text-slate-700 font-bold border-b"><th class="p-3"># Invoice</th><th class="p-3">Customer</th><th class="p-3">Date</th><th class="p-3 text-right">Total (SAR)</th><th class="p-3 text-right">Paid</th><th class="p-3 text-right">Due</th><th class="p-3 text-center">Status</th><th class="p-3 text-right">Actions</th></tr></thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for inv in invoices %}
+                    <tr class="hover:bg-slate-50 text-slate-800">
+                        <td class="p-3 font-mono font-bold text-indigo-600">#{{ inv.invoice_no }}</td>
+                        <td class="p-3 font-bold">{{ inv.customer.name }}</td>
+                        <td class="p-3 text-slate-500">{{ inv.date|date:"d M Y" }}</td>
+                        <td class="p-3 text-right font-mono font-bold">{{ inv.total_amount|floatformat:2 }}</td>
+                        <td class="p-3 text-right font-mono text-emerald-600">{{ inv.amount_paid|floatformat:2 }}</td>
+                        <td class="p-3 text-right font-mono font-bold text-rose-600">{{ inv.remaining_due|floatformat:2 }}</td>
+                        <td class="p-3 text-center"><span class="px-2 py-0.5 bg-slate-100 border rounded font-bold text-[10px]">{{ inv.get_payment_status_display }}</span></td>
+                        <td class="p-3 text-right"><a href="/invoice/{{ inv.id }}/" class="px-3 py-1 bg-indigo-50 text-indigo-700 font-bold rounded-lg hover:bg-indigo-100">View / Print 🖨️</a></td>
+                    </tr>
+                    {% empty %}<tr><td colspan="8" class="p-8 text-center text-slate-400 italic">No invoices issued yet. Click "+ Create Tax Invoice" to issue one!</td></tr>{% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 </body>
