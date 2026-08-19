@@ -16,12 +16,18 @@
                 <div><h1 class="font-black text-base tracking-wide text-white">SAMCO ERP</h1><p class="text-[10px] text-amber-400 font-black tracking-wider uppercase">Quyod Enterprise SaaS</p></div>
             </div>
 
-            <nav class="p-4 space-y-1 text-xs font-semibold">
+            <nav class="p-4 space-y-1.5 text-xs font-semibold">
                 <a href="/" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-cyan-500/10 text-cyan-400 font-bold border border-cyan-500/20"><i class="fa-solid fa-chart-pie w-5"></i> {% if is_ar %}الرئيسية{% else %}Dashboard{% endif %}</a>
-                <a href="/pos/" target="_blank" class="flex items-center gap-3 px-4 py-3 rounded-xl text-emerald-400 hover:bg-emerald-500/10 transition"><i class="fa-solid fa-cash-register w-5 text-emerald-400"></i> {% if is_ar %}نقاط البيع (POS){% else %}Cloud POS Terminal{% endif %}</a>
-                <a href="/banking/reconciliation/" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sky-400 hover:bg-sky-500/10 transition"><i class="fa-solid fa-building-columns w-5 text-sky-400"></i> {% if is_ar %}المطابقة البنكية{% else %}Bank Reconciliation{% endif %}</a>
-                <a href="/banking/transfer/" class="flex items-center gap-3 px-4 py-3 rounded-xl text-indigo-400 hover:bg-indigo-500/10 transition"><i class="fa-solid fa-money-bill-transfer w-5 text-indigo-400"></i> {% if is_ar %}التحويل بين الحسابات{% else %}Fund Transfers{% endif %}</a>
-                <a href="/manufacturing/" class="flex items-center gap-3 px-4 py-3 rounded-xl text-amber-400 hover:bg-amber-500/10 transition"><i class="fa-solid fa-industry w-5 text-amber-400"></i> {% if is_ar %}التصنيع{% else %}Manufacturing{% endif %}</a>
+                
+                <!-- 🌟 INVOICES & SALES MENU (Quyod Style) -->
+                <a href="/invoices/" class="flex items-center gap-3 px-4 py-3 rounded-xl text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 font-black hover:bg-emerald-500/20 transition"><i class="fa-solid fa-file-invoice w-5 text-emerald-400"></i> {% if is_ar %}الفواتير والمبيعات{% else %}Invoices & Sales{% endif %}</a>
+                
+                <a href="/pos/" target="_blank" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800/60 transition"><i class="fa-solid fa-cash-register w-5 text-emerald-400"></i> {% if is_ar %}نقاط البيع (POS){% else %}Cloud POS Terminal{% endif %}</a>
+                <a href="/inventory/bundles/" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800/60 transition"><i class="fa-solid fa-boxes-stacked w-5 text-amber-400"></i> {% if is_ar %}المنتجات والمخزون{% else %}Products & Bundles{% endif %}</a>
+                <a href="/expenses/" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800/60 transition"><i class="fa-solid fa-money-bill-wave w-5 text-rose-400"></i> {% if is_ar %}سندات المصروفات{% else %}Direct Expenses{% endif %}</a>
+                <a href="/banking/reconciliation/" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800/60 transition"><i class="fa-solid fa-building-columns w-5 text-sky-400"></i> {% if is_ar %}المطابقة البنكية{% else %}Bank Reconciliation{% endif %}</a>
+                <a href="/banking/transfer/" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800/60 transition"><i class="fa-solid fa-money-bill-transfer w-5 text-indigo-400"></i> {% if is_ar %}التحويل بين الحسابات{% else %}Fund Transfers{% endif %}</a>
+                <a href="/manufacturing/" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800/60 transition"><i class="fa-solid fa-industry w-5 text-amber-400"></i> {% if is_ar %}التصنيع{% else %}Manufacturing{% endif %}</a>
                 <a href="/reports/" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800/60 transition"><i class="fa-solid fa-file-invoice-dollar w-5 text-amber-400"></i> {% if is_ar %}التقارير المالية{% else %}Financial Reports{% endif %}</a>
                 <a href="/admin/" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800/60 transition"><i class="fa-solid fa-user-shield w-5 text-rose-400"></i> {% if is_ar %}الإدارة{% else %}Admin Database{% endif %}</a>
             </nav>
@@ -34,7 +40,7 @@
                 <span class="text-xs px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> ZATCA Phase-2 & SFDA Ready</span>
             </div>
             <div class="flex items-center gap-2 md:gap-3">
-                <a href="/banking/reconciliation/" class="flex items-center gap-1.5 bg-sky-500/20 border border-sky-500/40 text-sky-400 font-bold px-3 py-1.5 rounded-xl text-xs hover:bg-sky-500/30 transition"><i class="fa-solid fa-building-columns"></i> Bank Match</a>
+                <a href="/invoices/create/" class="flex items-center gap-1.5 bg-gradient-to-r from-cyan-500 to-emerald-400 text-slate-950 font-black px-3.5 py-1.5 rounded-xl text-xs shadow-lg transition"><i class="fa-solid fa-plus"></i> New Tax Invoice</a>
                 <a href="/pos/" target="_blank" class="flex items-center gap-1.5 bg-emerald-500 text-slate-950 font-black px-3.5 py-1.5 rounded-xl text-xs shadow-lg transition hover:bg-emerald-400"><i class="fa-solid fa-cash-register"></i> Launch POS</a>
                 {% if is_ar %}<a href="/set-language/en/" class="px-3 py-1.5 rounded-xl bg-slate-800 text-slate-200 font-bold text-xs border border-slate-700">🌐 EN</a>{% else %}<a href="/set-language/ar/" class="px-3 py-1.5 rounded-xl bg-slate-800 text-amber-400 font-bold text-xs border border-amber-500/30">🌐 AR</a>{% endif %}
             </div>
@@ -54,7 +60,7 @@
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-sm font-black text-rose-400 flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left"></i> Unpaid & Pending Invoices (فواتير بانتظار التحصيل)</h3>
-                        <span class="text-[10px] bg-rose-500/20 text-rose-300 px-2.5 py-1 rounded-full border border-rose-500/30 font-bold">Action Required</span>
+                        <a href="/invoices/?status=UNPAID" class="text-[10px] bg-rose-500/20 text-rose-300 px-2.5 py-1 rounded-full border border-rose-500/30 font-bold hover:bg-rose-500/30">View All</a>
                     </div>
                     <div class="space-y-2">
                         {% for inv in overdue_invoices %}
@@ -78,7 +84,7 @@
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-sm font-black text-amber-400 flex items-center gap-2"><i class="fa-solid fa-triangle-exclamation"></i> Low Stock Warning (تنبيه انخفاض المخزون)</h3>
-                        <span class="text-[10px] bg-amber-500/20 text-amber-300 px-2.5 py-1 rounded-full border border-amber-500/30 font-bold">&lt; 10 Units</span>
+                        <a href="/inventory/bundles/" class="text-[10px] bg-amber-500/20 text-amber-300 px-2.5 py-1 rounded-full border border-amber-500/30 font-bold hover:bg-amber-500/30">&lt; 10 Units</a>
                     </div>
                     <div class="space-y-2">
                         {% for p in low_stock_products %}

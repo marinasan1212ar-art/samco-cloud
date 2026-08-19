@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Tax Invoice - {{ company.company_name_en }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        function addRow() {
+            const table = document.getElementById('items-tbody');
+            const row = document.createElement('tr');
+            row.className = 'border-b border-slate-800';
+            row.innerHTML = `
+                <td class="p-2">
+                    <select name="product_id[]" onchange="updatePrice(this)" required class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white">
+                        <option value="">Select Product...</option>
+                        {% for p in products %}
+                        <option value="{{ p.id }}" data-price="{{ p.sale_price }}">{{ p.name }} (Stock: {{ p.current_stock }})</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td class="p-2">
+                    <input type="number" min="1" name="qty[]" value="1" oninput="calcTotals()" required class="w-20 bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-center text-white font-bold">
+                </td>
+                <td class="p-2">
+                    <input type="number" step="0.01" name="price[]" value="0.00" oninput="calcTotals()" required class="w-28 bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-right text-white font-bold">
+                </td>
+                <td class="p-2 text-right font-mono font-bold text-cyan-400 row-total">0.00 SAR</td>
+                <td class="p-2 text-center">
+                    <button type="button" onclick="removeRow(this)" class="text-rose-400 hover:text-rose-300"><i class="fa-solid fa-trash"></i></button>
+                </td>
+            `;
+            table.appendChild(row);
+        }
+
+        function updatePrice(select) {
+            const price = select.options[select.selectedIndex].getAttribute('data-price') || '0.00';
+            const row = select.closest('tr');
+            row.querySelector('input[name="price[]"]').value = parseFloat(price).toFixed(2);
+            calcTotals();
+        }
+
+        function removeRow(btn) {
+            btn.closest('tr').remove();
+            calcTotals();
+        }
+
+        function calcTotals() {
+            let subtotal = 0;
+            document.querySelectorAll('#items-tbody tr').forEach(row => {
+                const qty = parseFloat(row.querySelector('input[name="qty[]"]').value) || 0;
+                const price = parseFloat(row.querySelector('input[name="price[]"]').value) || 0;
+                const total = qty * price;
+                row.querySelector('.row-total').innerText = total.toFixed(2) + ' SAR';
+                subtotal += total;
+            });
+            const vat = subtotal * 0.15;
+            const grand = subtotal + vat;
+            document.getElementById('display-subtotal').innerText = subtotal.toFixed(2) + ' SAR';
+            document.getElementById('display-vat').innerText = vat.toFixed(2) + ' SAR';
+            document.getElementById('display-grand').innerText = grand.toFixed(2) + ' SAR';
+        }
+    </script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen p-4 md:p-8 font-sans antialiased">
+
+    <div class="max-w-4xl mx-auto mb-6 flex justify-between items-center">
+        <a href="/invoices/" class="text-xs md:text-sm font-semibold text-slate-400 hover:text-white flex items-center gap-2">
+            <i class="fa-solid fa-arrow-left"></i> Back to Invoices
+        </a>
+    </div>
+
+    <div class="max-w-4xl mx-auto bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl space-y-6">
+        <div class="flex justify-between items-center border-b border-slate-800 pb-4">
+            <div>
+                <h1 class="text-lg font-black text-white">➕ Create ZATCA Tax Invoice (إنشاء فاتورة ضريبية)</h1>
+                <p class="text-xs text-slate-400 mt-0.5">Issue standard electronic tax invoice with automatic Phase-2 QR & Accounting</p>
+            </div>
+        </div>
+
+        <form method="POST" class="space-y-6 text-xs">
+            {% csrf_token %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-bold text-slate-300 mb-1">Customer / العميل *</label>
+                    <select name="customer_id" required class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-white font-bold">
+                        {% for c in customers %}
+                        <option value="{{ c.id }}">{{ c.name }} (VAT: {{ c.vat_number|default:"N/A" }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-300 mb-1">Dispatching Warehouse / المستودع</label>
+                    <select name="warehouse_id" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-white font-bold">
+                        {% for wh in warehouses %}
+                        <option value="{{ wh.id }}">{{ wh.name_en }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <!-- Line Items Table -->
+            <div class="border border-slate-800 rounded-2xl overflow-hidden">
+                <table class="w-full text-left text-xs">
+                    <thead>
+                        <tr class="bg-slate-800 text-slate-300 font-bold border-b border-slate-700">
+                            <th class="p-3">Product / الصنف</th>
+                            <th class="p-3 text-center">Qty</th>
+                            <th class="p-3 text-right">Unit Price (SAR)</th>
+                            <th class="p-3 text-right">Line Total</th>
+                            <th class="p-3 text-center"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="items-tbody">
+                        <tr class="border-b border-slate-800">
+                            <td class="p-2">
+                                <select name="product_id[]" onchange="updatePrice(this)" required class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white">
+                                    <option value="">Select Product...</option>
+                                    {% for p in products %}
+                                    <option value="{{ p.id }}" data-price="{{ p.sale_price }}">{{ p.name }} (Stock: {{ p.current_stock }})</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                            <td class="p-2">
+                                <input type="number" min="1" name="qty[]" value="1" oninput="calcTotals()" required class="w-20 bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-center text-white font-bold">
+                            </td>
+                            <td class="p-2">
+                                <input type="number" step="0.01" name="price[]" value="0.00" oninput="calcTotals()" required class="w-28 bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-right text-white font-bold">
+                            </td>
+                            <td class="p-2 text-right font-mono font-bold text-cyan-400 row-total">0.00 SAR</td>
+                            <td class="p-2 text-center"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="p-3 bg-slate-800/40 border-t border-slate-800">
+                    <button type="button" onclick="addRow()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-cyan-400 font-bold rounded-lg text-xs">
+                        + Add Another Item Line
+                    </button>
+                </div>
+            </div>
+
+            <!-- Totals Summary -->
+            <div class="flex justify-end text-xs">
+                <div class="w-64 space-y-2 p-4 bg-slate-800/60 rounded-2xl border border-slate-700">
+                    <div class="flex justify-between text-slate-400">
+                        <span>Subtotal (Excl. VAT):</span>
+                        <span id="display-subtotal" class="font-bold text-white font-mono">0.00 SAR</span>
+                    </div>
+                    <div class="flex justify-between text-amber-400">
+                        <span>15% ZATCA VAT:</span>
+                        <span id="display-vat" class="font-bold font-mono">0.00 SAR</span>
+                    </div>
+                    <div class="flex justify-between text-sm font-black text-emerald-400 pt-2 border-t border-slate-700">
+                        <span>Grand Total:</span>
+                        <span id="display-grand" class="font-mono">0.00 SAR</span>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="w-full bg-gradient-to-r from-cyan-500 to-emerald-400 text-slate-950 font-black py-4 rounded-xl text-sm shadow-xl transition">
+                ✓ Issue Official ZATCA Tax Invoice
+            </button>
+        </form>
+    </div>
+</body>
+</html>

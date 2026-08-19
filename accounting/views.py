@@ -63,7 +63,59 @@ def dashboard_view(request):
         'overdue_invoices': overdue_invoices, 'low_stock_products': low_stock_products
     })
 
-# 📦 প্রোডাক্ট বান্ডেল ও কম্বো প্যাক ভিউ
+# 📑 ইনভয়েস তালিকা ভিউ (Invoices List)
+def invoices_list_view(request):
+    lang = request.session.get('lang', 'en'); is_ar = (lang == 'ar'); lang_dir = 'rtl' if is_ar else 'ltr'
+    company = get_user_company(request)
+    status_filter = request.GET.get('status', '')
+    invoices = Invoice.objects.filter(company=company).order_by('-id')
+    if status_filter:
+        invoices = invoices.filter(payment_status=status_filter)
+    return render(request, 'accounting/invoices_list.html', {
+        'company': company, 'invoices': invoices, 'status_filter': status_filter,
+        'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir
+    })
+
+# ➕ নতুন ট্যাক্স ইনভয়েস তৈরির ভিউ (Create Tax Invoice)
+def create_invoice_view(request):
+    lang = request.session.get('lang', 'en'); is_ar = (lang == 'ar'); lang_dir = 'rtl' if is_ar else 'ltr'
+    company = get_user_company(request)
+    customers = Customer.objects.filter(company=company)
+    warehouses = Warehouse.objects.filter(company=company)
+    products = Product.objects.filter(company=company)
+
+    if request.method == 'POST':
+        cust_id = request.POST.get('customer_id')
+        wh_id = request.POST.get('warehouse_id')
+        cust = get_object_or_404(Customer, id=cust_id)
+        wh = get_object_or_404(Warehouse, id=wh_id) if wh_id else None
+        
+        inv_no = f"INV-{int(datetime.now().timestamp())}"
+        invoice = Invoice.objects.create(
+            company=company, invoice_no=inv_no, customer=cust, warehouse=wh,
+            invoice_type='Tax Invoice (فاتورة ضريبية)'
+        )
+        
+        prod_ids = request.POST.getlist('product_id[]')
+        qtys = request.POST.getlist('qty[]')
+        prices = request.POST.getlist('price[]')
+
+        for p_id, q_val, pr_val in zip(prod_ids, qtys, prices):
+            if p_id and q_val and pr_val:
+                prod = get_object_or_404(Product, id=p_id)
+                InvoiceItem.objects.create(
+                    invoice=invoice, product=prod,
+                    qty=int(q_val), unit_price=Decimal(pr_val)
+                )
+        
+        invoice.update_totals_and_post_accounting()
+        return redirect('invoice-detail', pk=invoice.pk)
+
+    return render(request, 'accounting/invoice_create.html', {
+        'company': company, 'customers': customers, 'warehouses': warehouses,
+        'products': products, 'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir
+    })
+
 def product_bundle_view(request):
     lang = request.session.get('lang', 'en'); is_ar = (lang == 'ar'); lang_dir = 'rtl' if is_ar else 'ltr'
     company = get_user_company(request)
@@ -71,39 +123,22 @@ def product_bundle_view(request):
     individual_products = Product.objects.filter(company=company).exclude(item_type='BUNDLE')
 
     if request.method == 'POST' and 'create_bundle' in request.POST:
-        name = request.POST.get('name')
-        cat_no = request.POST.get('cat_no')
-        price = Decimal(request.POST.get('sale_price', '0.00'))
-        Product.objects.create(company=company, name=name, cat_no=cat_no, sale_price=price, item_type='BUNDLE')
+        Product.objects.create(company=company, name=request.POST.get('name'), cat_no=request.POST.get('cat_no'), sale_price=Decimal(request.POST.get('sale_price', '0.00')), item_type='BUNDLE')
         return redirect('/inventory/bundles/')
 
     if request.method == 'POST' and 'add_component' in request.POST:
-        b_id = request.POST.get('bundle_id')
-        c_id = request.POST.get('component_id')
-        qty = int(request.POST.get('qty', 1))
-        ProductBundleItem.objects.create(bundle_product_id=b_id, component_product_id=c_id, quantity=qty)
+        ProductBundleItem.objects.create(bundle_product_id=request.POST.get('bundle_id'), component_product_id=request.POST.get('component_id'), quantity=int(request.POST.get('qty', 1)))
         return redirect('/inventory/bundles/')
 
-    return render(request, 'accounting/product_bundles.html', {
-        'company': company, 'bundle_products': bundle_products, 'individual_products': individual_products,
-        'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir
-    })
+    return render(request, 'accounting/product_bundles.html', {'company': company, 'bundle_products': bundle_products, 'individual_products': individual_products, 'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir})
 
-# 📏 মাল্টি-ইউনিট (UOM) ভিউ
 def uom_view(request):
     lang = request.session.get('lang', 'en'); is_ar = (lang == 'ar'); lang_dir = 'rtl' if is_ar else 'ltr'
     company = get_user_company(request)
-    units = UnitOfMeasure.objects.filter(company=company)
-
     if request.method == 'POST':
-        name = request.POST.get('name')
-        sym = request.POST.get('symbol')
-        UnitOfMeasure.objects.create(company=company, name=name, symbol=sym)
+        UnitOfMeasure.objects.create(company=company, name=request.POST.get('name'), symbol=request.POST.get('symbol'))
         return redirect('/inventory/units/')
-
-    return render(request, 'accounting/uom_manage.html', {
-        'company': company, 'units': units, 'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir
-    })
+    return render(request, 'accounting/uom_manage.html', {'company': company, 'units': UnitOfMeasure.objects.filter(company=company), 'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir})
 
 def aging_report_view(request):
     lang = request.session.get('lang', 'en'); is_ar = (lang == 'ar'); lang_dir = 'rtl' if is_ar else 'ltr'
@@ -122,16 +157,12 @@ def aging_report_view(request):
             elif days <= 90: b61_90 += due
             else: b90_plus += due
         tot = b0_30 + b31_60 + b61_90 + b90_plus
-        if tot > 0:
-            customer_aging.append({'name': c.name, 'b0_30': b0_30, 'b31_60': b31_60, 'b61_90': b61_90, 'b90_plus': b90_plus, 'total': tot})
+        if tot > 0: customer_aging.append({'name': c.name, 'b0_30': b0_30, 'b31_60': b31_60, 'b61_90': b61_90, 'b90_plus': b90_plus, 'total': tot})
     return render(request, 'accounting/aging_report.html', {'company': company, 'customer_aging': customer_aging, 'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir})
 
 def recurring_invoice_view(request):
     lang = request.session.get('lang', 'en'); is_ar = (lang == 'ar'); lang_dir = 'rtl' if is_ar else 'ltr'
     company = get_user_company(request)
-    recurring_list = RecurringInvoice.objects.filter(company=company).order_by('-id')
-    customers = Customer.objects.filter(company=company)
-    products = Product.objects.filter(company=company)
     if request.method == 'POST':
         cust = get_object_or_404(Customer, id=request.POST.get('customer_id'))
         prod = get_object_or_404(Product, id=request.POST.get('product_id'))
@@ -140,22 +171,18 @@ def recurring_invoice_view(request):
         rec = RecurringInvoice.objects.create(company=company, customer=cust, frequency=request.POST.get('frequency', 'MONTHLY'), subtotal=sub, vat_amount=vat, total_amount=tot)
         RecurringInvoiceItem.objects.create(recurring_invoice=rec, product=prod, qty=qty, unit_price=prod.sale_price, total=sub)
         return redirect('/sales/recurring/')
-    return render(request, 'accounting/recurring_invoices.html', {'company': company, 'recurring_list': recurring_list, 'customers': customers, 'products': products, 'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir})
+    return render(request, 'accounting/recurring_invoices.html', {'company': company, 'recurring_list': RecurringInvoice.objects.filter(company=company).order_by('-id'), 'customers': Customer.objects.filter(company=company), 'products': Product.objects.filter(company=company), 'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir})
 
 def price_list_view(request):
     lang = request.session.get('lang', 'en'); is_ar = (lang == 'ar'); lang_dir = 'rtl' if is_ar else 'ltr'
     company = get_user_company(request)
-    price_lists = PriceList.objects.filter(company=company)
-    products = Product.objects.filter(company=company)
     if request.method == 'POST' and 'create_list' in request.POST:
         PriceList.objects.create(company=company, name=request.POST.get('name'))
         return redirect('/sales/price-lists/')
     if request.method == 'POST' and 'add_item' in request.POST:
-        pl = get_object_or_404(PriceList, id=request.POST.get('price_list_id'))
-        prod = get_object_or_404(Product, id=request.POST.get('product_id'))
-        PriceListItem.objects.update_or_create(price_list=pl, product=prod, defaults={'custom_price': Decimal(request.POST.get('custom_price', '0.00'))})
+        PriceListItem.objects.update_or_create(price_list=get_object_or_404(PriceList, id=request.POST.get('price_list_id')), product=get_object_or_404(Product, id=request.POST.get('product_id')), defaults={'custom_price': Decimal(request.POST.get('custom_price', '0.00'))})
         return redirect('/sales/price-lists/')
-    return render(request, 'accounting/price_lists.html', {'company': company, 'price_lists': price_lists, 'products': products, 'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir})
+    return render(request, 'accounting/price_lists.html', {'company': company, 'price_lists': PriceList.objects.filter(company=company), 'products': Product.objects.filter(company=company), 'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir})
 
 def debit_note_detail_view(request, pk):
     debit_note = get_object_or_404(DebitNote, pk=pk)

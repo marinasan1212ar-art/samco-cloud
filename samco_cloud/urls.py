@@ -7,12 +7,15 @@ from accounting.views import (
     company_signup_view, pricing_checkout_view, statement_of_account_view, wps_sif_export_view,
     credit_note_detail_view, create_credit_note_view, delivery_note_detail_view, create_delivery_note_view,
     bank_reconciliation_view, fund_transfer_view, debit_note_detail_view, create_debit_note_view, direct_expense_view,
-    aging_report_view, recurring_invoice_view, price_list_view, product_bundle_view, uom_view
+    aging_report_view, recurring_invoice_view, price_list_view, product_bundle_view, uom_view,
+    invoices_list_view, create_invoice_view
 )
 from accounting.pos_views import pos_dashboard, pos_checkout, pos_receipt_print
 
 urlpatterns = [
     path('', dashboard_view, name='home-dashboard'),
+    path('invoices/', invoices_list_view, name='invoices-list'),
+    path('invoices/create/', create_invoice_view, name='create-invoice'),
     path('pos/', pos_dashboard, name='pos-dashboard'),
     path('pos/checkout/', pos_checkout, name='pos-checkout'),
     path('pos/receipt/<int:pk>/', pos_receipt_print, name='pos-receipt'),
