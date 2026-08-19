@@ -41,7 +41,7 @@ def dashboard_view(request):
     net_vat_due = vat_output - vat_input
 
     # Dynamic Top Customers (Only who purchased)
-    top_customers = Customer.objects.filter(company=company, invoices__isnull=False).annotate(total_spent=Sum('invoices__total_amount')).order_by('-total_spent')[:5]
+    top_customers = Customer.objects.filter(company=company, invoice__isnull=False).annotate(total_spent=Sum('invoice__total_amount')).order_by('-total_spent')[:5]
 
     # Real Invoices & Overdue
     invoices = Invoice.objects.filter(company=company).order_by('-id')[:6]
