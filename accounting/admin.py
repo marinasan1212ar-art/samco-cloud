@@ -8,7 +8,7 @@ from .models import (
     Quotation, QuotationItem, ReceiptVoucher, PaymentVoucher, Warehouse, WarehouseStock, 
     StockTransfer, StockTransferItem, UserProfile, BillOfMaterials, BOMItem, WorkOrder,
     CostCenter, FixedAsset, Employee, MonthlyPayroll, PayrollItem, StockAdjustment,
-    SalesOrder, CreditNote, PurchaseOrder
+    SalesOrder, CreditNote, CreditNoteItem, PurchaseOrder
 )
 
 class UserProfileInline(admin.StackedInline):
@@ -23,6 +23,17 @@ class UserAdmin(BaseUserAdmin):
 
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
+
+class CreditNoteItemInline(admin.TabularInline):
+    model = CreditNoteItem
+    extra = 1
+
+@admin.register(CreditNote)
+class CreditNoteAdmin(admin.ModelAdmin):
+    list_display = ('credit_note_no', 'invoice', 'date', 'total_amount', 'reason')
+    inlines = [CreditNoteItemInline]
+    def response_add(self, request, obj, post_url_continue=None):
+        obj.update_totals_and_post_accounting(); return super().response_add(request, obj, post_url_continue)
 
 @admin.register(CostCenter)
 class CostCenterAdmin(admin.ModelAdmin):
@@ -45,10 +56,8 @@ class PayrollItemInline(admin.TabularInline):
 class MonthlyPayrollAdmin(admin.ModelAdmin):
     list_display = ('month_year', 'processed_date', 'total_amount', 'is_paid', 'download_wps_sif')
     inlines = [PayrollItemInline]
-
     def download_wps_sif(self, obj):
         return format_html('<a class="button" style="background-color: #10B981; color: #000; font-weight: bold; padding: 4px 8px; border-radius: 6px;" href="/wps-export/{}/">📥 SIF Bank File</a>', obj.pk)
-    download_wps_sif.short_description = "Saudi WPS File"
 
 @admin.register(StockAdjustment)
 class StockAdjustmentAdmin(admin.ModelAdmin):
@@ -62,7 +71,6 @@ class CustomerAdmin(admin.ModelAdmin):
     search_fields = ('name', 'vat_number')
     def print_statement(self, obj):
         return format_html('<a class="button" style="background-color: #38BDF8; color: #000; font-weight: bold; padding: 4px 8px; border-radius: 6px;" href="/statement/customer/{}/" target="_blank">📋 كشف حساب</a>', obj.pk)
-    print_statement.short_description = "Statement"
 
 @admin.register(Supplier)
 class SupplierAdmin(admin.ModelAdmin):
@@ -70,7 +78,6 @@ class SupplierAdmin(admin.ModelAdmin):
     search_fields = ('name', 'vat_number')
     def print_statement(self, obj):
         return format_html('<a class="button" style="background-color: #F59E0B; color: #000; font-weight: bold; padding: 4px 8px; border-radius: 6px;" href="/statement/supplier/{}/" target="_blank">📋 كشف حساب</a>', obj.pk)
-    print_statement.short_description = "Statement"
 
 class BOMItemInline(admin.TabularInline):
     model = BOMItem
@@ -84,7 +91,6 @@ class BillOfMaterialsAdmin(admin.ModelAdmin):
 @admin.register(WorkOrder)
 class WorkOrderAdmin(admin.ModelAdmin):
     list_display = ('order_no', 'bom', 'warehouse', 'planned_qty', 'actual_qty_produced', 'status', 'unit_cost')
-    list_filter = ('status', 'warehouse')
     def response_change(self, request, obj):
         obj.execute_production_completion(); return super().response_change(request, obj)
 
@@ -115,7 +121,6 @@ class WarehouseAdmin(admin.ModelAdmin):
 @admin.register(WarehouseStock)
 class WarehouseStockAdmin(admin.ModelAdmin):
     list_display = ('warehouse', 'product', 'stock_qty')
-    list_filter = ('warehouse',)
 
 @admin.register(StockTransfer)
 class StockTransferAdmin(admin.ModelAdmin):
@@ -148,7 +153,7 @@ class PaymentVoucherAdmin(admin.ModelAdmin):
 
 @admin.register(PurchaseBill)
 class PurchaseBillAdmin(admin.ModelAdmin):
-    list_display = ('bill_no', 'supplier', 'warehouse', 'date', 'total_amount')
+    list_display = ('bill_no', 'supplier', 'warehouse', 'date', 'total_amount', 'payment_status')
     inlines = [PurchaseBillItemInline]
     def response_add(self, request, obj, post_url_continue=None):
         obj.update_totals_and_post_accounting(); return super().response_add(request, obj, post_url_continue)
@@ -157,22 +162,18 @@ class PurchaseBillAdmin(admin.ModelAdmin):
 class QuotationAdmin(admin.ModelAdmin):
     list_display = ('quote_no', 'customer', 'date', 'total_amount', 'status')
     inlines = [QuotationItemInline]
-    def response_add(self, request, obj, post_url_continue=None):
-        obj.update_totals(); return super().response_add(request, obj, post_url_continue)
 
 @admin.register(Account)
 class AccountAdmin(admin.ModelAdmin):
     list_display = ('code', 'name', 'account_type', 'balance', 'company')
-    list_filter = ('account_type',)
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('cat_no', 'name', 'item_type', 'sale_price', 'cost_price', 'current_stock', 'company')
-    list_filter = ('item_type',)
 
 @admin.register(Invoice)
 class InvoiceAdmin(admin.ModelAdmin):
-    list_display = ('invoice_no', 'customer', 'warehouse', 'date', 'total_amount', 'print_tax_invoice')
+    list_display = ('invoice_no', 'customer', 'warehouse', 'date', 'total_amount', 'amount_paid', 'payment_status', 'print_tax_invoice')
     inlines = [InvoiceItemInline]
     def print_tax_invoice(self, obj):
         return format_html('<a class="button" style="background-color: #00F0FF; color: #000; font-weight: bold; padding: 4px 10px; border-radius: 6px; text-decoration: none;" href="/invoice/{}/" target="_blank">🖨️ Print Tax Invoice</a>', obj.pk)

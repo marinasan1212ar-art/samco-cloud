@@ -15,7 +15,8 @@ from .models import (
     JournalEntryLine, Company, Warehouse, WarehouseStock, StockTransfer, 
     UserProfile, BillOfMaterials, WorkOrder, Employee, MonthlyPayroll, 
     PayrollItem, CostCenter, FixedAsset, StockAdjustment, CompanySettings,
-    SubscriptionPlan, CompanySubscription, PaymentTransaction
+    SubscriptionPlan, CompanySubscription, PaymentTransaction,
+    CreditNote, CreditNoteItem
 )
 from .serializers import (
     AccountSerializer, CustomerSerializer, SupplierSerializer, ProductSerializer,
@@ -31,7 +32,6 @@ def get_user_company(request):
     comp, _ = Company.objects.get_or_create(id=1, defaults={"name": "SECOND ADVANCE MEDICAL COMPANY (SAMCO)", "vat_number": "310122456700003"})
     return comp
 
-# --- 🌟 QUYOD A TO Z DASHBOARD ---
 def dashboard_view(request):
     lang = request.session.get('lang', 'en'); is_ar = (lang == 'ar'); lang_dir = 'rtl' if is_ar else 'ltr'
     company = get_user_company(request)
@@ -65,7 +65,75 @@ def dashboard_view(request):
         'is_ar': is_ar, 'lang_dir': lang_dir, 'user_role': user_role
     })
 
-# --- 🚀 SAAS SIGNUP & PRICING VIEWS (FIXED) ---
+def invoice_detail_view(request, pk):
+    invoice = get_object_or_404(Invoice, pk=pk)
+    comp = invoice.company or get_user_company(request)
+    if not invoice.zatca_qr_b64:
+        invoice.update_totals_and_post_accounting()
+        invoice.refresh_from_db()
+    
+    qr_img = generate_qr_image_base64(invoice.zatca_qr_b64) if invoice.zatca_qr_b64 else ""
+    bank_accounts = BankAccount.objects.filter(company=comp)
+    
+    if request.method == 'POST' and 'record_payment' in request.POST:
+        pay_amount = Decimal(request.POST.get('pay_amount', '0.00'))
+        bank_id = request.POST.get('bank_id')
+        pay_method = request.POST.get('payment_method', 'Bank Transfer')
+        notes = request.POST.get('notes', f'Payment for Invoice #{invoice.invoice_no}')
+
+        if pay_amount > 0 and bank_id:
+            bank = get_object_or_404(BankAccount, id=bank_id)
+            rv_no = f"RV-INV-{invoice.invoice_no}-{int(datetime.now().timestamp())}"
+            rv = ReceiptVoucher.objects.create(
+                company=comp, voucher_no=rv_no, customer=invoice.customer,
+                invoice=invoice, bank_account=bank, amount=pay_amount,
+                payment_method=pay_method, notes=notes
+            )
+            rv.post_accounting()
+            return redirect('invoice-detail', pk=invoice.pk)
+
+    return render(request, 'accounting/invoice_detail.html', {
+        'invoice': invoice, 'company': comp, 'qr_image': qr_img,
+        'bank_accounts': bank_accounts
+    })
+
+def credit_note_detail_view(request, pk):
+    credit_note = get_object_or_404(CreditNote, pk=pk)
+    comp = credit_note.company or get_user_company(request)
+    if not credit_note.zatca_qr_b64:
+        credit_note.update_totals_and_post_accounting()
+        credit_note.refresh_from_db()
+    qr_img = generate_qr_image_base64(credit_note.zatca_qr_b64) if credit_note.zatca_qr_b64 else ""
+    return render(request, 'accounting/credit_note_detail.html', {
+        'credit_note': credit_note, 'company': comp, 'qr_image': qr_img
+    })
+
+def create_credit_note_view(request, invoice_id):
+    invoice = get_object_or_404(Invoice, pk=invoice_id)
+    comp = invoice.company or get_user_company(request)
+    
+    if request.method == 'POST':
+        reason = request.POST.get('reason', 'Customer Return (مرتجع بضاعة)')
+        cn_no = f"CN-{invoice.invoice_no}"
+        
+        cn = CreditNote.objects.create(
+            company=comp, credit_note_no=cn_no, invoice=invoice, reason=reason
+        )
+        
+        for item in invoice.items.all():
+            qty_return = int(request.POST.get(f'return_qty_{item.id}', 0))
+            if qty_return > 0:
+                CreditNoteItem.objects.create(
+                    credit_note=cn, product=item.product, qty=qty_return, unit_price=item.unit_price
+                )
+        
+        cn.update_totals_and_post_accounting()
+        return redirect('credit-note-detail', pk=cn.pk)
+
+    return render(request, 'accounting/credit_note_create.html', {
+        'invoice': invoice, 'company': comp
+    })
+
 def company_signup_view(request):
     error = None
     if request.method == 'POST':
@@ -81,7 +149,6 @@ def company_signup_view(request):
         else:
             user = User.objects.create_user(username=username, email=email, password=password)
             company = Company.objects.create(name=comp_name, vat_number=vat_number, phone=phone)
-            
             profile, _ = UserProfile.objects.get_or_create(user=user)
             profile.company = company
             profile.role = 'ADMIN'
@@ -92,7 +159,6 @@ def company_signup_view(request):
                 defaults={'name': 'Standard Enterprise Plan', 'price_monthly_sar': Decimal('199.00')}
             )
             CompanySubscription.objects.create(company=company, plan=default_plan, status='ACTIVE')
-
             login(request, user)
             return redirect('/')
 
@@ -100,35 +166,19 @@ def company_signup_view(request):
 
 def pricing_checkout_view(request):
     plans = SubscriptionPlan.objects.filter(is_active=True)
-    if not plans.exists():
-        SubscriptionPlan.objects.create(slug='basic', name='الباقة الأساسية (Basic)', price_monthly_sar=Decimal('99.00'))
-        SubscriptionPlan.objects.create(slug='pro', name='باقة الأعمال المتقدمة (Pro Enterprise)', price_monthly_sar=Decimal('299.00'))
-        plans = SubscriptionPlan.objects.filter(is_active=True)
-
     company = get_user_company(request)
-
     if request.method == 'POST':
         plan_id = request.POST.get('plan_id')
         pay_method = request.POST.get('payment_method', 'Mada')
         plan = get_object_or_404(SubscriptionPlan, id=plan_id)
-
-        PaymentTransaction.objects.create(
-            company=company,
-            amount_sar=plan.price_monthly_sar,
-            payment_method=pay_method,
-            status='PAID'
-        )
-
+        PaymentTransaction.objects.create(company=company, amount_sar=plan.price_monthly_sar, payment_method=pay_method, status='PAID')
         sub, _ = CompanySubscription.objects.get_or_create(company=company)
         sub.plan = plan
         sub.status = 'ACTIVE'
         sub.save()
-
         return redirect('/')
-
     return render(request, 'accounting/pricing.html', {'plans': plans, 'company': company})
 
-# --- 📋 STATEMENT OF ACCOUNT ---
 def statement_of_account_view(request, party_type, pk):
     lang = request.session.get('lang', 'en'); is_ar = (lang == 'ar'); lang_dir = 'rtl' if is_ar else 'ltr'
     company = get_user_company(request)
@@ -137,77 +187,59 @@ def statement_of_account_view(request, party_type, pk):
 
     if party_type == 'customer':
         party = get_object_or_404(Customer, pk=pk)
-        title_en = "Customer Statement of Account"
-        title_ar = "كشف حساب عميل تفصيلي"
+        title_en, title_ar = "Customer Statement of Account", "كشف حساب عميل تفصيلي"
         invoices = Invoice.objects.filter(customer=party).order_by('date')
         receipts = ReceiptVoucher.objects.filter(customer=party).order_by('date')
 
         for inv in invoices:
             running_balance += inv.total_amount
             ledger_lines.append({
-                'date': inv.date.strftime("%Y-%m-%d"),
-                'ref': f"Invoice #{inv.invoice_no}",
-                'desc': "Tax Sales Invoice",
-                'debit': inv.total_amount,
-                'credit': Decimal('0.00'),
-                'balance': running_balance
+                'date': inv.date.strftime("%Y-%m-%d"), 'ref': f"Invoice #{inv.invoice_no}",
+                'desc': f"Tax Sales Invoice ({inv.get_payment_status_display()})",
+                'debit': inv.total_amount, 'credit': Decimal('0.00'), 'balance': running_balance
             })
         for rc in receipts:
             running_balance -= rc.amount
             ledger_lines.append({
-                'date': str(rc.date),
-                'ref': f"Receipt #{rc.voucher_no}",
+                'date': str(rc.date), 'ref': f"Receipt #{rc.voucher_no}",
                 'desc': f"Payment received via {rc.payment_method}",
-                'debit': Decimal('0.00'),
-                'credit': rc.amount,
-                'balance': running_balance
+                'debit': Decimal('0.00'), 'credit': rc.amount, 'balance': running_balance
             })
     else:
         party = get_object_or_404(Supplier, pk=pk)
-        title_en = "Supplier Statement of Account"
-        title_ar = "كشف حساب مورد تفصيلي"
+        title_en, title_ar = "Supplier Statement of Account", "كشف حساب مورد تفصيلي"
         bills = PurchaseBill.objects.filter(supplier=party).order_by('date')
         payments = PaymentVoucher.objects.filter(supplier=party).order_by('date')
 
         for b in bills:
             running_balance += b.total_amount
             ledger_lines.append({
-                'date': str(b.date),
-                'ref': f"Bill #{b.bill_no}",
+                'date': str(b.date), 'ref': f"Bill #{b.bill_no}",
                 'desc': "Vendor Purchase Bill",
-                'debit': Decimal('0.00'),
-                'credit': b.total_amount,
-                'balance': running_balance
+                'debit': Decimal('0.00'), 'credit': b.total_amount, 'balance': running_balance
             })
         for pv in payments:
             running_balance -= pv.amount
             ledger_lines.append({
-                'date': str(pv.date),
-                'ref': f"Payment #{pv.voucher_no}",
+                'date': str(pv.date), 'ref': f"Payment #{pv.voucher_no}",
                 'desc': f"Settlement paid via {pv.payment_method}",
-                'debit': pv.amount,
-                'credit': Decimal('0.00'),
-                'balance': running_balance
+                'debit': pv.amount, 'credit': Decimal('0.00'), 'balance': running_balance
             })
 
     ledger_lines.sort(key=lambda x: x['date'])
-
     return render(request, 'accounting/statement.html', {
         'company': company, 'party': party, 'party_type': party_type,
         'title_en': title_en, 'title_ar': title_ar, 'ledger_lines': ledger_lines,
         'final_balance': running_balance, 'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir
     })
 
-# --- 🇸🇦 WPS EXPORT ---
 def wps_sif_export_view(request, payroll_id):
     payroll = get_object_or_404(MonthlyPayroll, pk=payroll_id)
     company = get_user_company(request)
-
     sif_content = f"SCR|{company.cr_number or '1010445566'}|{company.name}|{payroll.processed_date.strftime('%Y%m%d')}|{payroll.month_year.replace('-','')}|{payroll.items.count()}|{payroll.total_amount:.2f}|SAR\n"
     for idx, item in enumerate(payroll.items.all(), 1):
         emp = item.employee
         sif_content += f"EDR|{emp.iqama_no}|{emp.bank_iban}|{emp.name_en}|{item.basic_salary:.2f}|{item.housing:.2f}|{item.transport:.2f}|{item.deductions:.2f}|{item.net_salary:.2f}|SAR\n"
-
     response = HttpResponse(sif_content, content_type='text/plain')
     response['Content-Disposition'] = f'attachment; filename="WPS_SIF_{company.cr_number}_{payroll.month_year}.sif"'
     return response
@@ -303,15 +335,6 @@ def reports_view(request):
         'ledger_entries': recent_ledger_entries, 'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir
     })
 
-def invoice_detail_view(request, pk):
-    invoice = get_object_or_404(Invoice, pk=pk)
-    comp = invoice.company or get_user_company(request)
-    if not invoice.zatca_qr_b64:
-        invoice.update_totals_and_post_accounting()
-        invoice.refresh_from_db()
-    qr_img = generate_qr_image_base64(invoice.zatca_qr_b64) if invoice.zatca_qr_b64 else ""
-    return render(request, 'accounting/invoice_detail.html', {'invoice': invoice, 'company': comp, 'qr_image': qr_img})
-
 def voucher_print_view(request, v_type, pk):
     comp = get_user_company(request)
     if v_type == 'receipt':
@@ -329,7 +352,6 @@ def transfer_slip_print_view(request, pk):
     qr_img = generate_qr_image_base64(qr_payload)
     return render(request, 'accounting/transfer_print.html', {'transfer': transfer, 'company': comp, 'qr_image': qr_img})
 
-# API ViewSets
 class WarehouseViewSet(viewsets.ModelViewSet): queryset = Warehouse.objects.all(); serializer_class = WarehouseSerializer
 class WarehouseStockViewSet(viewsets.ModelViewSet): queryset = WarehouseStock.objects.all(); serializer_class = WarehouseStockSerializer
 class StockTransferViewSet(viewsets.ModelViewSet): queryset = StockTransfer.objects.all(); serializer_class = StockTransferSerializer

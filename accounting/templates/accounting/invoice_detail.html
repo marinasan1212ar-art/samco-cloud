@@ -16,22 +16,22 @@
 </head>
 <body class="bg-slate-950 text-slate-100 p-4 md:p-10 font-sans">
 
-    <!-- Top Action Bar -->
-    <div class="max-w-4xl mx-auto mb-6 flex justify-between items-center no-print">
+    <div class="max-w-4xl mx-auto mb-6 flex flex-wrap justify-between items-center gap-3 no-print">
         <a href="/" class="text-sm font-semibold text-slate-400 hover:text-white flex items-center gap-2">
             <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
         </a>
-        <div class="flex gap-3">
-            <button onclick="window.print()" class="bg-gradient-to-r from-cyan-500 to-emerald-400 text-slate-950 px-5 py-2.5 rounded-xl font-bold text-sm shadow-lg flex items-center gap-2">
-                <i class="fa-solid fa-print"></i> Print Tax Invoice (طباعة)
+        <div class="flex flex-wrap items-center gap-3">
+            <a href="/invoice/{{ invoice.id }}/return/" class="bg-rose-500 hover:bg-rose-400 text-slate-950 px-4 py-2.5 rounded-xl font-bold text-xs shadow-lg flex items-center gap-2">
+                <i class="fa-solid fa-rotate-left"></i> Sales Return / إشعار دائن
+            </a>
+            <button onclick="window.print()" class="bg-gradient-to-r from-cyan-500 to-emerald-400 text-slate-950 px-5 py-2.5 rounded-xl font-bold text-xs shadow-lg flex items-center gap-2">
+                <i class="fa-solid fa-print"></i> Print Invoice (طباعة)
             </button>
         </div>
     </div>
 
-    <!-- Official Saudi Tax Invoice Sheet (فاتورة ضريبية) -->
     <div class="max-w-4xl mx-auto bg-white text-slate-900 rounded-2xl shadow-2xl p-8 md:p-12 print-border">
         
-        <!-- Header -->
         <div class="flex justify-between items-start border-b-2 border-slate-800 pb-6">
             <div>
                 <h1 class="text-xl md:text-2xl font-black text-slate-900">{{ company.company_name_en }}</h1>
@@ -46,26 +46,39 @@
                 </span>
                 <p class="text-lg font-black text-slate-900">#{{ invoice.invoice_no }}</p>
                 <p class="text-xs text-slate-500 font-semibold mt-1">Date: {{ invoice.date|date:"d-m-Y H:i" }}</p>
+                
+                <div class="mt-2">
+                    {% if invoice.payment_status == 'PAID' %}
+                    <span class="px-3 py-1 bg-emerald-100 text-emerald-800 border border-emerald-300 font-black text-[11px] rounded-full">
+                        ● PAID (مدفوع بالكامل)
+                    </span>
+                    {% elif invoice.payment_status == 'PARTIALLY_PAID' %}
+                    <span class="px-3 py-1 bg-amber-100 text-amber-800 border border-amber-300 font-black text-[11px] rounded-full">
+                        ◐ PARTIALLY PAID (مدفوع جزئياً)
+                    </span>
+                    {% else %}
+                    <span class="px-3 py-1 bg-rose-100 text-rose-800 border border-rose-300 font-black text-[11px] rounded-full">
+                        ○ UNPAID (غير مدفوع)
+                    </span>
+                    {% endif %}
+                </div>
             </div>
         </div>
 
-        <!-- Bill To Info -->
-        <div class="grid grid-cols-2 gap-6 my-6 p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-6 p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs">
             <div>
                 <p class="font-bold text-slate-400 uppercase tracking-wider mb-1">Customer Details / العميل</p>
                 <p class="text-sm font-bold text-slate-900">{{ invoice.customer.name }}</p>
-                {% if invoice.customer.name_ar %}<p class="text-xs font-semibold text-slate-700 mt-0.5" dir="rtl">{{ invoice.customer.name_ar }}</p>{% endif %}
-                <p class="text-slate-600 mt-1">Phone: {{ invoice.customer.phone|default:"-" }}</p>
-                <p class="text-slate-600">Address: {{ invoice.customer.address|default:"Kingdom of Saudi Arabia" }}</p>
+                <p class="text-slate-600 mt-1">Phone: {{ invoice.customer.phone|default:"-" }} | VAT ID: {{ invoice.customer.vat_number|default:"N/A" }}</p>
             </div>
-            <div class="text-right">
-                <p class="font-bold text-slate-400 uppercase tracking-wider mb-1">Buyer Tax Number / الرقم الضريبي</p>
-                <p class="text-sm font-bold text-slate-900">{{ invoice.customer.vat_number|default:"N/A (Individual / B2C)" }}</p>
-                <p class="text-slate-500 text-[11px] mt-2 font-mono">UUID: {{ invoice.uuid }}</p>
+            <div class="text-left md:text-right border-t md:border-t-0 pt-2 md:pt-0 border-slate-200">
+                <p class="font-bold text-slate-400 uppercase tracking-wider mb-1">Payment Tracking (متابعة السداد)</p>
+                <p class="text-xs font-semibold text-slate-700">Total Billed: <span class="font-bold text-slate-900">{{ invoice.total_amount|floatformat:2 }} SAR</span></p>
+                <p class="text-xs font-semibold text-emerald-600">Total Paid: <span class="font-bold">{{ invoice.amount_paid|floatformat:2 }} SAR</span></p>
+                <p class="text-sm font-black text-rose-600 mt-1">Remaining Due (المتبقي): {{ invoice.remaining_due|floatformat:2 }} SAR</p>
             </div>
         </div>
 
-        <!-- Table -->
         <table class="w-full text-left text-xs mb-6 border-collapse">
             <thead>
                 <tr class="bg-slate-900 text-white uppercase text-[11px] font-bold">
@@ -92,9 +105,7 @@
             </tbody>
         </table>
 
-        <!-- Summary & ZATCA QR Code -->
         <div class="flex justify-between items-end pt-4 border-t-2 border-slate-800">
-            <!-- QR Code Section -->
             <div class="flex items-center gap-4">
                 {% if qr_image %}
                 <img src="data:image/png;base64,{{ qr_image }}" alt="ZATCA Phase 2 QR" class="w-28 h-28 border border-slate-300 rounded-lg p-1">
@@ -106,14 +117,13 @@
                 </div>
             </div>
 
-            <!-- Totals -->
             <div class="w-64 space-y-2 text-xs">
                 <div class="flex justify-between text-slate-600">
-                    <span>Taxable Amount (المبلغ الخاضع للضريبة):</span>
+                    <span>Taxable Amount (الخاضع للضريبة):</span>
                     <span class="font-bold">{{ invoice.subtotal|floatformat:2 }} SAR</span>
                 </div>
                 <div class="flex justify-between text-amber-600 font-bold">
-                    <span>15% VAT (ضريبة القيمة المضافة):</span>
+                    <span>15% VAT (الضريبة):</span>
                     <span>{{ invoice.vat_amount|floatformat:2 }} SAR</span>
                 </div>
                 <div class="flex justify-between text-base font-black text-slate-900 pt-2 border-t border-slate-300">
@@ -123,11 +133,55 @@
             </div>
         </div>
 
-        <!-- Footer -->
-        <div class="text-center text-[10px] text-slate-400 mt-10 pt-4 border-t border-slate-100">
-            Thank you for doing business with Second Advance Medical Company (SAMCO).
+        {% if invoice.receipts.all %}
+        <div class="mt-8 pt-4 border-t border-slate-200 text-xs">
+            <h4 class="font-black text-slate-800 mb-2">💳 Payment Receipts Log (سجل سندات القبض المستلمة):</h4>
+            <div class="space-y-1">
+                {% for r in invoice.receipts.all %}
+                <div class="flex justify-between p-2 bg-slate-50 rounded border border-slate-200">
+                    <span>#{{ r.voucher_no }} ({{ r.date }}) - {{ r.payment_method }}</span>
+                    <span class="font-bold text-emerald-600">+{{ r.amount|floatformat:2 }} SAR</span>
+                </div>
+                {% endfor %}
+            </div>
         </div>
+        {% endif %}
     </div>
+
+    {% if invoice.remaining_due > 0 %}
+    <div class="max-w-4xl mx-auto mt-6 bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl no-print">
+        <h3 class="text-sm font-black text-emerald-400 mb-3"><i class="fa-solid fa-money-bill-wave"></i> Record Quick Payment / تسجيل دفعة جديدة</h3>
+        <form method="POST" class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
+            {% csrf_token %}
+            <input type="hidden" name="record_payment" value="1">
+            <div>
+                <label class="block text-slate-400 mb-1">Amount to Pay (SAR)</label>
+                <input type="number" step="0.01" max="{{ invoice.remaining_due }}" name="pay_amount" value="{{ invoice.remaining_due }}" required class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-white font-bold">
+            </div>
+            <div>
+                <label class="block text-slate-400 mb-1">Bank / Cash Account</label>
+                <select name="bank_id" required class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-white font-bold">
+                    {% for b in bank_accounts %}
+                    <option value="{{ b.id }}">{{ b.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="block text-slate-400 mb-1">Payment Method</label>
+                <select name="payment_method" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-white font-bold">
+                    <option value="Bank Transfer">Bank Transfer (تحويل بنكي)</option>
+                    <option value="Cash">Cash (نقدي)</option>
+                    <option value="Mada / Card">Mada / Card (شبكة)</option>
+                </select>
+            </div>
+            <div class="flex items-end">
+                <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black p-2.5 rounded-xl transition">
+                    + Settle Payment
+                </button>
+            </div>
+        </form>
+    </div>
+    {% endif %}
 
 </body>
 </html>

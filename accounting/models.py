@@ -306,6 +306,11 @@ class SalesOrder(models.Model):
         return f"SO #{self.so_number} - {self.customer.name}"
 
 class Invoice(models.Model):
+    PAYMENT_STATUS_CHOICES = [
+        ('UNPAID', 'Unpaid (غير مدفوع) 🔴'),
+        ('PARTIALLY_PAID', 'Partially Paid (مدفوع جزئياً) 🟡'),
+        ('PAID', 'Paid (مدفوع) 🟢'),
+    ]
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True, related_name="invoices")
     invoice_no = models.CharField(max_length=100)
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
@@ -317,10 +322,26 @@ class Invoice(models.Model):
     subtotal = models.DecimalField(max_digits=12, decimal_places=2, default=0.00, editable=False)
     vat_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0.00, editable=False)
     total_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0.00, editable=False)
+    amount_paid = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    payment_status = models.CharField(max_length=30, choices=PAYMENT_STATUS_CHOICES, default='UNPAID')
     zatca_qr_b64 = models.TextField(blank=True, null=True, editable=False)
 
+    def remaining_due(self):
+        return max(Decimal('0.00'), self.total_amount - self.amount_paid)
+
     def __str__(self):
-        return f"Invoice #{self.invoice_no} - {self.customer.name}"
+        return f"Invoice #{self.invoice_no} - {self.customer.name} ({self.get_payment_status_display()})"
+
+    def recalculate_payment_status(self):
+        paid = sum(rv.amount for rv in self.receipts.all())
+        self.amount_paid = paid
+        if paid >= self.total_amount and self.total_amount > 0:
+            self.payment_status = 'PAID'
+        elif paid > 0:
+            self.payment_status = 'PARTIALLY_PAID'
+        else:
+            self.payment_status = 'UNPAID'
+        Invoice.objects.filter(pk=self.pk).update(amount_paid=self.amount_paid, payment_status=self.payment_status)
 
     def update_totals_and_post_accounting(self):
         with transaction.atomic():
@@ -339,6 +360,7 @@ class Invoice(models.Model):
             JournalEntryLine.objects.create(journal_entry=je, account=ar_acc, debit=tot, credit=0, description=f"Receivable from {self.customer.name}")
             JournalEntryLine.objects.create(journal_entry=je, account=sales_acc, debit=0, credit=sub, description=f"Revenue for Inv #{self.invoice_no}")
             JournalEntryLine.objects.create(journal_entry=je, account=vat_acc, debit=0, credit=vat, description="15% ZATCA Output VAT")
+            self.recalculate_payment_status()
 
 class InvoiceItem(models.Model):
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name='items')
@@ -361,13 +383,53 @@ class InvoiceItem(models.Model):
 class CreditNote(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True, related_name="credit_notes")
     credit_note_no = models.CharField(max_length=100, default="CN-001")
-    invoice = models.ForeignKey(Invoice, on_delete=models.PROTECT)
-    date = models.DateField(default=datetime.now)
-    amount_refunded = models.DecimalField(max_digits=12, decimal_places=2)
-    reason = models.CharField(max_length=255)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
+    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name="credit_notes")
+    date = models.DateTimeField(auto_now_add=True)
+    reason = models.CharField(max_length=255, default="Goods Returned by Customer (مرتجع بضاعة)")
+    subtotal = models.DecimalField(max_digits=12, decimal_places=2, default=0.00, editable=False)
+    vat_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0.00, editable=False)
+    total_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0.00, editable=False)
+    zatca_qr_b64 = models.TextField(blank=True, null=True, editable=False)
 
     def __str__(self):
-        return f"CN #{self.credit_note_no} - {self.invoice.customer.name}"
+        return f"Credit Note #{self.credit_note_no} (For Inv #{self.invoice.invoice_no})"
+
+    def update_totals_and_post_accounting(self):
+        with transaction.atomic():
+            sub = sum(item.total for item in self.items.all())
+            vat = sub * Decimal('0.15')
+            tot = sub + vat
+            comp = self.company or Company.objects.get_or_create(id=1)[0]
+            time_str = self.date.strftime("%Y-%m-%dT%H:%M:%SZ") if self.date else datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+            qr_b64 = generate_zatca_qr_base64(seller_name=comp.name, vat_no=comp.vat_number or "310122456700003", timestamp_iso=time_str, total_amount=f"-{tot:.2f}", vat_amount=f"-{vat:.2f}")
+            CreditNote.objects.filter(pk=self.pk).update(subtotal=sub, vat_amount=vat, total_amount=tot, zatca_qr_b64=qr_b64)
+            sales_acc, _ = Account.objects.get_or_create(company=comp, code="4000", defaults={"name": "Sales Revenue", "account_type": "Revenue"})
+            vat_acc, _ = Account.objects.get_or_create(company=comp, code="2100", defaults={"name": "VAT Output Tax (15%)", "account_type": "Liability"})
+            ar_acc, _ = Account.objects.get_or_create(company=comp, code="1200", defaults={"name": "Accounts Receivable", "account_type": "Asset"})
+            je, _ = JournalEntry.objects.get_or_create(company=comp, reference_no=f"CN-{self.credit_note_no}", defaults={"description": f"Credit Note #{self.credit_note_no} for Inv #{self.invoice.invoice_no}"})
+            je.lines.all().delete()
+            JournalEntryLine.objects.create(journal_entry=je, account=sales_acc, debit=sub, credit=0, description=f"Sales Return #{self.credit_note_no}")
+            JournalEntryLine.objects.create(journal_entry=je, account=vat_acc, debit=vat, credit=0, description="Reversal of Output VAT 15%")
+            JournalEntryLine.objects.create(journal_entry=je, account=ar_acc, debit=0, credit=tot, description=f"Credit Adjust for {self.invoice.customer.name}")
+
+class CreditNoteItem(models.Model):
+    credit_note = models.ForeignKey(CreditNote, on_delete=models.CASCADE, related_name='items')
+    product = models.ForeignKey(Product, on_delete=models.PROTECT)
+    qty = models.IntegerField(default=1)
+    unit_price = models.DecimalField(max_digits=12, decimal_places=2)
+    total = models.DecimalField(max_digits=12, decimal_places=2, editable=False)
+
+    def save(self, *args, **kwargs):
+        self.total = Decimal(self.qty) * Decimal(self.unit_price)
+        super().save(*args, **kwargs)
+        self.product.current_stock = models.F('current_stock') + self.qty
+        self.product.save()
+
+    def delete(self, *args, **kwargs):
+        self.product.current_stock = models.F('current_stock') - self.qty
+        self.product.save()
+        super().delete(*args, **kwargs)
 
 class PurchaseOrder(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True, related_name="purchase_orders")
@@ -381,6 +443,11 @@ class PurchaseOrder(models.Model):
         return f"PO #{self.po_number} - {self.supplier.name}"
 
 class PurchaseBill(models.Model):
+    PAYMENT_STATUS_CHOICES = [
+        ('UNPAID', 'Unpaid (غير مدفوع) 🔴'),
+        ('PARTIALLY_PAID', 'Partially Paid (مدفوع جزئياً) 🟡'),
+        ('PAID', 'Paid (مدفوع) 🟢'),
+    ]
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True, related_name="purchases")
     bill_no = models.CharField(max_length=100)
     supplier = models.ForeignKey(Supplier, on_delete=models.PROTECT)
@@ -390,9 +457,25 @@ class PurchaseBill(models.Model):
     subtotal = models.DecimalField(max_digits=12, decimal_places=2, default=0.00, editable=False)
     vat_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0.00, editable=False)
     total_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0.00, editable=False)
+    amount_paid = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    payment_status = models.CharField(max_length=30, choices=PAYMENT_STATUS_CHOICES, default='UNPAID')
+
+    def remaining_due(self):
+        return max(Decimal('0.00'), self.total_amount - self.amount_paid)
 
     def __str__(self):
         return f"Bill #{self.bill_no} - {self.supplier.name}"
+
+    def recalculate_payment_status(self):
+        paid = sum(pv.amount for pv in self.payments.all())
+        self.amount_paid = paid
+        if paid >= self.total_amount and self.total_amount > 0:
+            self.payment_status = 'PAID'
+        elif paid > 0:
+            self.payment_status = 'PARTIALLY_PAID'
+        else:
+            self.payment_status = 'UNPAID'
+        PurchaseBill.objects.filter(pk=self.pk).update(amount_paid=self.amount_paid, payment_status=self.payment_status)
 
     def update_totals_and_post_accounting(self):
         with transaction.atomic():
@@ -409,6 +492,7 @@ class PurchaseBill(models.Model):
             JournalEntryLine.objects.create(journal_entry=je, account=inv_acc, debit=sub, credit=0, description=f"Stock In from {self.supplier.name}")
             JournalEntryLine.objects.create(journal_entry=je, account=vat_in_acc, debit=vat, credit=0, description="15% Input VAT Paid")
             JournalEntryLine.objects.create(journal_entry=je, account=ap_acc, debit=0, credit=tot, description=f"Payable to {self.supplier.name}")
+            self.recalculate_payment_status()
 
 class PurchaseBillItem(models.Model):
     bill = models.ForeignKey(PurchaseBill, on_delete=models.CASCADE, related_name='items')
@@ -459,7 +543,7 @@ class ReceiptVoucher(models.Model):
     voucher_no = models.CharField(max_length=100, default="RV-001")
     date = models.DateField(default=datetime.now)
     customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
-    invoice = models.ForeignKey(Invoice, on_delete=models.SET_NULL, null=True, blank=True)
+    invoice = models.ForeignKey(Invoice, on_delete=models.SET_NULL, null=True, blank=True, related_name="receipts")
     bank_account = models.ForeignKey(BankAccount, on_delete=models.PROTECT)
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     payment_method = models.CharField(max_length=50, default="Bank Transfer")
@@ -476,13 +560,15 @@ class ReceiptVoucher(models.Model):
             je.lines.all().delete()
             JournalEntryLine.objects.create(journal_entry=je, account=bank_chart_acc, debit=self.amount, credit=0, description=f"Received via {self.payment_method}")
             JournalEntryLine.objects.create(journal_entry=je, account=ar_acc, debit=0, credit=self.amount, description=f"Payment from {self.customer.name}")
+            if self.invoice:
+                self.invoice.recalculate_payment_status()
 
 class PaymentVoucher(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True, related_name="payments_vouchers")
     voucher_no = models.CharField(max_length=100, default="PV-001")
     date = models.DateField(default=datetime.now)
     supplier = models.ForeignKey(Supplier, on_delete=models.SET_NULL, null=True, blank=True)
-    purchase_bill = models.ForeignKey(PurchaseBill, on_delete=models.SET_NULL, null=True, blank=True)
+    purchase_bill = models.ForeignKey(PurchaseBill, on_delete=models.SET_NULL, null=True, blank=True, related_name="payments")
     bank_account = models.ForeignKey(BankAccount, on_delete=models.PROTECT)
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     payment_method = models.CharField(max_length=50, default="Bank Transfer")
@@ -501,6 +587,8 @@ class PaymentVoucher(models.Model):
             je.lines.all().delete()
             JournalEntryLine.objects.create(journal_entry=je, account=debit_acc, debit=self.amount, credit=0, description=desc)
             JournalEntryLine.objects.create(journal_entry=je, account=bank_chart_acc, debit=0, credit=self.amount, description=f"Paid via {self.payment_method}")
+            if self.purchase_bill:
+                self.purchase_bill.recalculate_payment_status()
 
 class BillOfMaterials(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True, related_name="boms")
