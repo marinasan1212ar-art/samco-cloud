@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Price Lists / قوائم الأسعار - SAMCO Cloud</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen p-6 font-sans antialiased">
+    <div class="max-w-6xl mx-auto mb-6 flex justify-between items-center">
+        <a href="/" class="text-sm font-bold text-slate-600 hover:text-indigo-600 flex items-center gap-2">
+            <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+        </a>
+        <button class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-5 py-2.5 rounded-xl text-xs shadow flex items-center gap-2">
+            <i class="fa-solid fa-plus"></i> + New Price List (قائمة أسعار جديدة)
+        </button>
+    </div>
+
+    <div class="max-w-6xl mx-auto space-y-6">
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-black text-slate-900">🏷️ Custom Price Lists (قوائم الأسعار)</h1>
+                <p class="text-xs text-slate-500 mt-1">Manage custom price tiers, wholesale and retail catalogs.</p>
+            </div>
+            <span class="px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold text-xs rounded-full">Active Pricing Engine</span>
+        </div>
+
+        <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+            <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                    <tr class="bg-slate-100 text-slate-700 uppercase font-black border-b border-slate-200 text-[11px]">
+                        <th class="p-3.5">Price List Name</th>
+                        <th class="p-3.5">Currency</th>
+                        <th class="p-3.5 text-center">Discount / Markup</th>
+                        <th class="p-3.5 text-center">Status</th>
+                        <th class="p-3.5 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for item in price_lists %}
+                    <tr class="hover:bg-slate-50 text-slate-800 transition">
+                        <td class="p-3.5 font-bold text-slate-900">{{ item.name }}</td>
+                        <td class="p-3.5 font-mono">SAR</td>
+                        <td class="p-3.5 text-center font-mono font-bold text-indigo-600">{{ item.discount_percentage|default:"0" }}%</td>
+                        <td class="p-3.5 text-center"><span class="px-2.5 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-black rounded-full">ACTIVE</span></td>
+                        <td class="p-3.5 text-right">
+                            <button class="text-xs text-indigo-600 hover:underline font-bold">Edit</button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="p-10 text-center text-slate-400 italic">
+                            <i class="fa-solid fa-tags text-3xl mb-2 block opacity-40"></i>
+                            No custom price lists configured yet. Standard pricing applies.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

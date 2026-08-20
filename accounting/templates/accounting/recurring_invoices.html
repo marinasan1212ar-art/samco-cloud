@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Recurring Invoices / الفواتير الدورية - SAMCO Cloud</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen p-6 font-sans antialiased">
+    <div class="max-w-6xl mx-auto mb-6 flex justify-between items-center">
+        <a href="/" class="text-sm font-bold text-slate-600 hover:text-indigo-600 flex items-center gap-2">
+            <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+        </a>
+        <a href="/invoices/create/" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-5 py-2.5 rounded-xl text-xs shadow flex items-center gap-2">
+            <i class="fa-solid fa-plus"></i> + New Recurring Schedule (جدولة فاتورة دورية)
+        </a>
+    </div>
+
+    <div class="max-w-6xl mx-auto space-y-6">
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-black text-slate-900">🔁 Recurring Invoices & Auto-Billing (الفواتير الدورية)</h1>
+                <p class="text-xs text-slate-500 mt-1">Automate periodic client invoicing and subscriptions with ZATCA sync.</p>
+            </div>
+            <span class="px-3 py-1 bg-indigo-50 text-indigo-700 border border-indigo-200 font-bold text-xs rounded-full">Auto Engine Ready</span>
+        </div>
+
+        <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+            <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                    <tr class="bg-slate-100 text-slate-700 uppercase font-black border-b border-slate-200 text-[11px]">
+                        <th class="p-3.5">Customer / Schedule</th>
+                        <th class="p-3.5">Frequency</th>
+                        <th class="p-3.5">Next Generation Date</th>
+                        <th class="p-3.5 text-right">Amount (SAR)</th>
+                        <th class="p-3.5 text-center">Status</th>
+                        <th class="p-3.5 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for inv in recurring_invoices %}
+                    <tr class="hover:bg-slate-50 text-slate-800 transition">
+                        <td class="p-3.5 font-bold text-slate-900">{{ inv.customer.name|default:"General Client" }}</td>
+                        <td class="p-3.5"><span class="px-2 py-0.5 bg-slate-100 text-slate-700 font-bold rounded text-[10px]">{{ inv.frequency|default:"Monthly" }}</span></td>
+                        <td class="p-3.5 font-mono text-slate-600">{{ inv.next_date|default:"-" }}</td>
+                        <td class="p-3.5 text-right font-mono font-black text-slate-900">SAR {{ inv.total|default:"0.00" }}</td>
+                        <td class="p-3.5 text-center"><span class="px-2.5 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-black rounded-full">ACTIVE</span></td>
+                        <td class="p-3.5 text-right">
+                            <button class="text-xs text-indigo-600 hover:underline font-bold">Manage</button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="p-10 text-center text-slate-400 italic">
+                            <i class="fa-solid fa-arrows-rotate text-3xl mb-2 block opacity-40"></i>
+                            No recurring invoice schedules configured yet.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
