@@ -462,3 +462,8 @@ def vat_return_view(request):
         'pur_base': pur_base, 'pur_vat': pur_vat, 'net_vat': net_vat,
         'lang': lang, 'is_ar': is_ar, 'lang_dir': lang_dir
     })
+
+
+def ocr_scanner_view(request):
+    company = get_user_company(request)
+    return render(request, 'accounting/ocr_scanner.html', {'company': company})
