@@ -300,39 +300,63 @@
                 </div>
 
                 <!-- Top Customers -->
-                <!-- Quick Links -->
+                <!-- Quick Links (9 Balanced Cards) -->
                 <div class="lg:col-span-3 bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
                     <h3 class="text-sm font-black text-slate-900 mb-3">Quick Links</h3>
                     <div class="grid grid-cols-3 gap-2 text-center">
+                        <!-- 1. Create Invoice -->
                         <a href="/invoices/create/" class="p-2.5 rounded-xl border border-slate-100 hover:bg-slate-50 flex flex-col items-center gap-1 transition group">
                             <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs group-hover:scale-110 transition"><i class="fa-solid fa-file-invoice"></i></div>
                             <span class="text-[10px] font-bold text-slate-700">Create Invoice</span>
                         </a>
+
+                        <!-- 2. Purchases -->
                         <a href="#" class="p-2.5 rounded-xl border border-slate-100 hover:bg-slate-50 flex flex-col items-center gap-1 transition group">
                             <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-xs group-hover:scale-110 transition"><i class="fa-solid fa-cart-shopping"></i></div>
                             <span class="text-[10px] font-bold text-slate-700">Purchases</span>
                         </a>
+
+                        <!-- 3. Add Expense -->
                         <a href="/expenses/" class="p-2.5 rounded-xl border border-slate-100 hover:bg-slate-50 flex flex-col items-center gap-1 transition group">
                             <div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-xs group-hover:scale-110 transition"><i class="fa-solid fa-receipt"></i></div>
                             <span class="text-[10px] font-bold text-slate-700">Add Expense</span>
                         </a>
+
+                        <!-- 4. New Contact -->
                         <a href="#" class="p-2.5 rounded-xl border border-slate-100 hover:bg-slate-50 flex flex-col items-center gap-1 transition group">
                             <div class="w-8 h-8 rounded-lg bg-cyan-50 text-cyan-600 flex items-center justify-center text-xs group-hover:scale-110 transition"><i class="fa-solid fa-user-plus"></i></div>
                             <span class="text-[10px] font-bold text-slate-700">New Contact</span>
                         </a>
+
+                        <!-- 5. Bank Transfer -->
                         <a href="/banking/transfer/" class="p-2.5 rounded-xl border border-slate-100 hover:bg-slate-50 flex flex-col items-center gap-1 transition group">
                             <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs group-hover:scale-110 transition"><i class="fa-solid fa-building-columns"></i></div>
                             <span class="text-[10px] font-bold text-slate-700">Bank Transfer</span>
                         </a>
+
+                        <!-- 6. Reports -->
                         <a href="/reports/" class="p-2.5 rounded-xl border border-slate-100 hover:bg-slate-50 flex flex-col items-center gap-1 transition group">
                             <div class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center text-xs group-hover:scale-110 transition"><i class="fa-solid fa-chart-pie"></i></div>
                             <span class="text-[10px] font-bold text-slate-700">Reports</span>
                         </a>
-                        <!-- AI Smart Scanner Button (Reports এর ঠিক ডানে) -->
-                        <a href="/scanner/" class="p-2.5 rounded-xl border border-cyan-200 bg-cyan-50/50 hover:bg-cyan-100/70 flex flex-col items-center gap-1 transition group relative">
-                            <span class="absolute -top-1.5 -right-1 text-[8px] bg-cyan-500 text-white font-black px-1.5 py-0.2 rounded-full uppercase shadow-xs">AI</span>
+
+                        <!-- 7. AI Smart Scanner -->
+                        <a href="/scanner/" class="p-2.5 rounded-xl border border-cyan-200 bg-cyan-50/40 hover:bg-cyan-100/70 flex flex-col items-center gap-1 transition group relative">
+                            <span class="absolute -top-1.5 -right-1 text-[8px] bg-cyan-500 text-white font-black px-1 py-0.2 rounded-full uppercase shadow-xs">AI</span>
                             <div class="w-8 h-8 rounded-lg bg-cyan-100 text-cyan-700 flex items-center justify-center text-xs group-hover:scale-110 transition"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
                             <span class="text-[10px] font-bold text-cyan-950">AI Scanner</span>
+                        </a>
+
+                        <!-- 8. VAT Declaration -->
+                        <a href="/vat/" class="p-2.5 rounded-xl border border-amber-200 bg-amber-50/40 hover:bg-amber-100/70 flex flex-col items-center gap-1 transition group">
+                            <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center text-xs group-hover:scale-110 transition"><i class="fa-solid fa-percent"></i></div>
+                            <span class="text-[10px] font-bold text-amber-950">VAT Return</span>
+                        </a>
+
+                        <!-- 9. Debt Aging -->
+                        <a href="/reports/aging/" class="p-2.5 rounded-xl border border-indigo-200 bg-indigo-50/40 hover:bg-indigo-100/70 flex flex-col items-center gap-1 transition group">
+                            <div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center text-xs group-hover:scale-110 transition"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                            <span class="text-[10px] font-bold text-indigo-950">Debt Aging</span>
                         </a>
                     </div>
                 </div>
