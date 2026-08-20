@@ -213,7 +213,7 @@
                 <div class="flex items-center gap-2.5 {% if is_ar %}pr-2 border-r border-slate-200{% else %}pl-2 border-l border-slate-200{% endif %}">
                     <div class="{% if is_ar %}text-left{% else %}text-right{% endif %}">
                         <p class="text-xs font-bold text-slate-800 leading-tight">{{ company.name|default:"Demo Company" }}</p>
-                        <p class="text-[10px] text-slate-500 leading-tight">{{ request.user.username|default:"John Doe" }}</p>
+                        <p class="text-[10px] text-slate-500 leading-tight">{{ request.user.username|default:"Shamim" }}</p>
                     </div>
                     <div class="w-9 h-9 rounded-full bg-[#34d399] text-[#065f46] font-black text-xs flex items-center justify-center border-2 border-white shadow-sm">
                         JD
@@ -226,7 +226,7 @@
         <div class="p-6 space-y-6">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                 <h1 class="text-xl font-bold text-slate-900 flex items-center gap-2">
-                    {% if is_ar %}صباح الخير، {{ request.user.username|default:"John Doe" }}{% else %}Good Morning, {{ request.user.username|default:"John Doe" }}{% endif %} <span>👋</span>
+                    {% if is_ar %}صباح الخير، {{ request.user.username|default:"Shamim" }}{% else %}Good Morning, {{ request.user.username|default:"Shamim" }}{% endif %} <span>👋</span>
                 </h1>
                 <div class="flex items-center gap-2 text-xs">
                     <select class="bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-slate-700 font-bold focus:outline-none shadow-sm">
