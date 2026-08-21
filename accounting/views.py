@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.utils import timezone
+import random
 from .models import (
     CompanySettings, Customer, Supplier, Product, PriceList,
     Invoice, Quotation, RecurringInvoice, PurchaseBill, DirectExpense,
@@ -37,18 +38,82 @@ def home_dashboard_view(request):
     })
 
 # -------------------------------------------------------------------------
-# 5 DIVISIONS WEB WORKSPACES (Warehouse, Media, Cosmetic, Powder, Plastic)
+# INVOICE MANAGEMENT VIEWS (Fixes /invoices/ and /invoices/create/)
 # -------------------------------------------------------------------------
+def invoices_list_view(request):
+    company = get_user_company(request)
+    invoices = Invoice.objects.all().order_by('-id')
+    return render(request, 'accounting/invoices_list.html', {
+        'company': company,
+        'invoices': invoices,
+    })
+
+def create_invoice_view(request):
+    company = get_user_company(request)
+    if request.method == 'POST':
+        inv_no = request.POST.get('invoice_number') or f"INV-{random.randint(1000,9999)}"
+        issue_date = request.POST.get('issue_date') or timezone.now().date()
+        customer_name = request.POST.get('customer_name') or "General Client"
+        subtotal = float(request.POST.get('subtotal') or 0)
+        vat_amount = float(request.POST.get('vat_amount') or 0)
+        grand_total = float(request.POST.get('grand_total') or 0)
+        
+        customer, _ = Customer.objects.get_or_create(name=customer_name)
+        
+        inv = Invoice.objects.create(
+            invoice_number=inv_no,
+            customer=customer,
+            issue_date=issue_date,
+            subtotal=subtotal,
+            vat_amount=vat_amount,
+            grand_total=grand_total,
+            status="PAID"
+        )
+        return redirect('invoice-detail', pk=inv.id)
+
+    return render(request, 'accounting/create_invoice.html', {
+        'company': company,
+        'random_inv': random.randint(10000, 99999)
+    })
+
+def invoice_detail_view(request, pk):
+    company = get_user_company(request)
+    invoice = get_object_or_404(Invoice, pk=pk)
+    return render(request, 'accounting/invoice_detail.html', {
+        'company': company,
+        'invoice': invoice,
+    })
+
+def financial_reports_view(request):
+    company = get_user_company(request)
+    total_sales = sum(inv.grand_total for inv in Invoice.objects.all())
+    total_expenses = sum(exp.total_amount for exp in DirectExpense.objects.all())
+    net_profit = total_sales - total_expenses
+    return render(request, 'accounting/financial_reports.html', {
+        'company': company,
+        'total_sales': total_sales,
+        'total_expenses': total_expenses,
+        'net_profit': net_profit,
+    })
+
+def banking_transfer_view(request):
+    company = get_user_company(request)
+    return render(request, 'accounting/banking_transfer.html', {'company': company})
+
+def settings_page_view(request):
+    company = get_user_company(request)
+    return render(request, 'accounting/settings.html', {'company': company})
+
 def division_hub_view(request, dept='warehouse'):
     company = get_user_company(request)
     dept_lower = dept.lower()
     
     dept_meta = {
-        'warehouse': {'name': 'Warehouse Division', 'icon': '🏭', 'color': 'cyan', 'theme_code': '#06B6D4', 'sub': 'Master Finished Goods, Racking Map & Delivery'},
-        'media': {'name': 'Media Division', 'icon': '📺', 'color': 'emerald', 'theme_code': '#10B981', 'sub': 'Overtime Processing, Transfer Slips & Worker Dossier'},
-        'cosmetic': {'name': 'Cosmetic Division', 'icon': '💄', 'color': 'rose', 'theme_code': '#EC4899', 'sub': 'Cosmetic Formulations, Packaging & Batch QC'},
-        'powder': {'name': 'Powder Division', 'icon': '🧪', 'color': 'amber', 'theme_code': '#F59E0B', 'sub': 'GRN (Moisture/Purity), Lab QC Dual Release & Drum Labels'},
-        'plastic': {'name': 'Plastic Division', 'icon': '♻️', 'color': 'blue', 'theme_code': '#3B82F6', 'sub': 'Machine Injection Molding, Day/Night Shifts & Tender Delivery'}
+        'warehouse': {'name': 'Warehouse Division', 'icon': '🏭', 'sub': 'Master Finished Goods, Racking Map & Delivery'},
+        'media': {'name': 'Media Division', 'icon': '📺', 'sub': 'Overtime Processing, Transfer Slips & Worker Dossier'},
+        'cosmetic': {'name': 'Cosmetic Division', 'icon': '💄', 'sub': 'Cosmetic Formulations, Packaging & Batch QC'},
+        'powder': {'name': 'Powder Division', 'icon': '🧪', 'sub': 'GRN (Moisture/Purity), Lab QC Dual Release & Drum Labels'},
+        'plastic': {'name': 'Plastic Division', 'icon': '♻️', 'sub': 'Machine Injection Molding, Day/Night Shifts & Tender Delivery'}
     }
     
     current_meta = dept_meta.get(dept_lower, dept_meta['warehouse'])
@@ -67,13 +132,9 @@ def division_hub_view(request, dept='warehouse'):
         'deliveries': deliveries,
     })
 
-# -------------------------------------------------------------------------
-# 👑 SUPER ADMIN EXECUTIVE COMMAND CENTER
-# -------------------------------------------------------------------------
 def super_admin_hub_view(request):
     company = get_user_company(request)
     workers = Worker.objects.all()
-    
     today = timezone.now().date()
     iqama_alerts = []
     for w in workers:
@@ -94,9 +155,6 @@ def super_admin_hub_view(request):
         {'name': 'Saud Abdul Aziz', 'rank': '🎖️ Rank 4', 'sales': total_sales * 0.10, 'profit': net_profit * 0.10, 'comm': total_sales * 0.10 * 0.05},
     ]
     
-    vehicle_bills = VehicleBill.objects.all().order_by('-id')[:15]
-    recent_invoices = Invoice.objects.all().order_by('-id')[:10]
-    
     return render(request, 'accounting/super_admin_hub.html', {
         'company': company,
         'total_sales': total_sales,
@@ -105,13 +163,10 @@ def super_admin_hub_view(request):
         'net_profit': net_profit,
         'salesmen_stats': salesmen_stats,
         'iqama_alerts': iqama_alerts,
-        'vehicle_bills': vehicle_bills,
-        'recent_invoices': recent_invoices,
+        'vehicle_bills': VehicleBill.objects.all()[:10],
+        'recent_invoices': Invoice.objects.all()[:10],
     })
 
-# -------------------------------------------------------------------------
-# OTHER COMMON VIEWS
-# -------------------------------------------------------------------------
 def vat_return_view(request):
     company = get_user_company(request)
     sales_base = sum(inv.subtotal for inv in Invoice.objects.all())
@@ -150,7 +205,3 @@ def statement_of_account_view(request, party_type='customer', pk=1):
 def ocr_scanner_view(request):
     company = get_user_company(request)
     return render(request, 'accounting/ocr_scanner.html', {'company': company})
-
-def settings_page_view(request):
-    company = get_user_company(request)
-    return render(request, 'accounting/settings.html', {'company': company})

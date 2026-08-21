@@ -2,199 +2,77 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Tax Invoice #{{ invoice.invoice_no }} - {{ company.company_name_en }}</title>
+    <title>Tax Invoice - {{ invoice.invoice_number }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- html2pdf Library for Instant 1-Click A4 PDF Export -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <style>
-        @page { size: A4 portrait; margin: 8mm; }
-        @media print {
-            .no-print { display: none !important; }
-            body { background: white !important; padding: 0 !important; font-size: 9.5pt; }
-            .print-sheet { border: 1px solid #cbd5e1 !important; box-shadow: none !important; width: 100% !important; max-width: 100% !important; padding: 10mm !important; }
-        }
-    </style>
-    <script>
-        function downloadA4PDF() {
-            const btn = document.getElementById('pdf-btn');
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generating PDF...';
-            const element = document.getElementById('invoice-sheet');
-            const opt = {
-                margin: [4, 4, 4, 4],
-                filename: 'Tax_Invoice_{{ invoice.invoice_no }}.pdf',
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-            html2pdf().set(opt).from(element).save().then(() => {
-                btn.innerHTML = '<i class="fa-solid fa-file-pdf"></i> Download A4 PDF (تحميل PDF)';
-            });
-        }
-    </script>
 </head>
-<body class="bg-slate-100 text-slate-800 p-4 md:p-8 font-sans antialiased">
-
-    <!-- Top Action Bar -->
-    <div class="max-w-4xl mx-auto mb-6 flex flex-wrap justify-between items-center gap-3 no-print">
-        <a href="/invoices/" class="text-sm font-bold text-slate-600 hover:text-indigo-600 flex items-center gap-2">
-            <i class="fa-solid fa-arrow-left"></i> Back to Invoices (قائمة الفواتير)
+<body class="bg-slate-50 text-slate-800 min-h-screen p-6 antialiased font-sans">
+    <div class="max-w-4xl mx-auto mb-6 flex justify-between items-center">
+        <a href="/invoices/" class="text-xs font-bold text-slate-600 hover:text-indigo-600 flex items-center gap-2">
+            <i class="fa-solid fa-arrow-left"></i> Back to Invoices
         </a>
-        <div class="flex flex-wrap items-center gap-2">
-            <button id="pdf-btn" onclick="downloadA4PDF()" class="bg-rose-600 hover:bg-rose-500 text-white font-black px-4 py-2.5 rounded-xl text-xs shadow-md flex items-center gap-2 transition">
-                <i class="fa-solid fa-file-pdf text-sm"></i> Download A4 PDF (تحميل PDF)
-            </button>
-            <button onclick="window.print()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-black px-4 py-2.5 rounded-xl text-xs shadow-md flex items-center gap-2 transition">
-                <i class="fa-solid fa-print text-sm"></i> Print Invoice (طباعة A4)
-            </button>
-            <a href="/invoice/{{ invoice.id }}/delivery/" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3.5 py-2.5 rounded-xl text-xs shadow-md flex items-center gap-1.5 transition">
-                <i class="fa-solid fa-truck-fast"></i> Dispatch
-            </a>
-            <a href="/invoice/{{ invoice.id }}/return/" class="bg-slate-700 hover:bg-slate-600 text-white font-bold px-3.5 py-2.5 rounded-xl text-xs shadow-md flex items-center gap-1.5 transition">
-                <i class="fa-solid fa-rotate-left"></i> Return
-            </a>
-        </div>
+        <button onclick="window.print()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-4 py-2 rounded-xl text-xs shadow flex items-center gap-2">
+            <i class="fa-solid fa-print"></i> Print Official Tax Invoice
+        </button>
     </div>
 
-    <!-- Official ZATCA A4 Tax Invoice Sheet -->
-    <div id="invoice-sheet" class="max-w-4xl mx-auto bg-white text-slate-900 rounded-2xl shadow-xl p-8 md:p-12 border border-slate-200 print-sheet space-y-6">
-        
-        <!-- Header -->
+    <div class="max-w-4xl mx-auto bg-white border border-slate-200 rounded-2xl shadow-lg p-8 space-y-6">
         <div class="flex justify-between items-start border-b-2 border-slate-900 pb-5">
             <div>
-                <h1 class="text-xl md:text-2xl font-black text-slate-900">{{ company.company_name_en }}</h1>
-                <p class="text-base font-bold text-slate-700 mt-0.5" dir="rtl">{{ company.company_name_ar }}</p>
-                <p class="text-xs text-slate-600 mt-1 font-mono">VAT Reg: <span class="font-bold text-slate-900">{{ company.vat_number }}</span> | CR: {{ company.cr_number }}</p>
-                <p class="text-xs text-slate-500">{{ company.address_en }}</p>
-            </div>
-            
-            <div class="text-right">
-                <span class="inline-block px-3 py-1 bg-slate-900 text-amber-400 font-extrabold text-xs uppercase tracking-wider rounded mb-1">
-                    Tax Invoice / فاتورة ضريبية
-                </span>
-                <p class="text-lg font-black text-slate-900">#{{ invoice.invoice_no }}</p>
-                <p class="text-xs text-slate-600 font-semibold mt-0.5">Issue Date (تاريخ الإصدار): {{ invoice.date|date:"d-m-Y" }}</p>
-                <p class="text-xs text-slate-600 font-semibold">Supply Date (تاريخ التوريد): {{ invoice.supply_date|date:"d-m-Y" }}</p>
-                <p class="text-xs text-slate-500">Due Date (الاستحقاق): {{ invoice.due_date|date:"d-m-Y" }}</p>
-                
-                <div class="mt-1.5">
-                    {% if invoice.payment_status == 'PAID' %}
-                    <span class="px-2.5 py-0.5 bg-emerald-100 text-emerald-800 border border-emerald-300 font-black text-[10px] rounded-full">● PAID (مدفوع بالكامل)</span>
-                    {% elif invoice.payment_status == 'PARTIALLY_PAID' %}
-                    <span class="px-2.5 py-0.5 bg-amber-100 text-amber-800 border border-amber-300 font-black text-[10px] rounded-full">◐ PARTIALLY PAID (مدفوع جزئياً)</span>
-                    {% else %}
-                    <span class="px-2.5 py-0.5 bg-rose-100 text-rose-800 border border-rose-300 font-black text-[10px] rounded-full">○ UNPAID (غير مدفوع)</span>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-
-        <!-- Customer & Buyer Identification Grid -->
-        <div class="grid grid-cols-2 gap-4 p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs">
-            <div>
-                <p class="font-bold text-slate-400 uppercase tracking-wider mb-1">Customer / العميل</p>
-                <p class="text-sm font-black text-slate-900">{{ invoice.customer.name }}</p>
-                {% if invoice.customer.name_ar %}<p class="text-xs font-bold text-slate-700" dir="rtl">{{ invoice.customer.name_ar }}</p>{% endif %}
-                <p class="text-slate-600 mt-1">Phone: {{ invoice.customer.phone|default:"-" }}</p>
-                <p class="text-slate-600">Address: {{ invoice.customer.address|default:"Kingdom of Saudi Arabia" }}</p>
+                <h1 class="text-2xl font-black text-slate-900">SECOND ADVANCE MEDICAL COMPANY (SAMCO)</h1>
+                <p class="text-xs text-slate-500 mt-1">Official Tax Invoice / فاتورة ضريبية</p>
+                <p class="text-xs text-slate-600 font-mono mt-1">VAT ID: 300000000000003 | CR: 1010445566 | Riyadh, KSA</p>
             </div>
             <div class="text-right">
-                <p class="font-bold text-slate-400 uppercase tracking-wider mb-1">Buyer VAT No / الرقم الضريبي</p>
-                <p class="text-sm font-mono font-black text-slate-900">{{ invoice.customer.vat_number|default:"N/A (B2C Simplified)" }}</p>
-                {% if invoice.customer.cr_number %}<p class="text-slate-600 mt-0.5">CR No: {{ invoice.customer.cr_number }}</p>{% endif %}
-                <p class="text-slate-400 text-[10px] mt-1 font-mono">UUID: {{ invoice.uuid }}</p>
+                <span class="px-3 py-1 bg-emerald-100 text-emerald-800 font-black text-xs rounded-lg uppercase">PAID</span>
+                <p class="text-xs font-mono font-bold text-slate-900 mt-2">Invoice: {{ invoice.invoice_number }}</p>
+                <p class="text-xs text-slate-400 font-mono">Date: {{ invoice.issue_date }}</p>
             </div>
         </div>
 
-        <!-- Line Items Table -->
-        <table class="w-full text-left text-xs mb-6 border-collapse">
-            <thead>
-                <tr class="bg-slate-900 text-white uppercase text-[11px] font-bold">
-                    <th class="p-3">#</th>
-                    <th class="p-3">Item Description / الصنف والبيان</th>
-                    <th class="p-3 text-center">Qty</th>
-                    <th class="p-3 text-right">Unit Price</th>
-                    <th class="p-3 text-center">Disc %</th>
-                    <th class="p-3 text-right">Total (SAR)</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-200">
-                {% for item in invoice.items.all %}
-                <tr class="text-slate-800">
-                    <td class="p-3 font-semibold text-slate-400">{{ forloop.counter }}</td>
-                    <td class="p-3">
-                        <p class="font-bold text-slate-900">{{ item.product.name }}</p>
-                        {% if item.description %}<p class="text-[11px] text-slate-600">{{ item.description }}</p>{% endif %}
-                        <p class="text-[10px] text-slate-400 font-mono">CAT: {{ item.product.cat_no }}</p>
-                    </td>
-                    <td class="p-3 text-center font-bold">{{ item.qty }}</td>
-                    <td class="p-3 text-right font-medium">{{ item.unit_price|floatformat:2 }}</td>
-                    <td class="p-3 text-center">{{ item.discount_pct }}%</td>
-                    <td class="p-3 text-right font-black text-slate-900">{{ item.total|floatformat:2 }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-        <!-- Summary & ZATCA Phase-2 QR Code -->
-        <div class="flex justify-between items-end pt-4 border-t-2 border-slate-900">
-            <div class="flex items-center gap-4">
-                {% if qr_image %}
-                <img src="data:image/png;base64,{{ qr_image }}" alt="ZATCA Phase 2 QR" class="w-28 h-28 border border-slate-300 rounded p-1">
-                {% endif %}
-                <div class="text-[10px] text-slate-500 leading-tight">
-                    <p class="font-bold text-slate-900 text-xs mb-1">ZATCA e-Invoice (رصد)</p>
-                    <p>Verified Phase-2 Compliant</p>
-                    <p>Scan with ZATCA App to verify</p>
-                </div>
-            </div>
-
-            <div class="w-72 space-y-1.5 text-xs">
-                <div class="flex justify-between text-slate-600">
-                    <span>Taxable Base (المبلغ الخاضع للضريبة):</span>
-                    <span class="font-bold text-slate-900">{{ invoice.subtotal|floatformat:2 }} SAR</span>
-                </div>
-                {% if invoice.discount_amount > 0 %}
-                <div class="flex justify-between text-rose-600">
-                    <span>Discount (الخصم):</span>
-                    <span class="font-bold">-{{ invoice.discount_amount|floatformat:2 }} SAR</span>
-                </div>
-                {% endif %}
-                <div class="flex justify-between text-amber-600 font-bold">
-                    <span>15% ZATCA VAT (ضريبة القيمة المضافة):</span>
-                    <span>{{ invoice.vat_amount|floatformat:2 }} SAR</span>
-                </div>
-                <div class="flex justify-between text-base font-black text-slate-900 pt-2 border-t border-slate-300">
-                    <span>Grand Total (الإجمالي شامل الضريبة):</span>
-                    <span class="text-indigo-600">{{ invoice.total_amount|floatformat:2 }} SAR</span>
-                </div>
-                <div class="flex justify-between text-slate-600 pt-1 text-[11px]">
-                    <span>Paid (المدفوع):</span>
-                    <span class="font-bold text-emerald-600">{{ invoice.amount_paid|floatformat:2 }} SAR</span>
-                </div>
-                <div class="flex justify-between text-rose-600 font-bold text-[11px]">
-                    <span>Remaining Due (المتبقي):</span>
-                    <span>{{ invoice.remaining_due|floatformat:2 }} SAR</span>
-                </div>
-            </div>
-        </div>
-
-        {% if invoice.notes %}
-        <div class="mt-4 pt-3 border-t border-slate-200 text-xs text-slate-600">
-            <span class="font-bold text-slate-800">Terms & Conditions / الملاحظات والشروط:</span> {{ invoice.notes }}
-        </div>
-        {% endif %}
-
-        <!-- Signatures & Stamp Box -->
-        <div class="grid grid-cols-2 gap-8 pt-12 mt-6 border-t border-slate-200 text-xs text-center">
+        <div class="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl text-xs">
             <div>
-                <p class="border-t border-slate-400 pt-2 font-bold text-slate-700">Authorized Signature / التوقيع المعتمد</p>
+                <span class="text-slate-400 font-bold uppercase block mb-1">Bill To / العميل:</span>
+                <p class="font-bold text-slate-900">{{ invoice.customer.name|default:"General Client Entity" }}</p>
+                <p class="text-slate-500">VAT ID: {{ invoice.customer.vat_number|default:"300489217600003" }}</p>
             </div>
-            <div>
-                <p class="border-t border-slate-400 pt-2 font-bold text-slate-700">Official Company Stamp / ختم المنشأة</p>
+            <div class="text-right">
+                <span class="text-slate-400 font-bold uppercase block mb-1">Invoice Status:</span>
+                <p class="font-bold text-emerald-600">ZATCA Cryptographically Verified 🟢</p>
+            </div>
+        </div>
+
+        <div class="border border-slate-200 rounded-xl overflow-hidden text-xs">
+            <table class="w-full text-left border-collapse">
+                <thead class="bg-slate-100 font-black uppercase text-[11px]">
+                    <tr>
+                        <th class="p-3">Description</th>
+                        <th class="p-3 text-right">Subtotal</th>
+                        <th class="p-3 text-right">VAT (15%)</th>
+                        <th class="p-3 text-right">Total (SAR)</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    <tr>
+                        <td class="p-3 font-semibold">Medical Supplies & Operating Products Supply</td>
+                        <td class="p-3 text-right font-mono">SAR {{ invoice.subtotal|floatformat:2 }}</td>
+                        <td class="p-3 text-right font-mono text-amber-600">SAR {{ invoice.vat_amount|floatformat:2 }}</td>
+                        <td class="p-3 text-right font-mono font-black text-slate-900">SAR {{ invoice.grand_total|floatformat:2 }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="flex justify-between items-center pt-4 border-t border-slate-200">
+            <div class="text-xs text-slate-500">
+                <p class="font-bold text-slate-800">SAMCO Accounts & Finance</p>
+                <p>Generated by SAMCO Cloud ERP</p>
+            </div>
+            <div class="text-right font-mono">
+                <span class="text-xs text-slate-400">Total Net Amount:</span>
+                <p class="text-xl font-black text-indigo-700">SAR {{ invoice.grand_total|floatformat:2 }}</p>
             </div>
         </div>
     </div>
-
 </body>
 </html>

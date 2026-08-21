@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Tax Invoice - QOYOD SAMCO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen p-6 antialiased font-sans">
+    <div class="max-w-4xl mx-auto space-y-6">
+        <div class="flex justify-between items-center">
+            <a href="/invoices/" class="text-xs font-bold text-slate-600 hover:text-indigo-600 flex items-center gap-2">
+                <i class="fa-solid fa-arrow-left"></i> Back to Invoices List
+            </a>
+            <span class="px-3 py-1 bg-indigo-50 text-indigo-700 font-bold text-xs rounded-full border border-indigo-200">
+                Saudi ZATCA Phase 2 Compliant
+            </span>
+        </div>
+
+        <form method="POST" class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 space-y-5">
+            {% csrf_token %}
+            <div class="border-b border-slate-100 pb-4">
+                <h1 class="text-lg font-black text-slate-900">🧾 New Tax Invoice Form (إنشاء فاتورة ضريبية)</h1>
+                <p class="text-xs text-slate-500">Enter customer and billing details to generate ZATCA verified invoice</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-semibold">
+                <div>
+                    <label class="block text-slate-600 mb-1">Invoice Number:</label>
+                    <input type="text" name="invoice_number" required value="INV-{{ random_inv }}" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono">
+                </div>
+                <div>
+                    <label class="block text-slate-600 mb-1">Issue Date:</label>
+                    <input type="date" name="issue_date" required value="{% now 'Y-m-d' %}" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-semibold">
+                <div>
+                    <label class="block text-slate-600 mb-1">Customer / Entity Name:</label>
+                    <input type="text" name="customer_name" required placeholder="e.g. King Fahad Hospital" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl">
+                </div>
+                <div>
+                    <label class="block text-slate-600 mb-1">Customer VAT ID (15-digits):</label>
+                    <input type="text" name="customer_vat" placeholder="300000000000003" maxlength="15" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono">
+                </div>
+            </div>
+
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3 text-xs">
+                <div class="flex justify-between items-center">
+                    <span class="font-bold text-slate-700">Subtotal Amount (Excl. VAT):</span>
+                    <input type="number" step="0.01" id="subtotal" name="subtotal" required placeholder="0.00" oninput="calcVAT()" class="w-36 p-2 bg-white border border-slate-200 rounded-lg text-right font-mono font-bold">
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="font-bold text-amber-600">ZATCA 15% VAT Amount:</span>
+                    <input type="number" step="0.01" id="vat_amount" name="vat_amount" readonly placeholder="0.00" class="w-36 p-2 bg-slate-100 border border-slate-200 rounded-lg text-right font-mono font-bold text-amber-600">
+                </div>
+                <div class="border-t border-slate-200 pt-2 flex justify-between items-center text-sm font-black text-slate-900">
+                    <span>Grand Total (Incl. VAT):</span>
+                    <input type="number" step="0.01" id="grand_total" name="grand_total" readonly placeholder="0.00" class="w-40 p-2 bg-indigo-50 border border-indigo-200 rounded-lg text-right font-mono font-black text-indigo-700 text-base">
+                </div>
+            </div>
+
+            <div class="pt-2 flex justify-end gap-3">
+                <a href="/invoices/" class="px-5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50">Cancel</a>
+                <button type="submit" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl shadow">
+                    💾 Save & Issue Invoice
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+    function calcVAT() {
+        const sub = parseFloat(document.getElementById('subtotal').value) || 0;
+        const vat = sub * 0.15;
+        const total = sub + vat;
+        document.getElementById('vat_amount').value = vat.toFixed(2);
+        document.getElementById('grand_total').value = total.toFixed(2);
+    }
+    </script>
+</body>
+</html>

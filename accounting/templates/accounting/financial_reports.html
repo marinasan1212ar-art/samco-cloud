@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <title>Financial Reports - QOYOD SAMCO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen p-6 antialiased font-sans">
+    <div class="max-w-6xl mx-auto space-y-6">
+        <div class="flex justify-between items-center">
+            <a href="/" class="text-xs font-bold text-slate-600 hover:text-indigo-600 flex items-center gap-2">
+                <i class="fa-solid fa-arrow-left"></i> Dashboard
+            </a>
+            <h1 class="text-xl font-black text-slate-900">📊 Financial Reports & Balance Sheets</h1>
+            <span></span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 text-xs">
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-2">
+                <span class="text-slate-400 font-bold uppercase">Income & Revenue</span>
+                <p class="text-2xl font-black text-slate-900 font-mono">SAR {{ total_sales|floatformat:2 }}</p>
+                <p class="text-emerald-600 font-bold">Total Invoiced Sales</p>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-2">
+                <span class="text-slate-400 font-bold uppercase">Expenses & Costs</span>
+                <p class="text-2xl font-black text-slate-900 font-mono">SAR {{ total_expenses|floatformat:2 }}</p>
+                <p class="text-rose-500 font-bold">Direct Operating Expenses</p>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-2">
+                <span class="text-slate-400 font-bold uppercase">Net Profit Yield</span>
+                <p class="text-2xl font-black text-indigo-600 font-mono">SAR {{ net_profit|floatformat:2 }}</p>
+                <p class="text-indigo-600 font-bold">Trading Surplus</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
