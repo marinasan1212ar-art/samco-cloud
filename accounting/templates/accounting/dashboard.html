@@ -16,33 +16,37 @@
 </head>
 <body class="bg-slate-50 text-slate-800 h-full flex overflow-hidden">
 
-    <!-- 1. SIDEBAR -->
+    <!-- 1. QOYOD SIDEBAR -->
     <aside id="sidebar" class="w-64 bg-[#0a1020] text-slate-300 flex flex-col justify-between shrink-0 h-full border-r border-slate-800 z-30 select-none transition-all duration-300">
         
         <!-- Top Logo & Navigation -->
         <div class="flex flex-col flex-1 overflow-y-auto custom-scrollbar p-4">
             
-            <!-- Exact Image 3 QOYOD Vector Logo -->
+            <!-- Exact Perfect QOYOD Vector Logo -->
             <div class="flex items-center justify-between pb-4 border-b border-slate-800/80 mb-4 px-1">
-                <a href="/" id="logo-container" class="flex flex-col overflow-hidden">
+                <a href="/" id="logo-container" class="flex flex-col overflow-hidden select-none">
                     <div class="flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 170 45" class="w-36 h-auto">
-                            <!-- Q with Cyan Dot at bottom left -->
-                            <circle cx="20" cy="18" r="14" fill="none" stroke="#ffffff" stroke-width="6"/>
-                            <rect x="14.5" y="31.5" width="7" height="7" rx="1.8" fill="#22d3ee"/>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 38" class="w-36 h-auto">
+                            <!-- Q Ring & Snug Attached Cyan Square Dot -->
+                            <circle cx="16" cy="17" r="11.5" fill="none" stroke="#ffffff" stroke-width="4.8"/>
+                            <rect x="9.5" y="24.5" width="6.5" height="6.5" rx="1.5" fill="#22d3ee"/>
+                            
                             <!-- O -->
-                            <circle cx="56" cy="18" r="14" fill="none" stroke="#ffffff" stroke-width="6"/>
+                            <circle cx="45" cy="17" r="11.5" fill="none" stroke="#ffffff" stroke-width="4.8"/>
+                            
                             <!-- Y -->
-                            <path d="M 79 4 L 92 20 L 92 34 L 98 34 L 98 20 L 111 4 L 104 4 L 95 16 L 86 4 Z" fill="#ffffff"/>
+                            <path d="M 64.5 6 L 73 18.5 L 81.5 6 M 73 18.5 L 73 28.5" fill="none" stroke="#ffffff" stroke-width="4.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            
                             <!-- O -->
-                            <circle cx="132" cy="18" r="14" fill="none" stroke="#ffffff" stroke-width="6"/>
+                            <circle cx="102" cy="17" r="11.5" fill="none" stroke="#ffffff" stroke-width="4.8"/>
+                            
                             <!-- D -->
-                            <path d="M 152 4 L 162 4 C 171 4 178 10 178 19 C 178 28 171 34 162 34 L 152 34 Z M 158 10 L 158 28 L 162 28 C 167 28 172 24 172 19 C 172 14 167 10 162 10 Z" fill="#ffffff"/>
+                            <path d="M 123 6 L 133 6 C 141 6 146.5 11 146.5 17.25 C 146.5 23.5 141 28.5 133 28.5 L 123 28.5 Z" fill="none" stroke="#ffffff" stroke-width="4.8" stroke-linejoin="round"/>
                         </svg>
                     </div>
-                    <div id="logo-subtitles" class="mt-1 leading-none transition-opacity duration-200">
-                        <span class="text-[9.5px] font-bold text-slate-100 tracking-[0.22em] block" dir="rtl">أفـضـل تـجـربـة أعـمـال</span>
-                        <span class="text-[7px] font-medium text-slate-400 tracking-[0.06em] block mt-0.5">Best Business Experience</span>
+                    <div id="logo-subtitles" class="mt-1 leading-tight transition-opacity duration-200">
+                        <span class="text-[9.5px] font-bold text-slate-100 tracking-[0.18em] block" dir="rtl">أفضل تجربة أعمال</span>
+                        <span class="text-[7.2px] font-medium text-slate-400 tracking-[0.06em] block mt-0.5">Best Business Experience</span>
                     </div>
                 </a>
                 <button id="sidebarToggle" class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800/80 transition" title="Toggle Sidebar">
@@ -57,7 +61,7 @@
                     <span class="nav-label" data-i18n="dashboard">Dashboard</span>
                 </a>
 
-                <!-- 1. SALES ACCORDION DROPDOWN -->
+                <!-- 1. SALES DROPDOWN -->
                 <div class="pt-1">
                     <button type="button" class="sidebar-dropdown-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition group" data-target="sales-submenu">
                         <div class="flex items-center gap-3">
@@ -75,7 +79,7 @@
                     </div>
                 </div>
                 
-                <!-- 2. PURCHASES ACCORDION DROPDOWN -->
+                <!-- 2. PURCHASES DROPDOWN -->
                 <div>
                     <button type="button" class="sidebar-dropdown-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition group" data-target="purchases-submenu">
                         <div class="flex items-center gap-3">
@@ -106,7 +110,7 @@
                     <span class="nav-label" data-i18n="inventory">Items & Inventory</span>
                 </a>
 
-                <!-- 3. BANKING ACCORDION DROPDOWN -->
+                <!-- 3. BANKING DROPDOWN -->
                 <div>
                     <button type="button" class="sidebar-dropdown-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition group" data-target="banking-submenu">
                         <div class="flex items-center gap-3">
@@ -144,7 +148,7 @@
 
                 <a href="/settings/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
                     <i class="fa-solid fa-gear w-4 text-center text-indigo-400"></i>
-                    <span class="text-indigo-400 font-bold nav-label" data-i18n="settings_divisions">Settings & Divisions</span>
+                    <span class="text-indigo-400 font-bold nav-label" data-i18n="settings">Settings</span>
                 </a>
             </nav>
         </div>
@@ -209,11 +213,10 @@
                             <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full" data-i18n="all_clear">All clear</span>
                         </div>
                         <p class="text-slate-500 text-[11px] py-2">✓ ZATCA 15% Tax & e-Invoicing engine live.</p>
-                        <p class="text-slate-500 text-[11px] py-1">✓ All factory division databases operational.</p>
                     </div>
                 </div>
 
-                <a href="/settings/" class="text-slate-400 hover:text-slate-600 text-sm p-1.5 rounded-lg hover:bg-slate-50 transition" title="Settings & Factory Hub">
+                <a href="/settings/" class="text-slate-400 hover:text-slate-600 text-sm p-1.5 rounded-lg hover:bg-slate-50 transition" title="Settings">
                     <i class="fa-solid fa-gear"></i>
                 </a>
 
@@ -232,10 +235,10 @@
         <!-- DASHBOARD BODY -->
         <div class="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
             
-            <!-- GREETING BAR (Comma Space Fixed) -->
+            <!-- GREETING BAR (Comma Space Exactly Fixed) -->
             <div class="flex justify-between items-center">
                 <div>
-                    <h1 class="text-2xl font-black text-slate-900 flex items-center gap-2">
+                    <h1 class="text-2xl font-black text-slate-900 flex items-center gap-1.5">
                         <span id="dynamic-greeting">Good Afternoon</span>, Shamim 👋
                     </h1>
                     <p class="text-xs text-slate-500 mt-0.5" data-i18n="welcome_sub">Welcome back to your Qoyod ERP Dashboard</p>
@@ -352,7 +355,7 @@
                     <div class="grid grid-cols-3 gap-2 text-center">
                         <a href="/invoices/create/" class="p-2 rounded-xl border border-slate-100 hover:bg-slate-50 flex flex-col items-center gap-1 transition group">
                             <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs group-hover:scale-110 transition"><i class="fa-solid fa-file-invoice"></i></div>
-                            <span class="text-[10px] font-bold text-slate-700 leading-tight" data-i18n="create_invoice">Create Invoice</span>
+                            <span class="text-[10px] font-bold text-slate-700 leading-tight" data-i18n="create_invoice">+ Create Invoice</span>
                         </a>
                         <a href="/admin/accounting/purchasebill/" class="p-2 rounded-xl border border-slate-100 hover:bg-slate-50 flex flex-col items-center gap-1 transition group">
                             <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-xs group-hover:scale-110 transition"><i class="fa-solid fa-cart-shopping"></i></div>
@@ -394,7 +397,6 @@
 
             <!-- BOTTOM SECTION: Bank Accounts, Cash Flow, Recent Sales, ZATCA 15% VAT Return -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-5 pb-6">
-                <!-- Bank Accounts -->
                 <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex flex-col justify-between">
                     <div class="flex justify-between items-center">
                         <h3 class="text-xs font-black text-slate-900" data-i18n="bank_accounts">Bank Accounts</h3>
@@ -405,7 +407,6 @@
                     </div>
                 </div>
 
-                <!-- Cash Flow -->
                 <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
                     <div class="flex justify-between items-center mb-3">
                         <h3 class="text-xs font-black text-slate-900" data-i18n="cash_flow">Cash Flow</h3>
@@ -427,7 +428,6 @@
                     </div>
                 </div>
 
-                <!-- Recent Sales -->
                 <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex flex-col justify-between">
                     <div class="flex justify-between items-center">
                         <h3 class="text-xs font-black text-slate-900" data-i18n="recent_sales">Recent Sales</h3>
@@ -438,7 +438,6 @@
                     </div>
                 </div>
 
-                <!-- ZATCA 15% VAT Return -->
                 <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
                     <div class="flex justify-between items-center mb-3">
                         <h3 class="text-xs font-black text-slate-900" data-i18n="zatca_box_title">ZATCA 15% VAT Return</h3>
@@ -464,7 +463,7 @@
         </div>
     </main>
 
-    <!-- Interactive Scripts -->
+    <!-- Scripts -->
     <script>
     const i18nData = {
         en: {
@@ -491,7 +490,7 @@
             reports: "Reports",
             vat_declaration: "VAT Declaration",
             debt_aging: "Debt Aging",
-            settings_divisions: "Settings & Divisions",
+            settings: "Settings",
             your_plan: "YOUR PLAN",
             welcome_sub: "Welcome back to your Qoyod ERP Dashboard",
             total_sales: "Total Sales",
@@ -566,7 +565,7 @@
             reports: "التقارير",
             vat_declaration: "الإقرار الضريبي",
             debt_aging: "أعمار الديون",
-            settings_divisions: "الإعدادات والفروع",
+            settings: "الإعدادات",
             your_plan: "خطتك الحالية",
             welcome_sub: "مرحبًا بك في لوحة تحكم نظام قيود المحاسبي",
             total_sales: "إجمالي المبيعات",
