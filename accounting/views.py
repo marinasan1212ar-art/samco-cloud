@@ -102,7 +102,29 @@ def banking_transfer_view(request):
 
 def settings_page_view(request):
     company = get_user_company(request)
-    return render(request, 'accounting/settings.html', {'company': company})
+    models_data = [
+        {'name': 'Accounts', 'admin_url': '/admin/accounting/account/', 'add_url': '/admin/accounting/account/add/'},
+        {'name': 'Attendance logs', 'admin_url': '/admin/accounting/attendancelog/', 'add_url': '/admin/accounting/attendancelog/add/'},
+        {'name': 'Company Settings', 'admin_url': '/admin/accounting/companysettings/', 'add_url': '/admin/accounting/companysettings/add/'},
+        {'name': 'Customers', 'admin_url': '/admin/accounting/customer/', 'add_url': '/admin/accounting/customer/add/'},
+        {'name': 'Delivery notes', 'admin_url': '/admin/accounting/deliverynote/', 'add_url': '/admin/accounting/deliverynote/add/'},
+        {'name': 'Direct expenses', 'admin_url': '/admin/accounting/directexpense/', 'add_url': '/admin/accounting/directexpense/add/'},
+        {'name': 'Invoices', 'admin_url': '/admin/accounting/invoice/', 'add_url': '/invoices/create/'},
+        {'name': 'Journal Entries', 'admin_url': '/admin/accounting/journalentry/', 'add_url': '/admin/accounting/journalentry/add/'},
+        {'name': 'Price lists', 'admin_url': '/admin/accounting/pricelist/', 'add_url': '/admin/accounting/pricelist/add/'},
+        {'name': 'Products', 'admin_url': '/admin/accounting/product/', 'add_url': '/admin/accounting/product/add/'},
+        {'name': 'Purchase bills', 'admin_url': '/admin/accounting/purchasebill/', 'add_url': '/admin/accounting/purchasebill/add/'},
+        {'name': 'Quotations', 'admin_url': '/admin/accounting/quotation/', 'add_url': '/admin/accounting/quotation/add/'},
+        {'name': 'Recurring invoices', 'admin_url': '/admin/accounting/recurringinvoice/', 'add_url': '/admin/accounting/recurringinvoice/add/'},
+        {'name': 'Reject logs', 'admin_url': '/admin/accounting/rejectlog/', 'add_url': '/admin/accounting/rejectlog/add/'},
+        {'name': 'Salary sheets', 'admin_url': '/admin/accounting/salarysheet/', 'add_url': '/admin/accounting/salarysheet/add/'},
+        {'name': 'Suppliers', 'admin_url': '/admin/accounting/supplier/', 'add_url': '/admin/accounting/supplier/add/'},
+        {'name': 'Transfer slips', 'admin_url': '/admin/accounting/transferslip/', 'add_url': '/admin/accounting/transferslip/add/'},
+        {'name': 'Vehicle bills', 'admin_url': '/admin/accounting/vehiclebill/', 'add_url': '/admin/accounting/vehiclebill/add/'},
+        {'name': 'Workers', 'admin_url': '/admin/accounting/worker/', 'add_url': '/admin/accounting/worker/add/'},
+    ]
+    return render(request, 'accounting/settings.html', {'company': company, 'model_list': models_data})
+
 
 def division_hub_view(request, dept='warehouse'):
     company = get_user_company(request)

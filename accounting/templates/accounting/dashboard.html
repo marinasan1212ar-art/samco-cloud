@@ -16,23 +16,33 @@
 </head>
 <body class="bg-slate-50 text-slate-800 h-full flex overflow-hidden">
 
-    <!-- 1. QOYOD SIDEBAR -->
+    <!-- 1. SIDEBAR -->
     <aside id="sidebar" class="w-64 bg-[#0a1020] text-slate-300 flex flex-col justify-between shrink-0 h-full border-r border-slate-800 z-30 select-none transition-all duration-300">
         
         <!-- Top Logo & Navigation -->
         <div class="flex flex-col flex-1 overflow-y-auto custom-scrollbar p-4">
             
-            <!-- QOYOD Brand Header & Toggle Button -->
+            <!-- Exact Image 3 QOYOD Vector Logo -->
             <div class="flex items-center justify-between pb-4 border-b border-slate-800/80 mb-4 px-1">
                 <a href="/" id="logo-container" class="flex flex-col overflow-hidden">
-                    <div class="flex items-baseline">
-                        <span class="text-2xl font-black tracking-wider text-white relative">
-                            Q<span class="inline-block w-2 h-2 bg-cyan-400 rounded-sm absolute -bottom-0.5 left-2 shadow-sm"></span><span class="ml-1.5">OYOD</span>
-                        </span>
+                    <div class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 170 45" class="w-36 h-auto">
+                            <!-- Q with Cyan Dot at bottom left -->
+                            <circle cx="20" cy="18" r="14" fill="none" stroke="#ffffff" stroke-width="6"/>
+                            <rect x="14.5" y="31.5" width="7" height="7" rx="1.8" fill="#22d3ee"/>
+                            <!-- O -->
+                            <circle cx="56" cy="18" r="14" fill="none" stroke="#ffffff" stroke-width="6"/>
+                            <!-- Y -->
+                            <path d="M 79 4 L 92 20 L 92 34 L 98 34 L 98 20 L 111 4 L 104 4 L 95 16 L 86 4 Z" fill="#ffffff"/>
+                            <!-- O -->
+                            <circle cx="132" cy="18" r="14" fill="none" stroke="#ffffff" stroke-width="6"/>
+                            <!-- D -->
+                            <path d="M 152 4 L 162 4 C 171 4 178 10 178 19 C 178 28 171 34 162 34 L 152 34 Z M 158 10 L 158 28 L 162 28 C 167 28 172 24 172 19 C 172 14 167 10 162 10 Z" fill="#ffffff"/>
+                        </svg>
                     </div>
-                    <div id="logo-subtitles" class="transition-opacity duration-200">
-                        <span class="text-[9px] font-bold text-slate-100 tracking-[0.2em]" dir="rtl">أفـضـل تـجـربـة أعـمـال</span>
-                        <span class="text-[7px] font-semibold text-slate-400 tracking-tight block">Best Business Experience</span>
+                    <div id="logo-subtitles" class="mt-1 leading-none transition-opacity duration-200">
+                        <span class="text-[9.5px] font-bold text-slate-100 tracking-[0.22em] block" dir="rtl">أفـضـل تـجـربـة أعـمـال</span>
+                        <span class="text-[7px] font-medium text-slate-400 tracking-[0.06em] block mt-0.5">Best Business Experience</span>
                     </div>
                 </a>
                 <button id="sidebarToggle" class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800/80 transition" title="Toggle Sidebar">
@@ -56,7 +66,6 @@
                         </div>
                         <i class="fa-solid fa-chevron-down text-[10px] nav-label transition-transform duration-200"></i>
                     </button>
-                    <!-- Sales Submenu Items -->
                     <div id="sales-submenu" class="hidden pl-8 pr-2 py-1 space-y-1 text-[11px] bg-slate-900/40 rounded-xl my-1">
                         <a href="/invoices/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-white transition" data-i18n="invoices">Invoices</a>
                         <a href="/invoices/create/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-indigo-300 font-bold transition" data-i18n="create_invoice">+ Create Invoice</a>
@@ -75,7 +84,6 @@
                         </div>
                         <i class="fa-solid fa-chevron-down text-[10px] nav-label transition-transform duration-200"></i>
                     </button>
-                    <!-- Purchases Submenu Items -->
                     <div id="purchases-submenu" class="hidden pl-8 pr-2 py-1 space-y-1 text-[11px] bg-slate-900/40 rounded-xl my-1">
                         <a href="/admin/accounting/purchasebill/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-white transition" data-i18n="purchase_bills">Purchase Bills</a>
                         <a href="/admin/accounting/directexpense/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-white transition" data-i18n="direct_expenses">Direct Expenses</a>
@@ -107,7 +115,6 @@
                         </div>
                         <i class="fa-solid fa-chevron-down text-[10px] nav-label transition-transform duration-200"></i>
                     </button>
-                    <!-- Banking Submenu Items -->
                     <div id="banking-submenu" class="hidden pl-8 pr-2 py-1 space-y-1 text-[11px] bg-slate-900/40 rounded-xl my-1">
                         <a href="/banking/transfer/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-white transition" data-i18n="bank_accounts">Bank Accounts</a>
                         <a href="/banking/transfer/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-white transition" data-i18n="transfers">Fund Transfers</a>
@@ -156,7 +163,6 @@
         
         <!-- HEADER BAR -->
         <header class="bg-white border-b border-slate-200 px-6 py-3.5 flex justify-between items-center z-20 relative">
-            <!-- Search -->
             <div class="relative w-80">
                 <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                 <input id="globalSearch" type="text" placeholder="Search in Qoyod..." class="w-full pl-9 pr-12 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
@@ -165,19 +171,15 @@
 
             <!-- Top Actions & Profile -->
             <div class="flex items-center gap-3.5">
-                
-                <!-- 1-Click Dynamic Language Switcher Button -->
                 <button id="langToggleBtn" class="bg-indigo-50 text-indigo-600 hover:bg-indigo-100 font-bold px-3 py-1.5 rounded-xl text-xs flex items-center gap-1.5 transition">
                     <i class="fa-solid fa-globe text-xs"></i>
                     <span id="langBtnText">العربية</span>
                 </button>
 
-                <!-- Quick Plus Action with Dropdown -->
                 <div class="relative">
                     <button id="quickPlusBtn" class="w-8 h-8 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center text-xs shadow-sm transition">
                         <i class="fa-solid fa-plus"></i>
                     </button>
-                    <!-- Quick Plus Dropdown -->
                     <div id="quickPlusMenu" class="hidden absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-2xl shadow-xl py-2 z-50 text-xs">
                         <a href="/invoices/create/" class="flex items-center gap-2.5 px-4 py-2 hover:bg-slate-50 text-slate-700 font-bold">
                             <i class="fa-solid fa-file-invoice text-indigo-600 w-4"></i> <span data-i18n="create_invoice">+ New Invoice</span>
@@ -197,12 +199,10 @@
                     </div>
                 </div>
 
-                <!-- Notification Bell with Dropdown -->
                 <div class="relative">
                     <button id="notifBtn" class="text-slate-400 hover:text-slate-600 text-sm p-1.5 rounded-lg hover:bg-slate-50 transition">
                         <i class="fa-regular fa-bell"></i>
                     </button>
-                    <!-- Notification Dropdown -->
                     <div id="notifMenu" class="hidden absolute right-0 mt-2 w-72 bg-white border border-slate-200 rounded-2xl shadow-xl p-4 z-50 text-xs">
                         <div class="flex justify-between items-center mb-2 pb-2 border-b border-slate-100">
                             <span class="font-bold text-slate-900" data-i18n="notifications_title">Notifications</span>
@@ -213,12 +213,10 @@
                     </div>
                 </div>
 
-                <!-- Settings Gear Icon -->
                 <a href="/settings/" class="text-slate-400 hover:text-slate-600 text-sm p-1.5 rounded-lg hover:bg-slate-50 transition" title="Settings & Factory Hub">
                     <i class="fa-solid fa-gear"></i>
                 </a>
 
-                <!-- User Profile Badge -->
                 <div class="flex items-center gap-3 pl-2 border-l border-slate-200">
                     <div class="text-right">
                         <div class="text-xs font-black text-slate-900 leading-tight">SECOND ADVANCE MEDICAL COMPANY (SAMCO)</div>
@@ -231,14 +229,14 @@
             </div>
         </header>
 
-        <!-- DASHBOARD BODY (Scrollable with clean spacing) -->
+        <!-- DASHBOARD BODY -->
         <div class="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
             
-            <!-- GREETING & QUICK ACTIONS BAR -->
+            <!-- GREETING BAR (Comma Space Fixed) -->
             <div class="flex justify-between items-center">
                 <div>
                     <h1 class="text-2xl font-black text-slate-900 flex items-center gap-2">
-                        <span id="dynamic-greeting">Good Morning</span>, Shamim 👋
+                        <span id="dynamic-greeting">Good Afternoon</span>, Shamim 👋
                     </h1>
                     <p class="text-xs text-slate-500 mt-0.5" data-i18n="welcome_sub">Welcome back to your Qoyod ERP Dashboard</p>
                 </div>
@@ -466,7 +464,7 @@
         </div>
     </main>
 
-    <!-- COMPLETE REAL-TIME TRANSLATION & INTERACTIVE JAVASCRIPT ENGINE -->
+    <!-- Interactive Scripts -->
     <script>
     const i18nData = {
         en: {
@@ -632,53 +630,41 @@
         if (langBtnText) langBtnText.innerText = i18nData[lang].lang_btn;
         if (searchInput) searchInput.setAttribute('placeholder', i18nData[lang].search_ph);
 
-        // Update all translation keys
         document.querySelectorAll('[data-i18n]').forEach(elem => {
             const key = elem.getAttribute('data-i18n');
-            if (i18nData[lang][key]) {
-                elem.innerText = i18nData[lang][key];
-            }
+            if (i18nData[lang][key]) elem.innerText = i18nData[lang][key];
         });
 
-        // Dynamic Greeting Translation
         const hour = new Date().getHours();
         const elem = document.getElementById('dynamic-greeting');
         if (elem) {
-            if (lang === 'ar') {
-                if (hour >= 5 && hour < 12) elem.innerText = 'صباح الخير';
-                else if (hour >= 12 && hour < 17) elem.innerText = 'مساء الخير';
-                else elem.innerText = 'مساء الخير';
-            } else {
-                if (hour >= 5 && hour < 12) elem.innerText = 'Good Morning';
-                else if (hour >= 12 && hour < 17) elem.innerText = 'Good Afternoon';
-                else elem.innerText = 'Good Evening';
-            }
+            let greeting = 'Good Afternoon';
+            if (hour >= 5 && hour < 12) greeting = (lang === 'ar') ? 'صباح الخير' : 'Good Morning';
+            else if (hour >= 12 && hour < 17) greeting = (lang === 'ar') ? 'مساء الخير' : 'Good Afternoon';
+            else greeting = (lang === 'ar') ? 'مساء الخير' : 'Good Evening';
+            elem.innerText = greeting;
         }
 
         localStorage.setItem('qoyod_lang', lang);
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-        // Load saved language or default to English
         const savedLang = localStorage.getItem('qoyod_lang') || 'en';
         applyLanguage(savedLang);
 
-        // Language Switcher Click Event
         const langToggleBtn = document.getElementById('langToggleBtn');
         if (langToggleBtn) {
             langToggleBtn.addEventListener('click', function() {
                 const currentLang = localStorage.getItem('qoyod_lang') || 'en';
-                const nextLang = currentLang === 'en' ? 'ar' : 'en';
-                applyLanguage(nextLang);
+                applyLanguage(currentLang === 'en' ? 'ar' : 'en');
             });
         }
 
-        // Sidebar Dropdowns (Accordion)
+        // Accordion Dropdowns
         document.querySelectorAll('.sidebar-dropdown-btn').forEach(btn => {
             btn.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                
                 const targetId = this.getAttribute('data-target');
                 const targetSubmenu = document.getElementById(targetId);
                 const chevron = this.querySelector('.fa-chevron-down');
@@ -698,7 +684,7 @@
             });
         });
 
-        // 3-Dot (☰) Sidebar Toggle
+        // 3-Dot Toggle
         const sidebar = document.getElementById('sidebar');
         const sidebarToggle = document.getElementById('sidebarToggle');
         const navLabels = document.querySelectorAll('.nav-label');
@@ -725,7 +711,7 @@
             });
         }
 
-        // Quick Plus Dropdown
+        // Quick Plus
         const quickPlusBtn = document.getElementById('quickPlusBtn');
         const quickPlusMenu = document.getElementById('quickPlusMenu');
         if (quickPlusBtn && quickPlusMenu) {
@@ -736,7 +722,7 @@
             });
         }
 
-        // Notification Bell Dropdown
+        // Notification
         const notifBtn = document.getElementById('notifBtn');
         const notifMenu = document.getElementById('notifMenu');
         if (notifBtn && notifMenu) {
@@ -747,13 +733,11 @@
             });
         }
 
-        // Close dropdowns on click outside
         document.addEventListener('click', function() {
             if (quickPlusMenu) quickPlusMenu.classList.add('hidden');
             if (notifMenu) notifMenu.classList.add('hidden');
         });
 
-        // Cmd/Ctrl + K Focus Search
         window.addEventListener('keydown', function(e) {
             if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
                 e.preventDefault();
