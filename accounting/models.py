@@ -19,6 +19,34 @@ class CompanySettings(models.Model):
     def __str__(self):
         return self.company_name_en
 
+# -------------------------------------------------------------------------
+# 👤 DIVISION USER / MANAGER REGISTRATION MODEL
+# -------------------------------------------------------------------------
+class DivisionManager(models.Model):
+    DIVISION_CHOICES = [
+        ('Warehouse', 'Warehouse Division'),
+        ('Media', 'Media Division'),
+        ('Plastic', 'Plastic Division'),
+        ('Cosmetic', 'Cosmetic Division'),
+        ('Powder', 'Powder Division'),
+        ('Super Admin', 'Super Admin Suite'),
+    ]
+    division = models.CharField(max_length=50, choices=DIVISION_CHOICES, default='Warehouse')
+    username = models.CharField(max_length=150, default="")
+    password = models.CharField(max_length=128, default="")
+    email = models.EmailField(verbose_name="Gmail / Email", null=True, blank=True)
+    contact_number = models.CharField(max_length=50, verbose_name="Contract / Contact Number", null=True, blank=True)
+    image = models.FileField(upload_to='division_users/', verbose_name="PNG Image", null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(default=timezone.now, null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Division Manager / User"
+        verbose_name_plural = "Division Managers / Users"
+
+    def __str__(self):
+        return f"{self.username} ({self.division})"
+
 class Customer(models.Model):
     name = models.CharField(max_length=255, default="Customer")
     name_ar = models.CharField(max_length=255, null=True, blank=True)
