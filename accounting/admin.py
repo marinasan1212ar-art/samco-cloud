@@ -1,61 +1,27 @@
 from django.contrib import admin
-from .models import Account, JournalEntry, JournalEntryLine, Customer, Product, Invoice, InvoiceItem, Quotation, QuotationItem, CompanySettings
+from .models import (
+    CompanySettings, Customer, Supplier, Product, PriceList,
+    Invoice, Quotation, RecurringInvoice, PurchaseBill, DirectExpense,
+    Worker, AttendanceLog, SalarySheet, DeliveryNote, TransferSlip,
+    VehicleBill, RejectLog, Account, JournalEntry
+)
 
-class JournalEntryLineInline(admin.TabularInline):
-    model = JournalEntryLine
-    extra = 0
-
-class InvoiceItemInline(admin.TabularInline):
-    model = InvoiceItem
-    extra = 1
-
-class QuotationItemInline(admin.TabularInline):
-    model = QuotationItem
-    extra = 1
-
-@admin.register(CompanySettings)
-class CompanySettingsAdmin(admin.ModelAdmin):
-    list_display = ('company_name_en', 'vat_number', 'phone')
-
-@admin.register(Quotation)
-class QuotationAdmin(admin.ModelAdmin):
-    list_display = ('quote_no', 'customer', 'date', 'total_amount', 'status')
-    inlines = [QuotationItemInline]
-    
-    def response_add(self, request, obj, post_url_continue=None):
-        obj.update_totals()
-        return super().response_add(request, obj, post_url_continue)
-
-@admin.register(Account)
-class AccountAdmin(admin.ModelAdmin):
-    list_display = ('code', 'name', 'account_type', 'balance')
-    list_filter = ('account_type',)
-    search_fields = ('code', 'name')
-
-@admin.register(Customer)
-class CustomerAdmin(admin.ModelAdmin):
-    list_display = ('name', 'phone', 'vat_number')
-    search_fields = ('name', 'vat_number')
-
-@admin.register(Product)
-class ProductAdmin(admin.ModelAdmin):
-    list_display = ('cat_no', 'name', 'sale_price', 'current_stock')
-    search_fields = ('cat_no', 'name')
-
-@admin.register(Invoice)
-class InvoiceAdmin(admin.ModelAdmin):
-    list_display = ('invoice_no', 'customer', 'date', 'subtotal', 'vat_amount', 'total_amount')
-    inlines = [InvoiceItemInline]
-
-    def response_add(self, request, obj, post_url_continue=None):
-        obj.update_totals_and_post_accounting()
-        return super().response_add(request, obj, post_url_continue)
-
-    def response_change(self, request, obj):
-        obj.update_totals_and_post_accounting()
-        return super().response_change(request, obj)
-
-@admin.register(JournalEntry)
-class JournalEntryAdmin(admin.ModelAdmin):
-    list_display = ('reference_no', 'date', 'description')
-    inlines = [JournalEntryLineInline]
+admin.site.register(CompanySettings)
+admin.site.register(Customer)
+admin.site.register(Supplier)
+admin.site.register(Product)
+admin.site.register(PriceList)
+admin.site.register(Invoice)
+admin.site.register(Quotation)
+admin.site.register(RecurringInvoice)
+admin.site.register(PurchaseBill)
+admin.site.register(DirectExpense)
+admin.site.register(Worker)
+admin.site.register(AttendanceLog)
+admin.site.register(SalarySheet)
+admin.site.register(DeliveryNote)
+admin.site.register(TransferSlip)
+admin.site.register(VehicleBill)
+admin.site.register(RejectLog)
+admin.site.register(Account)
+admin.site.register(JournalEntry)
