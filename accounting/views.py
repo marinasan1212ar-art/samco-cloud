@@ -102,28 +102,44 @@ def banking_transfer_view(request):
 
 def settings_page_view(request):
     company = get_user_company(request)
-    models_data = [
-        {'name': 'Accounts', 'division': 'all', 'admin_url': '/admin/accounting/account/', 'add_url': '/admin/accounting/account/add/', 'show_url': '/admin/accounting/account/'},
-        {'name': 'Attendance logs', 'division': 'media', 'admin_url': '/admin/accounting/attendancelog/', 'add_url': '/admin/accounting/attendancelog/add/', 'show_url': '/division/media/'},
-        {'name': 'Company Settings', 'division': 'all', 'admin_url': '/admin/accounting/companysettings/', 'add_url': '/admin/accounting/companysettings/add/', 'show_url': '/admin/accounting/companysettings/'},
-        {'name': 'Customers', 'division': 'all', 'admin_url': '/admin/accounting/customer/', 'add_url': '/admin/accounting/customer/add/', 'show_url': '/admin/accounting/customer/'},
-        {'name': 'Delivery notes', 'division': 'warehouse', 'admin_url': '/admin/accounting/deliverynote/', 'add_url': '/admin/accounting/deliverynote/add/', 'show_url': '/division/warehouse/'},
-        {'name': 'Direct expenses', 'division': 'all', 'admin_url': '/admin/accounting/directexpense/', 'add_url': '/admin/accounting/directexpense/add/', 'show_url': '/admin/accounting/directexpense/'},
-        {'name': 'Invoices', 'division': 'all', 'admin_url': '/admin/accounting/invoice/', 'add_url': '/invoices/create/', 'show_url': '/invoices/'},
-        {'name': 'Journal Entries', 'division': 'all', 'admin_url': '/admin/accounting/journalentry/', 'add_url': '/admin/accounting/journalentry/add/', 'show_url': '/admin/accounting/journalentry/'},
-        {'name': 'Price lists', 'division': 'all', 'admin_url': '/admin/accounting/pricelist/', 'add_url': '/admin/accounting/pricelist/add/', 'show_url': '/sales/price-lists/'},
-        {'name': 'Products', 'division': 'warehouse', 'admin_url': '/admin/accounting/product/', 'add_url': '/admin/accounting/product/add/', 'show_url': '/division/warehouse/'},
-        {'name': 'Purchase bills', 'division': 'all', 'admin_url': '/admin/accounting/purchasebill/', 'add_url': '/admin/accounting/purchasebill/add/', 'show_url': '/admin/accounting/purchasebill/'},
-        {'name': 'Quotations', 'division': 'all', 'admin_url': '/admin/accounting/quotation/', 'add_url': '/admin/accounting/quotation/add/', 'show_url': '/admin/accounting/quotation/'},
-        {'name': 'Recurring invoices', 'division': 'all', 'admin_url': '/admin/accounting/recurringinvoice/', 'add_url': '/admin/accounting/recurringinvoice/add/', 'show_url': '/sales/recurring/'},
-        {'name': 'Reject logs', 'division': 'plastic', 'admin_url': '/admin/accounting/rejectlog/', 'add_url': '/admin/accounting/rejectlog/add/', 'show_url': '/division/plastic/'},
-        {'name': 'Salary sheets', 'division': 'media', 'admin_url': '/admin/accounting/salarysheet/', 'add_url': '/admin/accounting/salarysheet/add/', 'show_url': '/super-admin/'},
-        {'name': 'Suppliers', 'division': 'powder', 'admin_url': '/admin/accounting/supplier/', 'add_url': '/admin/accounting/supplier/add/', 'show_url': '/division/powder/'},
-        {'name': 'Transfer slips', 'division': 'media', 'admin_url': '/admin/accounting/transferslip/', 'add_url': '/admin/accounting/transferslip/add/', 'show_url': '/division/media/'},
-        {'name': 'Vehicle bills', 'division': 'all', 'admin_url': '/admin/accounting/vehiclebill/', 'add_url': '/admin/accounting/vehiclebill/add/', 'show_url': '/super-admin/'},
-        {'name': 'Workers', 'division': 'media', 'admin_url': '/admin/accounting/worker/', 'add_url': '/admin/accounting/worker/add/', 'show_url': '/super-admin/'},
+    
+    # 6 Divisions Table Rows
+    divisions_rows = [
+        {'name': 'Warehouse Division', 'icon': '🏭', 'desc': 'WMS & Stock Allocation', 'add_url': '/admin/accounting/product/add/', 'change_url': '/admin/accounting/product/', 'show_url': '/division/warehouse/'},
+        {'name': 'Media Division', 'icon': '📺', 'desc': 'Overtime & MES Transfers', 'add_url': '/admin/accounting/transferslip/add/', 'change_url': '/admin/accounting/transferslip/', 'show_url': '/division/media/'},
+        {'name': 'Plastic Division', 'icon': '♻️', 'desc': 'Molding Machinery & Shifts', 'add_url': '/admin/accounting/rejectlog/add/', 'change_url': '/admin/accounting/rejectlog/', 'show_url': '/division/plastic/'},
+        {'name': 'Cosmetic Division', 'icon': '💄', 'desc': 'Lab Formulations & Batch QC', 'add_url': '/admin/accounting/worker/add/', 'change_url': '/admin/accounting/worker/', 'show_url': '/division/cosmetic/'},
+        {'name': 'Powder Division', 'icon': '🧪', 'desc': 'GRN Purity & Drum Labels', 'add_url': '/admin/accounting/supplier/add/', 'change_url': '/admin/accounting/supplier/', 'show_url': '/division/powder/'},
+        {'name': 'Super Admin Command Suite', 'icon': '👑', 'desc': 'Executive HQ & Salesmen Live', 'add_url': '/invoices/create/', 'change_url': '/super-admin/', 'show_url': '/super-admin/'},
     ]
-    return render(request, 'accounting/settings.html', {'company': company, 'model_list': models_data})
+
+    # Standard Accounting Models
+    accounting_rows = [
+        {'name': 'Accounts', 'add_url': '/admin/accounting/account/add/', 'change_url': '/admin/accounting/account/', 'show_url': '/admin/accounting/account/'},
+        {'name': 'Company Settings', 'add_url': '/admin/accounting/companysettings/add/', 'change_url': '/admin/accounting/companysettings/', 'show_url': '/admin/accounting/companysettings/'},
+        {'name': 'Customers', 'add_url': '/admin/accounting/customer/add/', 'change_url': '/admin/accounting/customer/', 'show_url': '/admin/accounting/customer/'},
+        {'name': 'Delivery notes', 'add_url': '/admin/accounting/deliverynote/add/', 'change_url': '/admin/accounting/deliverynote/', 'show_url': '/division/warehouse/'},
+        {'name': 'Direct expenses', 'add_url': '/admin/accounting/directexpense/add/', 'change_url': '/admin/accounting/directexpense/', 'show_url': '/admin/accounting/directexpense/'},
+        {'name': 'Invoices', 'add_url': '/invoices/create/', 'change_url': '/admin/accounting/invoice/', 'show_url': '/invoices/'},
+        {'name': 'Journal Entries', 'add_url': '/admin/accounting/journalentry/add/', 'change_url': '/admin/accounting/journalentry/', 'show_url': '/admin/accounting/journalentry/'},
+        {'name': 'Price lists', 'add_url': '/admin/accounting/pricelist/add/', 'change_url': '/admin/accounting/pricelist/', 'show_url': '/sales/price-lists/'},
+        {'name': 'Products', 'add_url': '/admin/accounting/product/add/', 'change_url': '/admin/accounting/product/', 'show_url': '/division/warehouse/'},
+        {'name': 'Purchase bills', 'add_url': '/admin/accounting/purchasebill/add/', 'change_url': '/admin/accounting/purchasebill/', 'show_url': '/admin/accounting/purchasebill/'},
+        {'name': 'Quotations', 'add_url': '/admin/accounting/quotation/add/', 'change_url': '/admin/accounting/quotation/', 'show_url': '/admin/accounting/quotation/'},
+        {'name': 'Recurring invoices', 'add_url': '/admin/accounting/recurringinvoice/add/', 'change_url': '/admin/accounting/recurringinvoice/', 'show_url': '/sales/recurring/'},
+        {'name': 'Reject logs', 'add_url': '/admin/accounting/rejectlog/add/', 'change_url': '/admin/accounting/rejectlog/', 'show_url': '/division/plastic/'},
+        {'name': 'Salary sheets', 'add_url': '/admin/accounting/salarysheet/add/', 'change_url': '/admin/accounting/salarysheet/', 'show_url': '/super-admin/'},
+        {'name': 'Suppliers', 'add_url': '/admin/accounting/supplier/add/', 'change_url': '/admin/accounting/supplier/', 'show_url': '/division/powder/'},
+        {'name': 'Transfer slips', 'add_url': '/admin/accounting/transferslip/add/', 'change_url': '/admin/accounting/transferslip/', 'show_url': '/division/media/'},
+        {'name': 'Vehicle bills', 'add_url': '/admin/accounting/vehiclebill/add/', 'change_url': '/admin/accounting/vehiclebill/', 'show_url': '/super-admin/'},
+        {'name': 'Workers', 'add_url': '/admin/accounting/worker/add/', 'change_url': '/admin/accounting/worker/', 'show_url': '/super-admin/'},
+    ]
+
+    return render(request, 'accounting/settings.html', {
+        'company': company,
+        'divisions_rows': divisions_rows,
+        'accounting_rows': accounting_rows,
+    })
 
 
 def division_hub_view(request, dept='warehouse'):
