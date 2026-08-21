@@ -20,7 +20,7 @@ class CompanySettings(models.Model):
         return self.company_name_en
 
 class Customer(models.Model):
-    name = models.CharField(max_length=255, default="")
+    name = models.CharField(max_length=255, default="Customer")
     name_ar = models.CharField(max_length=255, null=True, blank=True)
     vat_number = models.CharField(max_length=50, null=True, blank=True)
     cr_number = models.CharField(max_length=50, null=True, blank=True)
@@ -28,22 +28,22 @@ class Customer(models.Model):
     phone = models.CharField(max_length=50, null=True, blank=True)
     address = models.TextField(null=True, blank=True)
     credit_limit = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now, null=True, blank=True)
 
     def __str__(self):
-        return self.name or "Customer"
+        return self.name
 
 class Supplier(models.Model):
-    name = models.CharField(max_length=255, default="")
+    name = models.CharField(max_length=255, default="Supplier")
     vat_number = models.CharField(max_length=50, null=True, blank=True)
     phone = models.CharField(max_length=50, null=True, blank=True)
     email = models.EmailField(null=True, blank=True)
     address = models.TextField(null=True, blank=True)
     contact_person = models.CharField(max_length=100, null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now, null=True, blank=True)
 
     def __str__(self):
-        return self.name or "Supplier"
+        return self.name
 
 class Product(models.Model):
     cat_no = models.CharField(max_length=100, default="", null=True, blank=True)
@@ -80,7 +80,7 @@ class Invoice(models.Model):
     grand_total = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     invoice_type = models.CharField(max_length=50, default="Tax Invoice")
     status = models.CharField(max_length=50, default="PAID")
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now, null=True, blank=True)
 
     def __str__(self):
         return f"Invoice {self.invoice_number}"
