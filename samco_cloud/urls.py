@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import path
 from accounting.views import (
+    settings_page_view,
     home_dashboard_view,
     division_hub_view,
     super_admin_hub_view,
@@ -21,6 +22,7 @@ urlpatterns = [
     
     # Super Admin Command Center
     path('super-admin/', super_admin_hub_view, name='super-admin-hub'),
+    path('settings/', settings_page_view, name='settings-page'),
     
     # Compliance & Accounting Hubs
     path('vat/', vat_return_view, name='vat-return'),

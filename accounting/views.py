@@ -150,3 +150,7 @@ def statement_of_account_view(request, party_type='customer', pk=1):
 def ocr_scanner_view(request):
     company = get_user_company(request)
     return render(request, 'accounting/ocr_scanner.html', {'company': company})
+
+def settings_page_view(request):
+    company = get_user_company(request)
+    return render(request, 'accounting/settings.html', {'company': company})

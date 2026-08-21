@@ -1,600 +1,417 @@
 <!DOCTYPE html>
-<html lang="{% if is_ar %}ar{% else %}en{% endif %}" dir="{{ lang_dir }}">
+<html lang="en" class="h-full">
 <head>
     <meta charset="UTF-8">
-    <title>{% if is_ar %}قيود - لوحة التحكم السحابية{% else %}Qoyod - Cloud Accounting Dashboard{% endif %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QOYOD - SAMCO Cloud ERP</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Arabic Font: Cairo -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;900&family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: {% if is_ar %}'Cairo', sans-serif{% else %}ui-sans-serif, system-ui, sans-serif{% endif %}; }
-        .sidebar-transition { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        body { font-family: 'Inter', 'Cairo', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
     </style>
 </head>
-<body class="bg-[#f8fafc] text-slate-800 min-h-screen flex antialiased">
+<body class="bg-slate-50 text-slate-800 h-full flex overflow-hidden">
 
-    <!-- 🌟 1. QOYOD OFFICIAL DARK NAVY SIDEBAR (Bilingual RTL/LTR) -->
-    <aside id="qoyod-sidebar" class="w-64 bg-[#0b132b] text-slate-300 flex flex-col justify-between hidden md:flex shrink-0 sidebar-transition select-none {% if is_ar %}border-l border-slate-800/80{% else %}border-r border-slate-800/80{% endif %}">
-        <div>
+    <!-- 1. OFFICIAL CLEAN QOYOD SIDEBAR -->
+    <aside id="sidebar" class="w-64 bg-[#0a1020] text-slate-300 flex flex-col justify-between shrink-0 h-full border-r border-slate-800 z-20 select-none transition-all duration-300">
+        
+        <!-- Top Logo & Navigation -->
+        <div class="flex flex-col flex-1 overflow-y-auto custom-scrollbar p-4">
+            
             <!-- QOYOD Brand Logo -->
-            <div class="h-16 flex items-center justify-between px-5 border-b border-slate-800/80">
-                <div class="flex items-center gap-2 overflow-hidden">
-                    <span id="logo-text" class="font-black text-2xl tracking-wider text-white">{% if is_ar %}قيود{% else %}QOYOD{% endif %}</span>
-                </div>
-                <button onclick="toggleSidebar()" class="w-8 h-8 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/80 flex items-center justify-center text-base transition" title="Toggle Sidebar">
-                    <i class="fa-solid fa-bars"></i>
+            <div class="flex items-center justify-between pb-4 border-b border-slate-800/80 mb-4 px-1">
+                <a href="/" class="flex flex-col">
+                    <span class="text-2xl font-black tracking-wider text-white relative">
+                        Q<span class="inline-block w-2 h-2 bg-cyan-400 rounded-sm absolute -bottom-0.5 left-2 shadow-sm"></span><span class="ml-1.5">OYOD</span>
+                    </span>
+                    <span class="text-[9px] font-bold text-slate-100 tracking-[0.2em]" dir="rtl">أفـضـل تـجـربـة أعـمـال</span>
+                    <span class="text-[7px] font-semibold text-slate-400 tracking-tight">Best Business Experience</span>
+                </a>
+                <button id="sidebarToggle" class="text-slate-400 hover:text-white p-1 rounded-lg transition">
+                    <i class="fa-solid fa-bars text-lg"></i>
                 </button>
             </div>
 
-            <!-- Navigation Links -->
-            <nav class="p-3 space-y-1 text-xs font-semibold overflow-y-auto max-h-[calc(100vh-14rem)]">
-                <!-- Dashboard Active -->
-                <a href="/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-[#4338ca] text-white font-bold shadow-lg shadow-indigo-900/30">
-                    <i class="fa-solid fa-gauge-high w-4 text-sm text-center"></i> 
-                    <span class="nav-label">{% if is_ar %}لوحة التحكم{% else %}Dashboard{% endif %}</span>
+            <!-- Standard QOYOD Navigation Links -->
+            <nav class="space-y-1 text-xs font-semibold">
+                <a href="/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-indigo-600 text-white font-bold shadow-sm shadow-indigo-600/30">
+                    <i class="fa-solid fa-gauge-high w-4 text-center"></i>
+                    <span>Dashboard</span>
                 </a>
 
-                <!-- Sales Dropdown -->
-                <div>
-                    <button onclick="toggleMenu('sales-sub', 'sales-icon')" class="w-full flex items-center justify-between px-3.5 py-2 rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition">
-                        <span class="flex items-center gap-3">
-                            <i class="fa-solid fa-cart-shopping w-4 text-center"></i> 
-                            <span class="nav-label">{% if is_ar %}المبيعات{% else %}Sales{% endif %}</span>
-                        </span>
-                        <i id="sales-icon" class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200"></i>
-                    </button>
-                    <div id="sales-sub" class="hidden {% if is_ar %}pr-9 pl-2 border-r border-slate-800 mr-4{% else %}pl-9 pr-2 border-l border-slate-800 ml-4{% endif %} py-1 space-y-1 text-[11px] text-slate-400 my-1">
-                        <a href="/invoices/" class="block py-1 hover:text-white transition">{% if is_ar %}قائمة الفواتير{% else %}Invoices{% endif %}</a>
-                        <a href="/invoices/create/" class="block py-1 hover:text-white transition">{% if is_ar %}+ إنشاء فاتورة ضريبية{% else %}+ New Tax Invoice{% endif %}</a>
-                        <a href="/sales/recurring/" class="block py-1 hover:text-white transition">{% if is_ar %}الفواتير المتكررة{% else %}Recurring Invoices{% endif %}</a>
-                        <a href="/sales/price-lists/" class="block py-1 hover:text-white transition">{% if is_ar %}قوائم الأسعار{% else %}Price Lists{% endif %}</a>
-                    </div>
-                </div>
+                <div class="space-y-1 pt-1">
+                    <a href="/invoices/" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-cart-shopping w-4 text-center"></i>
+                            <span>Sales</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                    </a>
+                    
+                    <a href="/admin/accounting/purchasebill/" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-bag-shopping w-4 text-center"></i>
+                            <span>Purchases</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                    </a>
 
-                <!-- Purchases Dropdown -->
-                <div>
-                    <button onclick="toggleMenu('pur-sub', 'pur-icon')" class="w-full flex items-center justify-between px-3.5 py-2 rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition">
-                        <span class="flex items-center gap-3">
-                            <i class="fa-solid fa-basket-shopping w-4 text-center"></i> 
-                            <span class="nav-label">{% if is_ar %}المشتريات{% else %}Purchases{% endif %}</span>
-                        </span>
-                        <i id="pur-icon" class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200"></i>
-                    </button>
-                    <div id="pur-sub" class="hidden {% if is_ar %}pr-9 pl-2 border-r border-slate-800 mr-4{% else %}pl-9 pr-2 border-l border-slate-800 ml-4{% endif %} py-1 space-y-1 text-[11px] text-slate-400 my-1">
-                        <a href="/expenses/" class="block py-1 hover:text-white transition">{% if is_ar %}سندات المصروفات{% else %}Direct Expenses{% endif %}</a>
-                        <a href="/admin/accounting/purchasebill/" class="block py-1 hover:text-white transition">{% if is_ar %}فواتير الشراء{% else %}Purchase Bills{% endif %}</a>
-                    </div>
-                </div>
+                    <a href="/admin/accounting/directexpense/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
+                        <i class="fa-solid fa-receipt w-4 text-center"></i>
+                        <span>Expenses</span>
+                    </a>
 
-                <a href="/expenses/" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition">
-                    <i class="fa-solid fa-receipt w-4 text-center"></i> <span class="nav-label">{% if is_ar %}المصروفات{% else %}Expenses{% endif %}</span>
-                </a>
-                
-                <a href="/statement/customer/1/" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition">
-                    <i class="fa-solid fa-user-group w-4 text-center"></i> <span class="nav-label">{% if is_ar %}جهات الاتصال والعملاء{% else %}Contacts & Customers{% endif %}</span>
-                </a>
+                    <a href="/admin/accounting/customer/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
+                        <i class="fa-solid fa-users w-4 text-center"></i>
+                        <span>Contacts & Customers</span>
+                    </a>
 
-                <a href="/inventory/bundles/" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition">
-                    <i class="fa-solid fa-boxes-stacked w-4 text-center"></i> <span class="nav-label">{% if is_ar %}المنتجات والمخزون{% else %}Items & Inventory{% endif %}</span>
-                </a>
+                    <a href="/admin/accounting/product/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
+                        <i class="fa-solid fa-boxes-stacked w-4 text-center"></i>
+                        <span>Items & Inventory</span>
+                    </a>
 
-                <!-- Banking Dropdown -->
-                <div>
-                    <button onclick="toggleMenu('bank-sub', 'bank-icon')" class="w-full flex items-center justify-between px-3.5 py-2 rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition">
-                        <span class="flex items-center gap-3">
-                            <i class="fa-solid fa-building-columns w-4 text-center"></i> 
-                            <span class="nav-label">{% if is_ar %}البنوك والمالية{% else %}Banking{% endif %}</span>
-                        </span>
-                        <i id="bank-icon" class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200"></i>
-                    </button>
-                    <div id="bank-sub" class="hidden {% if is_ar %}pr-9 pl-2 border-r border-slate-800 mr-4{% else %}pl-9 pr-2 border-l border-slate-800 ml-4{% endif %} py-1 space-y-1 text-[11px] text-slate-400 my-1">
-                        <a href="/banking/reconciliation/" class="block py-1 hover:text-white transition">{% if is_ar %}التسوية والمطابقة البنكية{% else %}Reconciliation{% endif %}</a>
-                        <a href="/banking/transfer/" class="block py-1 hover:text-white transition">{% if is_ar %}التحويل بين الحسابات{% else %}Fund Transfers{% endif %}</a>
-                    </div>
-                </div>
+                    <a href="/banking/transfer/" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-building-columns w-4 text-center"></i>
+                            <span>Banking</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                    </a>
 
-                <a href="/reports/" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition">
-                    <i class="fa-solid fa-calculator w-4 text-center"></i> <span class="nav-label">{% if is_ar %}المحاسبة العامة{% else %}Accounting{% endif %}</span>
-                </a>
+                    <a href="/admin/accounting/account/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
+                        <i class="fa-solid fa-calculator w-4 text-center"></i>
+                        <span>Accounting</span>
+                    </a>
 
-                <a href="/reports/" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition">
-                    <i class="fa-solid fa-chart-column w-4 text-center"></i> <span class="nav-label">{% if is_ar %}التقارير المالية{% else %}Reports{% endif %}</span>
-                </a>
+                    <a href="/reports/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
+                        <i class="fa-solid fa-chart-pie w-4 text-center"></i>
+                        <span>Reports</span>
+                    </a>
 
-                
-                <!-- 5 Divisions Cloud Hubs -->
-                <div class="pt-3 pb-1 px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider">SAMCO Divisions</div>
-                <a href="/division/warehouse/" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-cyan-300 hover:bg-slate-800/60 hover:text-white transition">
-                    <span>🏭</span> <span>Warehouse WMS</span>
-                </a>
-                <a href="/division/media/" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-emerald-300 hover:bg-slate-800/60 hover:text-white transition">
-                    <span>📺</span> <span>Media Division</span>
-                </a>
-                <a href="/division/cosmetic/" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-pink-300 hover:bg-slate-800/60 hover:text-white transition">
-                    <span>💄</span> <span>Cosmetic Division</span>
-                </a>
-                <a href="/division/powder/" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-amber-300 hover:bg-slate-800/60 hover:text-white transition">
-                    <span>🧪</span> <span>Powder Division</span>
-                </a>
-                <a href="/division/plastic/" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-blue-300 hover:bg-slate-800/60 hover:text-white transition">
-                    <span>♻️</span> <span>Plastic Division</span>
-                </a>
+                    <a href="/vat/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
+                        <i class="fa-solid fa-percent w-4 text-center text-amber-400"></i>
+                        <span class="text-amber-400">VAT Declaration</span>
+                    </a>
 
-                <div class="pt-2 pb-2 px-1">
-                    <a href="/super-admin/" class="flex items-center gap-3 px-3.5 py-2 rounded-xl bg-amber-500/10 text-amber-300 border border-amber-500/30 hover:bg-amber-500/20 font-bold transition">
-                        <span>👑</span> <span>Super Admin Hub</span>
+                    <a href="/reports/aging/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
+                        <i class="fa-solid fa-clock-rotate-left w-4 text-center"></i>
+                        <span>Debt Aging</span>
+                    </a>
+
+                    <a href="/settings/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
+                        <i class="fa-solid fa-gear w-4 text-center text-indigo-400"></i>
+                        <span class="text-indigo-400 font-bold">Settings & Divisions</span>
                     </a>
                 </div>
-
-                    <a href="/vat/" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition">
-                    <i class="fa-solid fa-percent w-4 text-center text-amber-400"></i> <span class="nav-label">{% if is_ar %}الإقرار الضريبي (VAT){% else %}VAT Declaration{% endif %}</span>
-                </a>
-
-                <a href="/reports/aging/" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition">
-                    <i class="fa-solid fa-clock-rotate-left w-4 text-center text-cyan-400"></i> <span class="nav-label">{% if is_ar %}أعمار الديون{% else %}Debt Aging{% endif %}</span>
-                </a>
-
-                <a href="/manufacturing/" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition">
-                    <i class="fa-solid fa-diagram-project w-4 text-center"></i> <span class="nav-label">{% if is_ar %}المشاريع والتصنيع{% else %}Projects & BOM{% endif %}</span>
-                </a>
-
-                <a href="/payroll/" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition">
-                    <i class="fa-solid fa-id-card-clip w-4 text-center text-emerald-400"></i> <span class="nav-label">{% if is_ar %}الرواتب والأجور (WPS){% else %}Payroll & WPS{% endif %}</span>
-                </a>
-
-                <a href="/admin/" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition">
-                    <i class="fa-solid fa-gear w-4 text-center"></i> <span class="nav-label">{% if is_ar %}الإعدادات{% else %}Settings{% endif %}</span>
-                </a>
             </nav>
         </div>
 
-        <!-- Plan Card (Bottom) -->
-        <div id="plan-section" class="p-4 space-y-3">
-            <div class="bg-[#1e293b]/70 border border-slate-700/60 rounded-2xl p-3.5 text-xs relative">
-                <p class="text-[10px] text-slate-400 font-semibold uppercase">{% if is_ar %}باقتك الحالية{% else %}Your Plan{% endif %}</p>
-                <p class="font-bold text-white text-sm mt-0.5">{% if is_ar %}باقة قيود برو (Pro){% else %}Qoyod Pro{% endif %}</p>
-                <a href="/pricing/" class="mt-2.5 block text-center bg-[#4338ca] hover:bg-indigo-600 text-white font-bold py-1.5 rounded-lg text-xs transition">
-                    {% if is_ar %}ترقية الباقة الآن{% else %}Upgrade Now{% endif %}
-                </a>
+        <!-- Plan Badge -->
+        <div class="p-4 border-t border-slate-800/80 bg-[#080d1a]">
+            <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700/50">
+                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Your Plan</span>
+                <span class="text-sm font-black text-indigo-400">Qoyod Pro</span>
             </div>
-            <a href="https://wa.me/966500000000" target="_blank" class="flex items-center gap-2 px-2 text-[11px] text-slate-400 hover:text-slate-200">
-                <i class="fa-solid fa-headset text-emerald-400"></i> {% if is_ar %}المساعدة والدعم الفني{% else %}Need Help? Contact Support{% endif %}
-            </a>
         </div>
     </aside>
 
-    <!-- 🌟 2. MAIN WORKSPACE WITH QOYOD HEADER -->
-    <main class="flex-1 flex flex-col min-w-0 overflow-y-auto">
-        <header class="h-16 bg-white border-b border-slate-200/90 flex items-center justify-between px-6 sticky top-0 z-30">
-            <!-- Search Bar with ⌘ K -->
-            <div onclick="openSearchModal()" class="relative w-80 cursor-pointer">
-                <i class="fa-solid fa-magnifying-glass absolute {% if is_ar %}right-3.5{% else %}left-3.5{% endif %} top-3 text-slate-400 text-xs"></i>
-                <input type="text" readonly placeholder="{% if is_ar %}ابحث في قيود...{% else %}Search in Qoyod...{% endif %}" class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 {% if is_ar %}pr-9 pl-12 text-right{% else %}pl-9 pr-12{% endif %} text-xs text-slate-800 cursor-pointer focus:outline-none">
-                <span class="absolute {% if is_ar %}left-2.5{% else %}right-2.5{% endif %} top-2 px-1.5 py-0.5 bg-slate-200/80 text-slate-600 text-[10px] font-mono font-bold rounded">⌘ K</span>
+    <!-- 2. MAIN WORKSPACE -->
+    <main class="flex-1 flex flex-col h-full overflow-hidden bg-[#f8fafc]">
+        
+        <!-- HEADER BAR -->
+        <header class="bg-white border-b border-slate-200 px-6 py-3.5 flex justify-between items-center z-10">
+            <!-- Search -->
+            <div class="relative w-80">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input id="globalSearch" type="text" placeholder="Search in Qoyod..." class="w-full pl-9 pr-12 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+                <span class="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-mono bg-white border border-slate-200 px-1.5 py-0.5 rounded text-slate-400 font-bold">⌘ K</span>
             </div>
 
-            <!-- Right Actions Bar -->
-            <div class="flex items-center gap-4 relative">
-                
-                <!-- 🌐 1-CLICK ARABIC / ENGLISH SWITCHER (Matching Quyod) -->
-                {% if is_ar %}
-                <a href="/set-language/en/" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl text-xs flex items-center gap-1.5 border border-slate-200 transition" title="Switch to English">
-                    <i class="fa-solid fa-globe text-indigo-600"></i> English
-                </a>
-                {% else %}
-                <a href="/set-language/ar/" class="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold rounded-xl text-xs flex items-center gap-1.5 border border-indigo-200 transition font-cairo" title="التحويل للغة العربية">
-                    <i class="fa-solid fa-globe text-indigo-600"></i> العربية
-                </a>
-                {% endif %}
-
-                <!-- Blue + Button -->
-                <a href="/invoices/create/" class="w-8 h-8 rounded-full bg-[#3b82f6] hover:bg-blue-600 text-white flex items-center justify-center shadow-sm font-black text-sm transition" title="{% if is_ar %}إنشاء فاتورة جديدة{% else %}Quick Create Invoice{% endif %}">
+            <!-- Top Actions & Profile -->
+            <div class="flex items-center gap-4">
+                <button class="bg-indigo-50 text-indigo-600 hover:bg-indigo-100 font-bold px-3 py-1.5 rounded-xl text-xs flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-globe text-xs"></i>
+                    <span>العربية</span>
+                </button>
+                <a href="/invoices/create/" class="w-8 h-8 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center text-xs shadow-sm transition">
                     <i class="fa-solid fa-plus"></i>
                 </a>
-                
-                <!-- 🔔 Notification Button -->
-                <div class="relative">
-                    <button onclick="toggleNotifications()" class="text-slate-500 hover:text-slate-800 text-sm relative p-1.5">
-                        <i class="fa-regular fa-bell text-base"></i>
-                        {% if overdue_invoices or low_stock_products %}
-                        <span class="w-2 h-2 rounded-full bg-rose-500 absolute top-1 {% if is_ar %}left-1{% else %}right-1{% endif %} animate-pulse"></span>
-                        {% endif %}
-                    </button>
-
-                    <div id="notif-dropdown" class="hidden absolute {% if is_ar %}left-0{% else %}right-0{% endif %} top-10 mt-2 w-80 bg-white border border-slate-200 rounded-2xl shadow-2xl p-4 space-y-3 z-50 text-xs text-right">
-                        <div class="flex justify-between items-center border-b border-slate-100 pb-2">
-                            <span class="font-black text-slate-900">{% if is_ar %}التنبيهات والإشعارات{% else %}Notifications{% endif %}</span>
-                            <span class="text-[10px] text-indigo-600 font-bold">{% if is_ar %}مباشر{% else %}Real-time{% endif %}</span>
-                        </div>
-                        <div class="space-y-2 max-h-64 overflow-y-auto">
-                            {% for inv in overdue_invoices %}
-                            <div class="p-2.5 bg-rose-50 border border-rose-100 rounded-xl">
-                                <p class="font-bold text-rose-800">{% if is_ar %}فاتورة مستحقة التحصيل{% else %}Unpaid Invoice{% endif %} #{{ inv.invoice_no }}</p>
-                                <p class="text-[10px] text-rose-600 mt-0.5">{{ inv.customer.name }} - SAR {{ inv.remaining_due|floatformat:2 }}</p>
-                            </div>
-                            {% endfor %}
-
-                            {% for p in low_stock_products %}
-                            <div class="p-2.5 bg-amber-50 border border-amber-100 rounded-xl">
-                                <p class="font-bold text-amber-800">{% if is_ar %}انخفاض المخزون:{% else %}Low Stock:{% endif %} {{ p.name }}</p>
-                                <p class="text-[10px] text-amber-600 mt-0.5">{{ p.current_stock }} {% if is_ar %}قطعة متبقية بالمستودع{% else %}units left in warehouse{% endif %}</p>
-                            </div>
-                            {% endfor %}
-
-                            {% if not overdue_invoices and not low_stock_products %}
-                            <p class="text-slate-400 italic text-center py-4">{% if is_ar %}لا توجد إشعارات جديدة! 🟢{% else %}No unread notifications! 🟢{% endif %}</p>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-
-                <a href="/admin/" class="text-slate-500 hover:text-slate-800 text-sm">
+                <button class="text-slate-400 hover:text-slate-600 text-sm">
+                    <i class="fa-regular fa-bell"></i>
+                </button>
+                <a href="/settings/" class="text-slate-400 hover:text-slate-600 text-sm" title="Settings & Divisions">
                     <i class="fa-solid fa-gear"></i>
                 </a>
 
-                <!-- User Profile Badge -->
-                <div class="flex items-center gap-2.5 {% if is_ar %}pr-2 border-r border-slate-200{% else %}pl-2 border-l border-slate-200{% endif %}">
-                    <div class="{% if is_ar %}text-left{% else %}text-right{% endif %}">
-                        <p class="text-xs font-bold text-slate-800 leading-tight">{{ company.name|default:"Demo Company" }}</p>
-                        <p class="text-[10px] text-slate-500 leading-tight">{{ request.user.username|default:"Shamim" }}</p>
+                <!-- User Profile -->
+                <div class="flex items-center gap-3 pl-2 border-l border-slate-200">
+                    <div class="text-right">
+                        <div class="text-xs font-black text-slate-900 leading-tight">SECOND ADVANCE MEDICAL COMPANY (SAMCO)</div>
+                        <div class="text-[11px] font-bold text-slate-500">Shamim</div>
                     </div>
-                    <div class="w-9 h-9 rounded-full bg-[#34d399] text-[#065f46] font-black text-xs flex items-center justify-center border-2 border-white shadow-sm">
-                        JD
+                    <div class="w-9 h-9 rounded-full bg-emerald-500 text-white font-black text-xs flex items-center justify-center shadow-sm">
+                        SR
                     </div>
                 </div>
             </div>
         </header>
 
-        <!-- 🌟 3. DASHBOARD WORKSPACE -->
-        <div class="p-6 space-y-6">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                <h1 class="text-xl font-bold text-slate-900 flex items-center gap-2">
-                    {% if is_ar %}صباح الخير، {{ request.user.username|default:"Shamim" }}{% else %}Good Morning, {{ request.user.username|default:"Shamim" }}{% endif %} <span>👋</span>
+        <!-- DASHBOARD BODY -->
+        <div class="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
+            
+            <!-- GREETING & ACTIONS -->
+            <div class="flex justify-between items-center">
+                <h1 class="text-2xl font-black text-slate-900 flex items-center gap-2">
+                    <span id="dynamic-greeting">Good Morning</span>, Shamim 👋
                 </h1>
-                <div class="flex items-center gap-2 text-xs">
-                    <select class="bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-slate-700 font-bold focus:outline-none shadow-sm">
-                        <option>{% if is_ar %}هذا الشهر{% else %}This Month{% endif %}</option>
-                        <option>{% if is_ar %}هذا الربع{% else %}This Quarter{% endif %}</option>
-                        <option>{% if is_ar %}هذه السنة{% else %}This Year{% endif %}</option>
+                <div class="flex items-center gap-3">
+                    <select class="bg-white border border-slate-200 text-xs font-bold text-slate-700 px-3 py-2 rounded-xl focus:outline-none shadow-sm">
+                        <option>This Month</option>
+                        <option>Last Month</option>
+                        <option>This Quarter</option>
+                        <option>This Year</option>
                     </select>
-                    <a href="/invoices/create/" class="bg-indigo-600 text-white hover:bg-indigo-700 px-3.5 py-1.5 rounded-xl font-bold text-xs shadow-sm flex items-center gap-1.5 transition">
-                        <i class="fa-solid fa-plus"></i> {% if is_ar %}+ فاتورة جديدة{% else %}+ New Invoice{% endif %}
+                    <a href="/invoices/create/" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-4 py-2 rounded-xl text-xs shadow flex items-center gap-2 transition">
+                        <i class="fa-solid fa-plus"></i> + New Invoice
                     </a>
                 </div>
             </div>
 
-            <!-- 4 KPI Summary Cards (১০০% ডাইনামিক ও বাইলিঙ্গুয়াল) -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
-                <!-- Total Sales -->
-                <div class="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-sm space-y-2">
-                    <div class="flex justify-between items-center">
-                        <span class="text-slate-500 font-medium">{% if is_ar %}إجمالي المبيعات{% else %}Total Sales{% endif %}</span>
-                        <div class="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center"><i class="fa-regular fa-file-lines"></i></div>
+            <!-- 4 METRICS CARDS -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
+                <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm relative overflow-hidden">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-xs font-bold text-slate-500">Total Sales</span>
+                        <div class="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs">
+                            <i class="fa-solid fa-file-invoice"></i>
+                        </div>
                     </div>
-                    <h2 class="text-xl font-black text-slate-900 font-mono">SAR {{ summary.total_sales_sar|floatformat:2 }}</h2>
-                    <p class="text-[10px] text-emerald-600 font-bold flex items-center gap-1">▲ {% if is_ar %}مبيعات فعلية مسجلة{% else %}Real-time Invoiced Sales{% endif %}</p>
+                    <div class="text-2xl font-black text-slate-900 font-mono">SAR {{ total_sales|floatformat:2|default:"0.00" }}</div>
+                    <div class="text-[11px] font-bold text-emerald-600 mt-2 flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-trend-up"></i> Real-time Invoiced Sales
+                    </div>
                 </div>
 
-                <!-- Total Purchases -->
-                <div class="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-sm space-y-2">
-                    <div class="flex justify-between items-center">
-                        <span class="text-slate-500 font-medium">{% if is_ar %}إجمالي المشتريات{% else %}Total Purchases{% endif %}</span>
-                        <div class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center"><i class="fa-solid fa-cart-arrow-down"></i></div>
+                <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm relative overflow-hidden">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-xs font-bold text-slate-500">Total Purchases</span>
+                        <div class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs">
+                            <i class="fa-solid fa-cart-flatbed"></i>
+                        </div>
                     </div>
-                    <h2 class="text-xl font-black text-slate-900 font-mono">SAR {{ summary.total_purchases_sar|floatformat:2 }}</h2>
-                    <p class="text-[10px] text-emerald-600 font-bold flex items-center gap-1">▲ {% if is_ar %}فواتير شراء معتمدة{% else %}Vendor Billed Purchases{% endif %}</p>
+                    <div class="text-2xl font-black text-slate-900 font-mono">SAR {{ total_purchases|floatformat:2|default:"0.00" }}</div>
+                    <div class="text-[11px] font-bold text-emerald-600 mt-2 flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-trend-up"></i> Vendor Billed Purchases
+                    </div>
                 </div>
 
-                <!-- Total Expenses -->
-                <div class="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-sm space-y-2">
-                    <div class="flex justify-between items-center">
-                        <span class="text-slate-500 font-medium">{% if is_ar %}إجمالي المصروفات{% else %}Total Expenses{% endif %}</span>
-                        <div class="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center"><i class="fa-solid fa-receipt"></i></div>
+                <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm relative overflow-hidden">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-xs font-bold text-slate-500">Total Expenses</span>
+                        <div class="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-xs">
+                            <i class="fa-solid fa-receipt"></i>
+                        </div>
                     </div>
-                    <h2 class="text-xl font-black text-slate-900 font-mono">SAR {{ summary.total_expenses_sar|floatformat:2 }}</h2>
-                    <p class="text-[10px] text-amber-600 font-bold flex items-center gap-1">● {% if is_ar %}سندات صرف مباشرة{% else %}Direct Expense Claims{% endif %}</p>
+                    <div class="text-2xl font-black text-slate-900 font-mono">SAR {{ total_expenses|floatformat:2|default:"0.00" }}</div>
+                    <div class="text-[11px] font-bold text-amber-600 mt-2 flex items-center gap-1">
+                        ● Direct Expense Claims
+                    </div>
                 </div>
 
-                <!-- Net Profit -->
-                <div class="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-sm space-y-2">
-                    <div class="flex justify-between items-center">
-                        <span class="text-slate-500 font-medium">{% if is_ar %}صافي الأرباح{% else %}Net Profit{% endif %}</span>
-                        <div class="w-7 h-7 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center"><i class="fa-solid fa-chart-line"></i></div>
+                <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm relative overflow-hidden">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-xs font-bold text-slate-500">Net Profit</span>
+                        <div class="w-7 h-7 rounded-lg bg-cyan-50 text-cyan-600 flex items-center justify-center text-xs">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </div>
                     </div>
-                    <h2 class="text-xl font-black text-slate-900 font-mono">SAR {{ summary.net_profit_sar|floatformat:2 }}</h2>
-                    <p class="text-[10px] text-emerald-600 font-bold flex items-center gap-1">▲ {% if is_ar %}صافي أرباح النشاط{% else %}Net Trading Earnings{% endif %}</p>
+                    <div class="text-2xl font-black text-slate-900 font-mono">SAR {{ net_profit|floatformat:2|default:"0.00" }}</div>
+                    <div class="text-[11px] font-bold text-emerald-600 mt-2 flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-trend-up"></i> Net Trading Earnings
+                    </div>
                 </div>
             </div>
 
-            <!-- Middle Row: Sales Wave Chart, Top Customers & Quick Links -->
+            <!-- MIDDLE SECTION: Sales Chart, Top Customers, Quick Links (12 Cols) -->
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-                <div class="lg:col-span-6 bg-white border border-slate-200/90 rounded-2xl p-5 shadow-sm">
-                    <div class="flex justify-between items-center mb-3">
-                        <h3 class="font-bold text-slate-900 text-sm">{% if is_ar %}نظرة عامة على المبيعات{% else %}Sales Overview{% endif %}</h3>
-                        <span class="text-xs text-slate-500 border rounded-lg px-2 py-0.5 font-semibold">{% if is_ar %}رسم بياني مباشر ▾{% else %}Live Trend ▾{% endif %}</span>
-                    </div>
-                    <div class="h-48"><canvas id="salesChart"></canvas></div>
-                </div>
-
-                <!-- Top Customers -->
-                <div class="lg:col-span-3 bg-white border border-slate-200/90 rounded-2xl p-5 shadow-sm flex flex-col justify-between">
-                    <div>
-                        <div class="flex justify-between items-center mb-3">
-                            <h3 class="font-bold text-slate-900 text-sm">{% if is_ar %}أهم العملاء{% else %}Top Customers{% endif %}</h3>
-                            <a href="/invoices/" class="text-[11px] font-bold text-indigo-600 hover:underline">{% if is_ar %}عرض الكل{% else %}View All{% endif %}</a>
-                        </div>
-                        <div class="space-y-2.5 text-xs">
-                            {% for c in top_customers %}
-                            <div class="flex justify-between items-center">
-                                <span class="flex items-center gap-2 truncate w-32"><span class="w-4 text-slate-400 font-mono">{{ forloop.counter }}</span> {{ c.name }}</span>
-                                <span class="font-mono font-bold text-slate-900">SAR {{ c.total_spent|floatformat:2 }}</span>
-                            </div>
-                            {% empty %}
-                            <div class="py-8 text-center text-slate-400 italic text-[11px]">
-                                <i class="fa-solid fa-users text-slate-300 text-xl mb-1 block"></i>
-                                {% if is_ar %}لا توجد مبيعات مسجلة لعملاء حتى الآن.{% else %}No customer purchases yet.{% endif %}
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 6 Quick Links (Arabic & English) -->
-                <div class="lg:col-span-3 bg-white border border-slate-200/90 rounded-2xl p-5 shadow-sm flex flex-col justify-between">
-                    <h3 class="font-bold text-slate-900 text-sm mb-2">{% if is_ar %}روابط سريعة{% else %}Quick Links{% endif %}</h3>
-                    <div class="grid grid-cols-3 gap-2 text-center text-[10px] font-bold">
-                        <a href="/invoices/create/" class="p-2.5 rounded-xl border border-slate-100 hover:bg-slate-50 transition flex flex-col items-center gap-1.5">
-                            <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center text-sm"><i class="fa-regular fa-file-lines"></i></div>
-                            <span class="text-slate-600 leading-tight">{% if is_ar %}فاتورة جديدة{% else %}Create Invoice{% endif %}</span>
-                        </a>
-                        <a href="/expenses/" class="p-2.5 rounded-xl border border-slate-100 hover:bg-slate-50 transition flex flex-col items-center gap-1.5">
-                            <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-sm"><i class="fa-solid fa-cart-plus"></i></div>
-                            <span class="text-slate-600 leading-tight">{% if is_ar %}أمر شراء{% else %}Purchases{% endif %}</span>
-                        </a>
-                        <a href="/expenses/" class="p-2.5 rounded-xl border border-slate-100 hover:bg-slate-50 transition flex flex-col items-center gap-1.5">
-                            <div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-sm"><i class="fa-solid fa-receipt"></i></div>
-                            <span class="text-slate-600 leading-tight">{% if is_ar %}سند صرف{% else %}Add Expense{% endif %}</span>
-                        </a>
-                        <a href="/invoices/create/" class="p-2.5 rounded-xl border border-slate-100 hover:bg-slate-50 transition flex flex-col items-center gap-1.5">
-                            <div class="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center text-sm"><i class="fa-solid fa-user-plus"></i></div>
-                            <span class="text-slate-600 leading-tight">{% if is_ar %}عميل جديد{% else %}New Contact{% endif %}</span>
-                        </a>
-                        <a href="/banking/transfer/" class="p-2.5 rounded-xl border border-slate-100 hover:bg-slate-50 transition flex flex-col items-center gap-1.5">
-                            <div class="w-8 h-8 rounded-lg bg-teal-50 text-teal-600 flex items-center justify-center text-sm"><i class="fa-solid fa-building-columns"></i></div>
-                            <span class="text-slate-600 leading-tight">{% if is_ar %}تحويل بنكي{% else %}Bank Transfer{% endif %}</span>
-                        </a>
-                        <a href="/reports/" class="p-2.5 rounded-xl border border-slate-100 hover:bg-slate-50 transition flex flex-col items-center gap-1.5">
-                            <div class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center text-sm"><i class="fa-solid fa-chart-pie"></i></div>
-                            <span class="text-slate-600 leading-tight">{% if is_ar %}التقارير{% else %}Reports{% endif %}</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Bottom Row -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 text-xs">
                 
-                <!-- 1. Bank Accounts List -->
-                <div class="lg:col-span-3 bg-white border border-slate-200/90 rounded-2xl p-5 shadow-sm space-y-3">
+                <!-- 1. Sales Overview Chart (5 cols) -->
+                <div class="lg:col-span-5 bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex flex-col justify-between">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-sm font-black text-slate-900">Sales Overview</h3>
+                        <span class="text-[11px] font-bold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-lg">Live Trend ▾</span>
+                    </div>
+                    <div class="h-44 flex items-center justify-center border-b border-dashed border-slate-200 mb-2">
+                        <div class="w-full h-1 bg-indigo-500 relative flex justify-between items-center">
+                            <span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span>
+                        </div>
+                    </div>
+                    <div class="flex justify-between text-[10px] text-slate-400 font-bold">
+                        <span>1 May</span><span>6 May</span><span>11 May</span><span>16 May</span><span>21 May</span><span>26 May</span><span>31 May</span>
+                    </div>
+                </div>
+
+                <!-- 2. Top Customers (4 cols) -->
+                <div class="lg:col-span-4 bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex flex-col justify-between">
                     <div class="flex justify-between items-center">
-                        <h3 class="font-bold text-slate-900 text-sm">{% if is_ar %}الحسابات البنكية{% else %}Bank Accounts{% endif %}</h3>
-                        <a href="/banking/reconciliation/" class="text-[11px] font-bold text-indigo-600 hover:underline">{% if is_ar %}إدارة{% else %}Manage{% endif %}</a>
+                        <h3 class="text-sm font-black text-slate-900">Top Customers</h3>
+                        <a href="/admin/accounting/customer/" class="text-xs font-bold text-indigo-600 hover:underline">View All</a>
                     </div>
-                    <div class="space-y-3">
-                        {% for b in banks %}
-                        <div class="flex justify-between items-center">
-                            <div class="flex items-center gap-2.5">
-                                <div class="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs"><i class="fa-solid fa-building-columns"></i></div>
-                                <div><p class="font-bold text-slate-900 truncate w-28">{{ b.name }}</p><p class="text-[10px] text-slate-400">{{ b.account_number|default:"Corporate Account" }}</p></div>
-                            </div>
-                            <span class="font-mono font-bold text-slate-900">SAR {{ b.balance|floatformat:2 }}</span>
+                    <div class="text-center py-12 text-slate-400 flex flex-col items-center justify-center">
+                        <div class="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center text-slate-300 mb-2 text-xl">
+                            <i class="fa-solid fa-users"></i>
                         </div>
-                        {% empty %}
-                        <p class="text-slate-400 italic text-center py-4">{% if is_ar %}لا توجد حسابات بنكية مضافة.{% else %}No bank accounts configured.{% endif %}</p>
-                        {% endfor %}
+                        <p class="text-xs text-slate-400 italic font-medium">No customer purchases yet.</p>
                     </div>
+                    <div class="h-2"></div>
                 </div>
 
-                <!-- 2. Real Cash Flow -->
-                <div class="lg:col-span-3 bg-white border border-slate-200/90 rounded-2xl p-5 shadow-sm flex flex-col justify-between">
-                    <div>
-                        <div class="flex justify-between items-center mb-3">
-                            <h3 class="font-bold text-slate-900 text-sm">{% if is_ar %}التدفق النقدي{% else %}Cash Flow{% endif %}</h3>
-                            <span class="text-[10px] text-slate-400 font-bold">{% if is_ar %}سجل القيود{% else %}Ledger{% endif %}</span>
-                        </div>
-                        <div class="space-y-3 pt-1">
-                            <div class="flex justify-between items-center font-bold">
-                                <span class="text-slate-600 flex items-center gap-2"><span class="text-emerald-500">❖</span> {% if is_ar %}نقد وارد{% else %}Cash In{% endif %}</span>
-                                <span class="font-mono text-emerald-600 font-black">SAR {{ summary.cash_in|floatformat:2 }}</span>
-                            </div>
-                            <div class="flex justify-between items-center font-bold">
-                                <span class="text-slate-600 flex items-center gap-2"><span class="text-rose-500">❖</span> {% if is_ar %}نقد صادر{% else %}Cash Out{% endif %}</span>
-                                <span class="font-mono text-rose-500 font-black">SAR {{ summary.cash_out|floatformat:2 }}</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex justify-between items-center pt-3 border-t border-slate-100 font-black text-slate-900">
-                        <span>{% if is_ar %}صافي التدفق النقدي{% else %}Net Cash Flow{% endif %}</span>
-                        <span class="font-mono {% if summary.net_cash_flow >= 0 %}text-emerald-600{% else %}text-rose-600{% endif %} text-sm">
-                            SAR {{ summary.net_cash_flow|floatformat:2 }}
-                        </span>
-                    </div>
-                </div>
-
-                <!-- 3. Recent Sales Invoices -->
-                <div class="lg:col-span-3 bg-white border border-slate-200/90 rounded-2xl p-5 shadow-sm space-y-2.5">
-                    <div class="flex justify-between items-center mb-1">
-                        <h3 class="font-bold text-slate-900 text-sm">{% if is_ar %}آخر الفواتير{% else %}Recent Sales{% endif %}</h3>
-                        <a href="/invoices/" class="text-[11px] font-bold text-indigo-600 hover:underline">{% if is_ar %}عرض الكل{% else %}View All{% endif %}</a>
-                    </div>
-                    <div class="space-y-2">
-                        {% for inv in invoices %}
-                        <div class="flex justify-between items-center">
-                            <div><p class="font-mono font-bold text-slate-800 text-[11px]">#{{ inv.invoice_no }}</p><p class="text-[10px] text-slate-400 truncate w-24">{{ inv.customer.name }}</p></div>
-                            <div class="{% if is_ar %}text-left{% else %}text-right{% endif %} flex items-center gap-1.5"><span class="font-mono font-bold text-slate-900">{{ inv.total_amount|floatformat:2 }}</span><span class="px-1.5 py-0.5 bg-slate-100 text-slate-700 rounded text-[9px] font-bold">{{ inv.get_payment_status_display }}</span></div>
-                        </div>
-                        {% empty %}
-                        <p class="text-slate-400 italic text-center py-4">{% if is_ar %}لا توجد فواتير مبيعات مسجلة.{% else %}No recent sales invoices.{% endif %}</p>
-                        {% endfor %}
-                    </div>
-                </div>
-
-                <!-- 4. ZATCA VAT Summary -->
-                <div class="lg:col-span-3 bg-white border border-slate-200/90 rounded-2xl p-5 shadow-sm space-y-2.5">
-                    <div class="flex justify-between items-center mb-1">
-                        <h3 class="font-bold text-slate-900 text-sm">{% if is_ar %}الإقرار الضريبي (15%){% else %}ZATCA 15% VAT Return{% endif %}</h3>
-                        
-                <!-- 5 Divisions Cloud Hubs -->
-                <div class="pt-3 pb-1 px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider">SAMCO Divisions</div>
-                <a href="/division/warehouse/" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-cyan-300 hover:bg-slate-800/60 hover:text-white transition">
-                    <span>🏭</span> <span>Warehouse WMS</span>
-                </a>
-                <a href="/division/media/" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-emerald-300 hover:bg-slate-800/60 hover:text-white transition">
-                    <span>📺</span> <span>Media Division</span>
-                </a>
-                <a href="/division/cosmetic/" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-pink-300 hover:bg-slate-800/60 hover:text-white transition">
-                    <span>💄</span> <span>Cosmetic Division</span>
-                </a>
-                <a href="/division/powder/" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-amber-300 hover:bg-slate-800/60 hover:text-white transition">
-                    <span>🧪</span> <span>Powder Division</span>
-                </a>
-                <a href="/division/plastic/" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-blue-300 hover:bg-slate-800/60 hover:text-white transition">
-                    <span>♻️</span> <span>Plastic Division</span>
-                </a>
-
-                <div class="pt-2 pb-2 px-1">
-                    <a href="/super-admin/" class="flex items-center gap-3 px-3.5 py-2 rounded-xl bg-amber-500/10 text-amber-300 border border-amber-500/30 hover:bg-amber-500/20 font-bold transition">
-                        <span>👑</span> <span>Super Admin Hub</span>
-                    </a>
-                </div>
-
-                    <a href="/vat/" class="text-[10px] bg-amber-50 text-amber-800 px-2 py-0.5 rounded font-bold border border-amber-200 hover:bg-amber-100">{% if is_ar %}تفاصيل الإقرار{% else %}File Return{% endif %}</a>
-                    </div>
-                    <div class="space-y-2 pt-1 font-semibold text-[11px]">
-                        <div class="flex justify-between text-slate-600"><span>{% if is_ar %}ضريبة المخرجات:{% else %}Output VAT:{% endif %}</span><span class="font-bold text-slate-900 font-mono">SAR {{ summary.vat_output|floatformat:2 }}</span></div>
-                        <div class="flex justify-between text-slate-600"><span>{% if is_ar %}ضريبة المدخلات:{% else %}Input VAT:{% endif %}</span><span class="font-bold text-slate-900 font-mono">SAR {{ summary.vat_input|floatformat:2 }}</span></div>
-                        <div class="flex justify-between text-slate-900 font-black border-t border-slate-100 pt-2 text-xs"><span>{% if is_ar %}صافي الضريبة المستحقة:{% else %}Net VAT Due:{% endif %}</span><span class="text-amber-600 font-mono">SAR {{ summary.net_vat_due|floatformat:2 }}</span></div>
+                <!-- 3. Quick Links (3 cols with 9 balanced buttons) -->
+                <div class="lg:col-span-3 bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                    <h3 class="text-sm font-black text-slate-900 mb-3">Quick Links</h3>
+                    <div class="grid grid-cols-3 gap-2 text-center">
+                        <a href="/invoices/create/" class="p-2 rounded-xl border border-slate-100 hover:bg-slate-50 flex flex-col items-center gap-1 transition group">
+                            <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs group-hover:scale-110 transition"><i class="fa-solid fa-file-invoice"></i></div>
+                            <span class="text-[10px] font-bold text-slate-700 leading-tight">Create Invoice</span>
+                        </a>
+                        <a href="/admin/accounting/purchasebill/" class="p-2 rounded-xl border border-slate-100 hover:bg-slate-50 flex flex-col items-center gap-1 transition group">
+                            <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-xs group-hover:scale-110 transition"><i class="fa-solid fa-cart-shopping"></i></div>
+                            <span class="text-[10px] font-bold text-slate-700 leading-tight">Purchases</span>
+                        </a>
+                        <a href="/admin/accounting/directexpense/" class="p-2 rounded-xl border border-slate-100 hover:bg-slate-50 flex flex-col items-center gap-1 transition group">
+                            <div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-xs group-hover:scale-110 transition"><i class="fa-solid fa-receipt"></i></div>
+                            <span class="text-[10px] font-bold text-slate-700 leading-tight">Add Expense</span>
+                        </a>
+                        <a href="/admin/accounting/customer/add/" class="p-2 rounded-xl border border-slate-100 hover:bg-slate-50 flex flex-col items-center gap-1 transition group">
+                            <div class="w-8 h-8 rounded-lg bg-cyan-50 text-cyan-600 flex items-center justify-center text-xs group-hover:scale-110 transition"><i class="fa-solid fa-user-plus"></i></div>
+                            <span class="text-[10px] font-bold text-slate-700 leading-tight">New Contact</span>
+                        </a>
+                        <a href="/banking/transfer/" class="p-2 rounded-xl border border-slate-100 hover:bg-slate-50 flex flex-col items-center gap-1 transition group">
+                            <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs group-hover:scale-110 transition"><i class="fa-solid fa-building-columns"></i></div>
+                            <span class="text-[10px] font-bold text-slate-700 leading-tight">Bank Transfer</span>
+                        </a>
+                        <a href="/reports/" class="p-2 rounded-xl border border-slate-100 hover:bg-slate-50 flex flex-col items-center gap-1 transition group">
+                            <div class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center text-xs group-hover:scale-110 transition"><i class="fa-solid fa-chart-pie"></i></div>
+                            <span class="text-[10px] font-bold text-slate-700 leading-tight">Reports</span>
+                        </a>
+                        <a href="/scanner/" class="p-2 rounded-xl border border-cyan-200 bg-cyan-50/40 hover:bg-cyan-100/70 flex flex-col items-center gap-1 transition group relative">
+                            <span class="absolute -top-1.5 -right-1 text-[8px] bg-cyan-500 text-white font-black px-1 py-0.2 rounded-full uppercase shadow-xs">AI</span>
+                            <div class="w-8 h-8 rounded-lg bg-cyan-100 text-cyan-700 flex items-center justify-center text-xs group-hover:scale-110 transition"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                            <span class="text-[10px] font-bold text-cyan-950 leading-tight">AI Scanner</span>
+                        </a>
+                        <a href="/vat/" class="p-2 rounded-xl border border-amber-200 bg-amber-50/40 hover:bg-amber-100/70 flex flex-col items-center gap-1 transition group">
+                            <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center text-xs group-hover:scale-110 transition"><i class="fa-solid fa-percent"></i></div>
+                            <span class="text-[10px] font-bold text-amber-950 leading-tight">VAT Return</span>
+                        </a>
+                        <a href="/reports/aging/" class="p-2 rounded-xl border border-indigo-200 bg-indigo-50/40 hover:bg-indigo-100/70 flex flex-col items-center gap-1 transition group">
+                            <div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center text-xs group-hover:scale-110 transition"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                            <span class="text-[10px] font-bold text-indigo-950 leading-tight">Debt Aging</span>
+                        </a>
                     </div>
                 </div>
 
             </div>
 
-            <!-- Footer -->
-            <footer class="pt-6 border-t border-slate-200 text-slate-400 text-[11px] flex flex-col sm:flex-row justify-between items-center gap-2">
-                <p>© 2024 Qoyod. All rights reserved.</p>
-                <div class="flex gap-4">
-                    <a href="#" class="hover:underline">Terms of Use</a>
-                    <a href="#" class="hover:underline">Privacy Policy</a>
-                    {% if is_ar %}
-                    <a href="/set-language/en/" class="hover:underline font-bold text-indigo-600">English</a>
-                    {% else %}
-                    <a href="/set-language/ar/" class="hover:underline font-bold text-indigo-600 font-cairo">العربية</a>
-                    {% endif %}
+            <!-- BOTTOM SECTION: Bank Accounts, Cash Flow, Recent Sales, ZATCA 15% VAT Return -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-5 pb-6">
+                <!-- Bank Accounts -->
+                <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex flex-col justify-between">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xs font-black text-slate-900">Bank Accounts</h3>
+                        <a href="/banking/transfer/" class="text-[11px] font-bold text-indigo-600 hover:underline">Manage</a>
+                    </div>
+                    <div class="text-center py-6 text-slate-400 text-xs italic">
+                        No bank accounts configured.
+                    </div>
                 </div>
-            </footer>
+
+                <!-- Cash Flow -->
+                <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-xs font-black text-slate-900">Cash Flow</h3>
+                        <span class="text-[10px] font-bold text-slate-400">Ledger</span>
+                    </div>
+                    <div class="space-y-1.5 text-xs">
+                        <div class="flex justify-between font-bold">
+                            <span class="text-emerald-600">❖ Cash In</span>
+                            <span class="font-mono">SAR 0.00</span>
+                        </div>
+                        <div class="flex justify-between font-bold">
+                            <span class="text-rose-500">❖ Cash Out</span>
+                            <span class="font-mono">SAR 0.00</span>
+                        </div>
+                    </div>
+                    <div class="border-t border-slate-100 mt-3 pt-2 flex justify-between items-center text-xs font-black">
+                        <span>Net Cash Flow</span>
+                        <span class="text-emerald-600 font-mono">SAR 0.00</span>
+                    </div>
+                </div>
+
+                <!-- Recent Sales -->
+                <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex flex-col justify-between">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xs font-black text-slate-900">Recent Sales</h3>
+                        <a href="/invoices/" class="text-[11px] font-bold text-indigo-600 hover:underline">View All</a>
+                    </div>
+                    <div class="text-center py-6 text-slate-400 text-xs italic">
+                        No recent sales invoices.
+                    </div>
+                </div>
+
+                <!-- ZATCA 15% VAT Return -->
+                <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-xs font-black text-slate-900">ZATCA 15% VAT Return</h3>
+                        <a href="/vat/" class="text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-lg hover:bg-amber-100 transition">File Return</a>
+                    </div>
+                    <div class="space-y-1 text-xs">
+                        <div class="flex justify-between text-slate-500">
+                            <span>Output VAT:</span>
+                            <span class="font-mono font-bold text-slate-900">SAR 0.00</span>
+                        </div>
+                        <div class="flex justify-between text-slate-500">
+                            <span>Input VAT:</span>
+                            <span class="font-mono font-bold text-slate-900">SAR 0.00</span>
+                        </div>
+                    </div>
+                    <div class="border-t border-slate-100 mt-2.5 pt-2 flex justify-between items-center text-xs font-black">
+                        <span>Net VAT Due:</span>
+                        <span class="text-amber-600 font-mono">SAR 0.00</span>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </main>
 
-    <!-- Search Modal -->
-    <div id="search-modal" class="fixed inset-0 bg-slate-900/60 z-50 flex items-start justify-center pt-24 hidden p-4">
-        <div class="bg-white rounded-2xl p-4 w-full max-w-lg shadow-2xl border border-slate-200 space-y-3">
-            <div class="relative">
-                <i class="fa-solid fa-magnifying-glass absolute {% if is_ar %}right-3{% else %}left-3{% endif %} top-3 text-slate-400 text-sm"></i>
-                <input type="text" autofocus placeholder="{% if is_ar %}اكتب أمرًا أو ابحث في قيود...{% else %}Type a command or search...{% endif %}" class="w-full bg-slate-50 border rounded-xl py-2 {% if is_ar %}pr-9 pl-4 text-right{% else %}pl-9 pr-4{% endif %} text-xs font-bold focus:outline-none">
-            </div>
-            <div class="space-y-1 text-xs">
-                <a href="/invoices/create/" class="flex items-center gap-3 p-2 rounded-lg hover:bg-indigo-50 text-slate-700 font-bold"><i class="fa-solid fa-file-circle-plus text-indigo-600"></i> {% if is_ar %}إنشاء فاتورة ضريبية جديدة{% else %}Create New Tax Invoice{% endif %}</a>
-                <a href="/invoices/" class="flex items-center gap-3 p-2 rounded-lg hover:bg-indigo-50 text-slate-700"><i class="fa-solid fa-file-invoice text-indigo-500"></i> {% if is_ar %}عرض قائمة الفواتير{% else %}View All Invoices{% endif %}</a>
-                <a href="/expenses/" class="flex items-center gap-3 p-2 rounded-lg hover:bg-indigo-50 text-slate-700"><i class="fa-solid fa-money-bill-wave text-rose-500"></i> {% if is_ar %}تسجيل سند صرف مصروفات{% else %}Record Direct Expense{% endif %}</a>
-                
-                <!-- 5 Divisions Cloud Hubs -->
-                <div class="pt-3 pb-1 px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider">SAMCO Divisions</div>
-                <a href="/division/warehouse/" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-cyan-300 hover:bg-slate-800/60 hover:text-white transition">
-                    <span>🏭</span> <span>Warehouse WMS</span>
-                </a>
-                <a href="/division/media/" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-emerald-300 hover:bg-slate-800/60 hover:text-white transition">
-                    <span>📺</span> <span>Media Division</span>
-                </a>
-                <a href="/division/cosmetic/" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-pink-300 hover:bg-slate-800/60 hover:text-white transition">
-                    <span>💄</span> <span>Cosmetic Division</span>
-                </a>
-                <a href="/division/powder/" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-amber-300 hover:bg-slate-800/60 hover:text-white transition">
-                    <span>🧪</span> <span>Powder Division</span>
-                </a>
-                <a href="/division/plastic/" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-blue-300 hover:bg-slate-800/60 hover:text-white transition">
-                    <span>♻️</span> <span>Plastic Division</span>
-                </a>
-
-                <div class="pt-2 pb-2 px-1">
-                    <a href="/super-admin/" class="flex items-center gap-3 px-3.5 py-2 rounded-xl bg-amber-500/10 text-amber-300 border border-amber-500/30 hover:bg-amber-500/20 font-bold transition">
-                        <span>👑</span> <span>Super Admin Hub</span>
-                    </a>
-                </div>
-
-                    <a href="/vat/" class="flex items-center gap-3 p-2 rounded-lg hover:bg-indigo-50 text-slate-700"><i class="fa-solid fa-percent text-amber-500"></i> {% if is_ar %}الإقرار الضريبي لهيئة الزكاة{% else %}ZATCA VAT Return{% endif %}</a>
-                <a href="/banking/reconciliation/" class="flex items-center gap-3 p-2 rounded-lg hover:bg-indigo-50 text-slate-700"><i class="fa-solid fa-building-columns text-sky-500"></i> {% if is_ar %}المطابقة والتسوية البنكية{% else %}Bank Match & Reconciliation{% endif %}</a>
-            </div>
-            <div class="text-right border-t pt-2"><button onclick="closeSearchModal()" class="text-xs font-bold text-slate-400">Esc to close</button></div>
-        </div>
-    </div>
-
+    <!-- Scripts -->
     <script>
-        function toggleSidebar() {
-            const sb = document.getElementById('qoyod-sidebar');
-            const logo = document.getElementById('logo-text');
-            const labels = document.querySelectorAll('.nav-label');
-            const plan = document.getElementById('plan-section');
-            if (sb.classList.contains('w-64')) {
-                sb.classList.remove('w-64'); sb.classList.add('w-20');
-                logo.innerText = '{% if is_ar %}ق{% else %}Q{% endif %}';
-                labels.forEach(l => l.classList.add('hidden'));
-                plan.classList.add('hidden');
-            } else {
-                sb.classList.remove('w-20'); sb.classList.add('w-64');
-                logo.innerText = '{% if is_ar %}قيود{% else %}QOYOD{% endif %}';
-                labels.forEach(l => l.classList.remove('hidden'));
-                plan.classList.remove('hidden');
-            }
+    document.addEventListener('DOMContentLoaded', function() {
+        const hour = new Date().getHours();
+        const elem = document.getElementById('dynamic-greeting');
+        if (elem) {
+            if (hour >= 5 && hour < 12) elem.innerText = 'Good Morning';
+            else if (hour >= 12 && hour < 17) elem.innerText = 'Good Afternoon';
+            else elem.innerText = 'Good Evening';
         }
 
-        function toggleMenu(menuId, iconId) {
-            document.getElementById(menuId).classList.toggle('hidden');
-            document.getElementById(iconId).classList.toggle('rotate-180');
-        }
-
-        function toggleNotifications() {
-            document.getElementById('notif-dropdown').classList.toggle('hidden');
-        }
-
-        function openSearchModal() { document.getElementById('search-modal').classList.remove('hidden'); }
-        function closeSearchModal() { document.getElementById('search-modal').classList.add('hidden'); }
-        window.addEventListener('keydown', (e) => {
-            if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); openSearchModal(); }
-            if (e.key === 'Escape') { closeSearchModal(); }
-        });
-
-        const ctx = document.getElementById('salesChart').getContext('2d');
-        const salesVal = {{ summary.total_sales_sar|default:0 }};
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ['1 May', '6 May', '11 May', '16 May', '21 May', '26 May', '31 May'],
-                datasets: [{
-                    data: [0, 0, 0, 0, 0, 0, salesVal],
-                    borderColor: '#4338ca',
-                    backgroundColor: 'rgba(67, 56, 202, 0.08)',
-                    tension: 0.4,
-                    fill: true, pointRadius: 3, pointBackgroundColor: '#4338ca'
-                }]
-            },
-            options: {
-                responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: { x: { grid: { display: false } }, y: { grid: { color: '#f1f5f9' } } }
+        window.addEventListener('keydown', function(e) {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault();
+                const searchInput = document.getElementById('globalSearch');
+                if (searchInput) searchInput.focus();
             }
         });
+    });
     </script>
 </body>
 </html>
