@@ -106,31 +106,22 @@ def settings_page_view(request):
 
 def division_hub_view(request, dept='warehouse'):
     company = get_user_company(request)
-    dept_lower = dept.lower()
-    
-    dept_meta = {
-        'warehouse': {'name': 'Warehouse Division', 'icon': '🏭', 'sub': 'Master Finished Goods, Racking Map & Delivery'},
-        'media': {'name': 'Media Division', 'icon': '📺', 'sub': 'Overtime Processing, Transfer Slips & Worker Dossier'},
-        'cosmetic': {'name': 'Cosmetic Division', 'icon': '💄', 'sub': 'Cosmetic Formulations, Packaging & Batch QC'},
-        'powder': {'name': 'Powder Division', 'icon': '🧪', 'sub': 'GRN (Moisture/Purity), Lab QC Dual Release & Drum Labels'},
-        'plastic': {'name': 'Plastic Division', 'icon': '♻️', 'sub': 'Machine Injection Molding, Day/Night Shifts & Tender Delivery'}
-    }
-    
-    current_meta = dept_meta.get(dept_lower, dept_meta['warehouse'])
-    products = Product.objects.all().order_by('-id')[:20]
-    workers = Worker.objects.all().order_by('-id')[:20]
-    transfers = TransferSlip.objects.all().order_by('-id')[:20]
-    deliveries = DeliveryNote.objects.all().order_by('-id')[:20]
+    products = Product.objects.all().order_by('-id')
+    suppliers = Supplier.objects.all().order_by('-id')
+    deliveries = DeliveryNote.objects.all().order_by('-id')
+    transfers = TransferSlip.objects.all().order_by('-id')
+    workers = Worker.objects.all().order_by('-id')
     
     return render(request, 'accounting/division_hub.html', {
         'company': company,
-        'dept': dept_lower,
-        'dept_meta': current_meta,
+        'dept': dept.lower(),
         'products': products,
-        'workers': workers,
-        'transfers': transfers,
+        'suppliers': suppliers,
         'deliveries': deliveries,
+        'transfers': transfers,
+        'workers': workers,
     })
+
 
 def super_admin_hub_view(request):
     company = get_user_company(request)

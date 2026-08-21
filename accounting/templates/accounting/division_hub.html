@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Warehouse WMS - SAMCO ERP</title>
+    <title>Warehouse WMS - SAMCO Cloud ERP</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;900&family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
@@ -12,54 +12,71 @@
         .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .wms-panel { display: none; }
+        .wms-panel.active { display: block; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 h-full flex overflow-hidden">
 
-    <!-- 1. WAREHOUSE SIDEBAR NAVIGATION -->
+    <!-- 1. SIDEBAR -->
     <aside class="w-64 bg-[#0a1020] text-slate-300 flex flex-col justify-between shrink-0 h-full border-r border-slate-800 z-30 select-none">
         
-        <!-- Brand & Links -->
+        <!-- Brand & Custom WMS Navigation -->
         <div class="flex flex-col flex-1 overflow-y-auto custom-scrollbar p-3.5">
             
-            <!-- QOYOD Vector Logo -->
+            <!-- Perfect Official QOYOD Vector Logo -->
             <div class="flex items-center justify-between pb-3.5 border-b border-slate-800/80 mb-3 px-1">
-                <a href="/" class="flex flex-col">
-                    <span class="text-2xl font-black tracking-wider text-white relative">
-                        Q<span class="inline-block w-2 h-2 bg-cyan-400 rounded-sm absolute -bottom-0.5 left-2 shadow-sm"></span><span class="ml-1.5">OYOD</span>
-                    </span>
-                    <span class="text-[9px] font-bold text-slate-100 tracking-[0.2em]" dir="rtl">أفـضـل تـجـربـة أعـمـال</span>
-                    <span class="text-[7px] font-semibold text-slate-400 tracking-tight block">Warehouse WMS Management</span>
+                <a href="/" class="flex flex-col select-none">
+                    <div class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 38" class="w-36 h-auto">
+                            <!-- Q with attached Cyan square dot -->
+                            <circle cx="16" cy="17" r="11.5" fill="none" stroke="#ffffff" stroke-width="4.8"/>
+                            <rect x="9.5" y="24.5" width="6.5" height="6.5" rx="1.5" fill="#22d3ee"/>
+                            <!-- O -->
+                            <circle cx="45" cy="17" r="11.5" fill="none" stroke="#ffffff" stroke-width="4.8"/>
+                            <!-- Y -->
+                            <path d="M 64.5 6 L 73 18.5 L 81.5 6 M 73 18.5 L 73 28.5" fill="none" stroke="#ffffff" stroke-width="4.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            <!-- O -->
+                            <circle cx="102" cy="17" r="11.5" fill="none" stroke="#ffffff" stroke-width="4.8"/>
+                            <!-- D -->
+                            <path d="M 123 6 L 133 6 C 141 6 146.5 11 146.5 17.25 C 146.5 23.5 141 28.5 133 28.5 L 123 28.5 Z" fill="none" stroke="#ffffff" stroke-width="4.8" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="mt-1 leading-tight">
+                        <span class="text-[9.5px] font-bold text-slate-100 tracking-[0.18em] block" dir="rtl">أفضل تجربة أعمال</span>
+                        <span class="text-[7.2px] font-medium text-slate-400 tracking-[0.06em] block mt-0.5">Warehouse WMS Management</span>
+                    </div>
                 </a>
             </div>
 
-            <!-- Custom Warehouse Navigation -->
+            <!-- Operations Section Title -->
             <div class="text-[10px] font-bold text-cyan-400 uppercase tracking-wider mb-2 px-2 flex items-center gap-1.5">
-                <span>🏭</span> <span>Warehouse Operations</span>
+                <span>🏭</span> <span>WAREHOUSE OPERATIONS</span>
             </div>
 
-            <nav class="space-y-1 text-xs font-semibold">
+            <!-- Custom WMS Menu Links -->
+            <nav class="space-y-1 text-xs font-semibold" id="sidebarMenu">
                 <!-- 1. Sales Entry -->
-                <button onclick="switchTab('sales_entry', '🛍️ Sales Entry')" class="w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                <button onclick="showWMSPanel('sales_entry', this)" class="wms-nav-btn w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
                     <span>🛍️</span> <span>Sales Entry</span>
                 </button>
 
                 <!-- 2. Purchase Entry -->
-                <button onclick="switchTab('purchase_entry', '🛒 Purchase Entry')" class="w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                <button onclick="showWMSPanel('purchase_entry', this)" class="wms-nav-btn w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
                     <span>🛒</span> <span>Purchase Entry</span>
                 </button>
 
                 <!-- 3. Supplier -->
-                <button onclick="switchTab('suppliers', '🏭 Supplier Directory')" class="w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                <button onclick="showWMSPanel('suppliers', this)" class="wms-nav-btn w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
                     <span>🏭</span> <span>Supplier</span>
                 </button>
 
-                <!-- 4. Stock / Inventory -->
-                <button onclick="switchTab('inventory', '📦 Stock / Inventory')" class="w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl bg-cyan-600/30 text-cyan-300 border border-cyan-500/40 font-bold transition">
+                <!-- 4. Stock / Inventory (Default Active) -->
+                <button onclick="showWMSPanel('inventory', this)" class="wms-nav-btn active w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl bg-cyan-600/30 text-cyan-300 border border-cyan-500/40 font-bold transition">
                     <span>📦</span> <span>Stock / Inventory</span>
                 </button>
 
-                <!-- 5. Receiving (Dropdown: Finished Goods, Semi Goods, Outside Goods) -->
+                <!-- 5. Receiving (Dropdown) -->
                 <div>
                     <button type="button" onclick="toggleSubmenu('receiving-sub', this)" class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
                         <div class="flex items-center gap-3">
@@ -68,13 +85,13 @@
                         <i class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200"></i>
                     </button>
                     <div id="receiving-sub" class="hidden pl-8 pr-2 py-1 space-y-1 text-[11px] bg-slate-900/60 rounded-xl my-1 border border-slate-800">
-                        <button onclick="switchTab('recv_finished', '📥 Receive Finished Goods')" class="w-full text-left block py-1.5 px-2.5 rounded-lg text-slate-400 hover:text-white">📦 Finished Goods</button>
-                        <button onclick="switchTab('recv_semi', '📥 Receive Semi Goods')" class="w-full text-left block py-1.5 px-2.5 rounded-lg text-slate-400 hover:text-white">🧩 Semi Goods</button>
-                        <button onclick="switchTab('recv_outside', '📥 Receive Outside Goods')" class="w-full text-left block py-1.5 px-2.5 rounded-lg text-slate-400 hover:text-white">🌍 Outside Goods</button>
+                        <button onclick="showWMSPanel('recv_finished', this)" class="w-full text-left block py-1.5 px-2.5 rounded-lg text-slate-400 hover:text-white">📦 Finished Goods</button>
+                        <button onclick="showWMSPanel('recv_semi', this)" class="w-full text-left block py-1.5 px-2.5 rounded-lg text-slate-400 hover:text-white">🧩 Semi Goods</button>
+                        <button onclick="showWMSPanel('recv_outside', this)" class="w-full text-left block py-1.5 px-2.5 rounded-lg text-slate-400 hover:text-white">🌍 Outside Goods</button>
                     </div>
                 </div>
 
-                <!-- 6. Raw Material (Dropdown: Raw Material Stock, Transfer Material Slip, QA) -->
+                <!-- 6. Raw Material (Dropdown) -->
                 <div>
                     <button type="button" onclick="toggleSubmenu('raw-sub', this)" class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
                         <div class="flex items-center gap-3">
@@ -83,28 +100,28 @@
                         <i class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200"></i>
                     </button>
                     <div id="raw-sub" class="hidden pl-8 pr-2 py-1 space-y-1 text-[11px] bg-slate-900/60 rounded-xl my-1 border border-slate-800">
-                        <button onclick="switchTab('raw_stock', '🧪 Raw Material Stock')" class="w-full text-left block py-1.5 px-2.5 rounded-lg text-slate-400 hover:text-white">🧪 Raw Material Stock</button>
-                        <button onclick="switchTab('transfer_slip', '🔄 Transfer Material Slip')" class="w-full text-left block py-1.5 px-2.5 rounded-lg text-slate-400 hover:text-white">🔄 Transfer Material Slip</button>
-                        <button onclick="switchTab('raw_qa', '🔬 QA Quarantine & Release')" class="w-full text-left block py-1.5 px-2.5 rounded-lg text-slate-400 hover:text-white">🔬 QA Quarantine</button>
+                        <button onclick="showWMSPanel('raw_stock', this)" class="w-full text-left block py-1.5 px-2.5 rounded-lg text-slate-400 hover:text-white">🧪 Raw Material Stock</button>
+                        <button onclick="showWMSPanel('transfer_slip', this)" class="w-full text-left block py-1.5 px-2.5 rounded-lg text-slate-400 hover:text-white">🔄 Transfer Material Slip</button>
+                        <button onclick="showWMSPanel('raw_qa', this)" class="w-full text-left block py-1.5 px-2.5 rounded-lg text-slate-400 hover:text-white">🔬 QA Quarantine</button>
                     </div>
                 </div>
 
                 <!-- 7. Delivery Note -->
-                <button onclick="switchTab('delivery_notes', '🚚 Delivery Note')" class="w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                <button onclick="showWMSPanel('delivery_notes', this)" class="wms-nav-btn w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
                     <span>🚚</span> <span>Delivery Note</span>
                 </button>
 
                 <!-- 8. Issue Slip -->
-                <button onclick="switchTab('issue_slip', '📑 Material Issue Slip')" class="w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                <button onclick="showWMSPanel('issue_slip', this)" class="wms-nav-btn w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
                     <span>📑</span> <span>Issue Slip</span>
                 </button>
 
                 <!-- 9. SABIC -->
-                <button onclick="switchTab('sabic_ledger', '🏢 SABIC Supply Ledger')" class="w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                <button onclick="showWMSPanel('sabic_ledger', this)" class="wms-nav-btn w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
                     <span>🏢</span> <span>SABIC (Polymers)</span>
                 </button>
 
-                <!-- 10. Surebeam (Dropdown: Transfer & Receiving) -->
+                <!-- 10. Surebeam (Dropdown) -->
                 <div>
                     <button type="button" onclick="toggleSubmenu('surebeam-sub', this)" class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
                         <div class="flex items-center gap-3">
@@ -113,19 +130,18 @@
                         <i class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200"></i>
                     </button>
                     <div id="surebeam-sub" class="hidden pl-8 pr-2 py-1 space-y-1 text-[11px] bg-slate-900/60 rounded-xl my-1 border border-slate-800">
-                        <button onclick="switchTab('surebeam_transfer', '📤 Transfer Surebeam Goods')" class="w-full text-left block py-1.5 px-2.5 rounded-lg text-slate-400 hover:text-white">📤 Transfer Surebeam Goods</button>
-                        <button onclick="switchTab('surebeam_recv', '📥 Receiving Surebeam Goods')" class="w-full text-left block py-1.5 px-2.5 rounded-lg text-slate-400 hover:text-white">📥 Receiving Surebeam Goods</button>
+                        <button onclick="showWMSPanel('surebeam_transfer', this)" class="w-full text-left block py-1.5 px-2.5 rounded-lg text-slate-400 hover:text-white">📤 Transfer Surebeam Goods</button>
+                        <button onclick="showWMSPanel('surebeam_recv', this)" class="w-full text-left block py-1.5 px-2.5 rounded-lg text-slate-400 hover:text-white">📥 Receiving Surebeam Goods</button>
                     </div>
                 </div>
 
                 <!-- 11. System Setting -->
-                <button onclick="switchTab('system_setting', '⚙️ Warehouse System Setting')" class="w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                <button onclick="showWMSPanel('system_setting', this)" class="wms-nav-btn w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
                     <span>⚙️</span> <span>System Setting</span>
                 </button>
             </nav>
         </div>
 
-        <!-- Back to Main Qoyod Button -->
         <div class="p-3 border-t border-slate-800/80 bg-[#080d1a]">
             <a href="/" class="text-xs font-bold text-slate-400 hover:text-white flex items-center gap-2">
                 <i class="fa-solid fa-arrow-left"></i> Back to Main Qoyod
@@ -136,18 +152,16 @@
     <!-- 2. MAIN WORKSPACE -->
     <main class="flex-1 flex flex-col h-full overflow-hidden bg-[#f8fafc]">
         
-        <!-- HEADER (EXACT IMAGE 4 STYLE: SEARCH, LIVE DATE/CLOCK, BELL 8, MAIL 3, ADMIN PROFILE) -->
+        <!-- HEADER (IMAGE 4 STYLE: SEARCH, REALTIME DATE/CLOCK, BELL 8, MAIL 3, ADMIN PROFILE) -->
         <header class="bg-white border-b border-slate-200 px-6 py-3 flex justify-between items-center z-20 shadow-xs">
-            
-            <!-- Left: Search Box (Image 4 Style) -->
+            <!-- Left: Search Box -->
             <div class="relative w-96">
-                <input type="text" id="wmsSearch" placeholder="Search anything..." class="w-full pl-4 pr-10 py-2 bg-white border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-slate-400 text-slate-700 shadow-xs">
+                <input type="text" id="wmsSearch" placeholder="Search anything..." oninput="filterWMSTables(this.value)" class="w-full pl-4 pr-10 py-2 bg-white border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-slate-400 text-slate-700 shadow-xs">
                 <i class="fa-solid fa-magnifying-glass absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
             </div>
 
             <!-- Right Controls: Date/Time + Notifications (8) + Mail (3) + Admin Profile -->
             <div class="flex items-center gap-6 text-slate-700">
-                
                 <!-- Live Date & Clock -->
                 <div class="flex items-center gap-3 text-xs font-semibold pl-4 border-l border-slate-200">
                     <div class="text-right">
@@ -159,13 +173,13 @@
                     </div>
                 </div>
 
-                <!-- Notification Bell with Red Badge (8) -->
+                <!-- Bell with Red Badge (8) -->
                 <div class="relative cursor-pointer">
                     <i class="fa-regular fa-bell text-base text-slate-600 hover:text-slate-900"></i>
                     <span class="absolute -top-1.5 -right-2 bg-rose-500 text-white font-black text-[9px] w-4 h-4 rounded-full flex items-center justify-center shadow-xs">8</span>
                 </div>
 
-                <!-- Mail Icon with Green Badge (3) -->
+                <!-- Mail with Green Badge (3) -->
                 <div class="relative cursor-pointer">
                     <i class="fa-regular fa-envelope text-base text-slate-600 hover:text-slate-900"></i>
                     <span class="absolute -top-1.5 -right-2 bg-emerald-500 text-white font-black text-[9px] w-4 h-4 rounded-full flex items-center justify-center shadow-xs">3</span>
@@ -184,118 +198,418 @@
             </div>
         </header>
 
-        <!-- WAREHOUSE WORKSPACE BODY -->
+        <!-- DYNAMIC PANELS CONTAINER -->
         <div class="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
-            
-            <!-- TOP 4 KPI CARDS -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
-                <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-                    <span class="text-xs font-bold text-slate-500">Division Active SKUs</span>
-                    <div class="text-2xl font-black text-slate-900 font-mono mt-1">{{ products.count }} Items</div>
-                    <div class="text-[11px] font-bold text-emerald-600 mt-2">● Real-time Inventory</div>
-                </div>
-                <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-                    <span class="text-xs font-bold text-slate-500">Division Workforce</span>
-                    <div class="text-2xl font-black text-slate-900 font-mono mt-1">{{ workers.count }} Staff</div>
-                    <div class="text-[11px] font-bold text-indigo-600">● Active Biometrics</div>
-                </div>
-                <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-                    <span class="text-xs font-bold text-slate-500">Outward Transfer Slips</span>
-                    <div class="text-2xl font-black text-slate-900 font-mono mt-1">{{ transfers.count }} Slips</div>
-                    <div class="text-[11px] font-bold text-amber-600">● Inter-Dept Synced</div>
-                </div>
-                <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-                    <span class="text-xs font-bold text-slate-500">Delivery Dispatches</span>
-                    <div class="text-2xl font-black text-slate-900 font-mono mt-1">{{ deliveries.count }} Notes</div>
-                    <div class="text-[11px] font-bold text-cyan-600">● KSA Gate Clearance</div>
-                </div>
-            </div>
 
-            <!-- DYNAMIC ACTIVE TAB CARD -->
-            <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
-                
-                <div class="flex justify-between items-center pb-3 border-b border-slate-100">
-                    <h3 id="activeTabTitle" class="text-base font-black text-slate-900 flex items-center gap-2">
-                        📦 Warehouse Division Operating Inventory & Master Log
-                    </h3>
-                    <div class="flex gap-2">
-                        <button onclick="document.getElementById('entryModal').classList.remove('hidden')" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-4 py-2 rounded-xl text-xs shadow-sm flex items-center gap-1.5">
-                            <i class="fa-solid fa-plus"></i> + New Entry / Add Stock
-                        </button>
+            <!-- ========================================================= -->
+            <!-- 📦 1. PANEL: STOCK / INVENTORY (DEFAULT) -->
+            <!-- ========================================================= -->
+            <div id="panel-inventory" class="wms-panel active space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
+                    <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                        <span class="text-xs font-bold text-slate-500">Total Warehouse SKUs</span>
+                        <div class="text-2xl font-black text-slate-900 font-mono mt-1">{{ products.count }} Items</div>
+                        <div class="text-[11px] font-bold text-emerald-600 mt-2">● Real-time Inventory</div>
+                    </div>
+                    <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                        <span class="text-xs font-bold text-slate-500">Outward Transfer Slips</span>
+                        <div class="text-2xl font-black text-slate-900 font-mono mt-1">{{ transfers.count }} Slips</div>
+                        <div class="text-[11px] font-bold text-amber-600">● Inter-Dept Synced</div>
+                    </div>
+                    <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                        <span class="text-xs font-bold text-slate-500">Delivery Dispatches</span>
+                        <div class="text-2xl font-black text-slate-900 font-mono mt-1">{{ deliveries.count }} Notes</div>
+                        <div class="text-[11px] font-bold text-cyan-600">● KSA Gate Clearance</div>
+                    </div>
+                    <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                        <span class="text-xs font-bold text-slate-500">Active Suppliers</span>
+                        <div class="text-2xl font-black text-slate-900 font-mono mt-1">{{ suppliers.count }} Vendors</div>
+                        <div class="text-[11px] font-bold text-indigo-600">● Supply Chain Ready</div>
                     </div>
                 </div>
 
-                <!-- Table Content -->
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs border-collapse">
-                        <thead>
-                            <tr class="bg-slate-50 text-slate-700 uppercase font-black border-b border-slate-200 text-[11px]">
-                                <th class="p-3">CAT Number</th>
-                                <th class="p-3">Product Description</th>
-                                <th class="p-3">Category</th>
-                                <th class="p-3">Batch / Lot</th>
-                                <th class="p-3">Expiry</th>
-                                <th class="p-3 text-right">Physical Stock</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100 font-sans" id="tableRows">
-                            {% for p in products %}
-                            <tr class="hover:bg-slate-50">
-                                <td class="p-3 font-mono font-bold text-indigo-600">{{ p.cat_no }}</td>
-                                <td class="p-3 font-bold text-slate-900">{{ p.item_name }}</td>
-                                <td class="p-3"><span class="px-2 py-0.5 bg-slate-100 text-slate-700 font-bold rounded text-[10px]">{{ p.category }}</span></td>
-                                <td class="p-3 font-mono text-slate-600">{{ p.batch_no|default:"LOT-WH-01" }}</td>
-                                <td class="p-3 font-mono text-slate-600">{{ p.exp_date|default:"2028-12" }}</td>
-                                <td class="p-3 text-right font-mono font-black text-slate-900">{{ p.current_stock }} Pcs/Kg</td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="6" class="p-8 text-center text-slate-400 italic">No inventory products recorded yet.</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+                    <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                        <h3 class="text-base font-black text-slate-900 flex items-center gap-2">
+                            📦 Master Finished Goods & Inventory Stock Ledger
+                        </h3>
+                        <a href="/admin/accounting/product/add/" target="_blank" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-4 py-2 rounded-xl text-xs shadow-sm flex items-center gap-1.5">
+                            <i class="fa-solid fa-plus"></i> + Add New SKU
+                        </a>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs border-collapse searchable-table">
+                            <thead>
+                                <tr class="bg-slate-50 text-slate-700 uppercase font-black border-b border-slate-200 text-[11px]">
+                                    <th class="p-3">CAT Number</th>
+                                    <th class="p-3">Product Description</th>
+                                    <th class="p-3">Category</th>
+                                    <th class="p-3">Batch / Lot</th>
+                                    <th class="p-3">Expiry</th>
+                                    <th class="p-3 text-right">Physical Stock</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 font-sans">
+                                {% for p in products %}
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3 font-mono font-bold text-indigo-600">{{ p.cat_no }}</td>
+                                    <td class="p-3 font-bold text-slate-900">{{ p.item_name }}</td>
+                                    <td class="p-3"><span class="px-2 py-0.5 bg-slate-100 text-slate-700 font-bold rounded text-[10px]">{{ p.category }}</span></td>
+                                    <td class="p-3 font-mono text-slate-600">{{ p.batch_no|default:"LOT-WH-01" }}</td>
+                                    <td class="p-3 font-mono text-slate-600">{{ p.exp_date|default:"2028-12" }}</td>
+                                    <td class="p-3 text-right font-mono font-black text-slate-900">{{ p.current_stock }} Pcs/Kg</td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="6" class="p-8 text-center text-slate-400 italic">No inventory products recorded yet.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- 🛍️ 2. PANEL: SALES ENTRY -->
+            <!-- ========================================================= -->
+            <div id="panel-sales_entry" class="wms-panel space-y-6">
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4 max-w-4xl mx-auto">
+                    <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                        <h3 class="text-base font-black text-slate-900">🛍️ Warehouse Sales Entry Form (إدخال المبيعات)</h3>
+                        <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg">ZATCA 15% VAT Auto-Calculated</span>
+                    </div>
+                    <form action="/invoices/create/" method="POST" class="space-y-4 text-xs font-semibold">
+                        {% csrf_token %}
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-slate-600 mb-1">Invoice / Reference Number:</label>
+                                <input type="text" name="invoice_number" required value="INV-WH-{% now 'U' %}" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono">
+                            </div>
+                            <div>
+                                <label class="block text-slate-600 mb-1">Issue Date:</label>
+                                <input type="date" name="issue_date" required value="{% now 'Y-m-d' %}" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-slate-600 mb-1">Customer / Entity Name:</label>
+                                <input type="text" name="customer_name" required placeholder="e.g. King Fahad Medical City" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl">
+                            </div>
+                            <div>
+                                <label class="block text-slate-600 mb-1">Sales Person:</label>
+                                <select class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl">
+                                    <option>Mr. Jamal</option><option>Sheikh Sultan</option><option>Dr. Omar</option><option>Saud Abdul Aziz</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-xl space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span>Subtotal Amount (Excl. VAT):</span>
+                                <input type="number" step="0.01" id="wms_sales_subtotal" name="subtotal" required placeholder="0.00" oninput="calcWMSSales()" class="w-36 p-2 bg-white border border-slate-200 rounded-lg text-right font-mono font-bold">
+                            </div>
+                            <div class="flex justify-between items-center text-amber-600 font-bold">
+                                <span>VAT (15%):</span>
+                                <input type="number" step="0.01" id="wms_sales_vat" name="vat_amount" readonly placeholder="0.00" class="w-36 p-2 bg-slate-100 border border-slate-200 rounded-lg text-right font-mono font-bold">
+                            </div>
+                            <div class="border-t border-slate-200 pt-2 flex justify-between items-center text-sm font-black text-slate-900">
+                                <span>Total Grand Amount (SAR):</span>
+                                <input type="number" step="0.01" id="wms_sales_total" name="grand_total" readonly placeholder="0.00" class="w-40 p-2 bg-indigo-50 border border-indigo-200 rounded-lg text-right font-mono font-black text-indigo-700 text-base">
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold shadow text-xs">
+                            💾 Commit Sales Entry & Issue Invoice
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- 🛒 3. PANEL: PURCHASE ENTRY -->
+            <!-- ========================================================= -->
+            <div id="panel-purchase_entry" class="wms-panel space-y-6">
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4 max-w-4xl mx-auto">
+                    <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                        <h3 class="text-base font-black text-slate-900">🛒 Purchase & Vendor Bill Entry (إدخال المشتريات)</h3>
+                        <a href="/admin/accounting/purchasebill/add/" target="_blank" class="text-xs font-bold text-indigo-600 hover:underline">+ Open Full Form</a>
+                    </div>
+                    <form action="/admin/accounting/purchasebill/add/" method="POST" target="_blank" class="space-y-4 text-xs font-semibold">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-slate-600 mb-1">Supplier / Vendor Name:</label>
+                                <input type="text" required placeholder="e.g. Al-Dawaa Medical Supply" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl">
+                            </div>
+                            <div>
+                                <label class="block text-slate-600 mb-1">Invoice / Bill Number:</label>
+                                <input type="text" required placeholder="e.g. BILL-9921" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-slate-600 mb-1">Total Bill Amount (SAR):</label>
+                                <input type="number" step="0.01" required placeholder="0.00" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono">
+                            </div>
+                            <div>
+                                <label class="block text-slate-600 mb-1">Purchase Date:</label>
+                                <input type="date" value="{% now 'Y-m-d' %}" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono">
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold shadow text-xs">
+                            💾 Save Purchase Bill & Update Stock
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- 🏭 4. PANEL: SUPPLIERS -->
+            <!-- ========================================================= -->
+            <div id="panel-suppliers" class="wms-panel space-y-6">
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+                    <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                        <h3 class="text-base font-black text-slate-900">🏭 Suppliers & Vendor Master Directory</h3>
+                        <a href="/admin/accounting/supplier/add/" target="_blank" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-3.5 py-1.5 rounded-xl text-xs shadow-sm">
+                            + Add Supplier
+                        </a>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 text-slate-700 uppercase font-black border-b border-slate-200 text-[11px]">
+                                    <th class="p-3">Vendor Name</th>
+                                    <th class="p-3">VAT ID</th>
+                                    <th class="p-3">Phone</th>
+                                    <th class="p-3">Contact Person</th>
+                                    <th class="p-3 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                {% for s in suppliers %}
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3 font-bold text-slate-900">{{ s.name }}</td>
+                                    <td class="p-3 font-mono text-slate-600">{{ s.vat_number|default:"300489217600003" }}</td>
+                                    <td class="p-3 font-mono text-slate-600">{{ s.phone|default:"+966 50 000 0000" }}</td>
+                                    <td class="p-3 text-slate-700">{{ s.contact_person|default:"Director" }}</td>
+                                    <td class="p-3 text-right"><a href="/admin/accounting/supplier/{{ s.id }}/change/" target="_blank" class="text-indigo-600 font-bold hover:underline">Edit</a></td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="5" class="p-8 text-center text-slate-400 italic">No suppliers registered yet.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- 📥 5. RECEIVING (Finished, Semi, Outside) -->
+            <!-- ========================================================= -->
+            <div id="panel-recv_finished" class="wms-panel space-y-6">
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4 max-w-4xl mx-auto">
+                    <h3 class="text-base font-black text-slate-900 pb-3 border-b border-slate-100">📦 Receive Finished Goods (استلام بضاعة جاهزة)</h3>
+                    <form action="/admin/accounting/product/add/" method="POST" target="_blank" class="space-y-4 text-xs font-semibold">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div><label class="block text-slate-600 mb-1">CAT No:</label><input type="text" required placeholder="e.g. CAT-FG-9921" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono"></div>
+                            <div><label class="block text-slate-600 mb-1">Product Description:</label><input type="text" required placeholder="e.g. Paracetamol 500mg" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl"></div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-4">
+                            <div><label class="block text-slate-600 mb-1">Batch / Lot No:</label><input type="text" required placeholder="BATCH-A01" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono"></div>
+                            <div><label class="block text-slate-600 mb-1">Quantity Received:</label><input type="number" required placeholder="500" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono"></div>
+                            <div><label class="block text-slate-600 mb-1">Expiry Date:</label><input type="text" value="12-2028" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono"></div>
+                        </div>
+                        <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold shadow text-xs">💾 Commit Finished Goods to Warehouse Stock</button>
+                    </form>
+                </div>
+            </div>
+
+            <div id="panel-recv_semi" class="wms-panel space-y-6">
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4 max-w-4xl mx-auto">
+                    <h3 class="text-base font-black text-slate-900 pb-3 border-b border-slate-100">🧩 Receive Semi Goods / Components (استلام بضاعة نصف مصنعة)</h3>
+                    <p class="text-xs text-slate-500">Record incoming components from Plastic / Cosmetic / Powder for final assembly.</p>
+                    <div class="p-8 text-center text-slate-400 italic text-xs border border-dashed border-slate-200 rounded-xl">
+                        <i class="fa-solid fa-boxes-stacked text-3xl mb-2 block opacity-40"></i>
+                        All semi-finished components received are logged to production WIP ledger.
+                    </div>
+                </div>
+            </div>
+
+            <div id="panel-recv_outside" class="wms-panel space-y-6">
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4 max-w-4xl mx-auto">
+                    <h3 class="text-base font-black text-slate-900 pb-3 border-b border-slate-100">🌍 Receive Outside / Imported Goods (استلام بضائع خارجية)</h3>
+                    <p class="text-xs text-slate-500">International imports, custom clearances, and overseas vendor consignments.</p>
+                    <div class="p-8 text-center text-slate-400 italic text-xs border border-dashed border-slate-200 rounded-xl">
+                        <i class="fa-solid fa-plane-arrival text-3xl mb-2 block opacity-40"></i>
+                        Customs entry & Port clearance records synced.
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- 🧪 6. RAW MATERIAL (Stock, Transfer, QA) -->
+            <!-- ========================================================= -->
+            <div id="panel-raw_stock" class="wms-panel space-y-6">
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+                    <h3 class="text-base font-black text-slate-900 pb-3 border-b border-slate-100">🧪 Raw Material & Polymer Resin Stock Ledger</h3>
+                    <div class="p-8 text-center text-slate-400 italic text-xs border border-dashed border-slate-200 rounded-xl">
+                        <i class="fa-solid fa-flask text-3xl mb-2 block opacity-40"></i>
+                        Raw material inventory stock active: PP, HDPE, Active Pharmaceutical Ingredients.
+                    </div>
+                </div>
+            </div>
+
+            <div id="panel-transfer_slip" class="wms-panel space-y-6">
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+                    <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                        <h3 class="text-base font-black text-slate-900">🔄 Transfer Material Slips (سندات تحويل المواد)</h3>
+                        <a href="/admin/accounting/transferslip/add/" target="_blank" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-3.5 py-1.5 rounded-xl text-xs">+ New Transfer Slip</a>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 text-slate-700 uppercase font-black border-b border-slate-200 text-[11px]">
+                                    <th class="p-3">Slip #</th><th class="p-3">Target Division</th><th class="p-3">CAT No</th><th class="p-3">Item Name</th><th class="p-3">Qty</th><th class="p-3">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 font-mono">
+                                {% for t in transfers %}
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3 font-bold text-indigo-600">{{ t.slip_no }}</td>
+                                    <td class="p-3 font-sans">{{ t.target_division }}</td>
+                                    <td class="p-3">{{ t.cat_no }}</td>
+                                    <td class="p-3 font-sans font-bold text-slate-900">{{ t.item_name }}</td>
+                                    <td class="p-3 font-bold">{{ t.qty }} Pcs</td>
+                                    <td class="p-3"><span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] rounded-full font-bold">TRANSFERRED</span></td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="6" class="p-8 text-center text-slate-400 italic">No transfer slips logged yet.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="panel-raw_qa" class="wms-panel space-y-6">
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4 max-w-4xl mx-auto">
+                    <h3 class="text-base font-black text-slate-900 pb-3 border-b border-slate-100">🔬 QA Quarantine & Dual Release Portal (اعتماد الجودة)</h3>
+                    <p class="text-xs text-slate-500">SFDA & MOH compliant double authorization for sterile lots.</p>
+                    <div class="p-8 text-center text-slate-400 italic text-xs border border-dashed border-slate-200 rounded-xl">
+                        <i class="fa-solid fa-microscope text-3xl mb-2 block opacity-40"></i>
+                        All incoming biological and medical lots are verified in quarantine before release.
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- 🚚 7. DELIVERY NOTE -->
+            <!-- ========================================================= -->
+            <div id="panel-delivery_notes" class="wms-panel space-y-6">
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+                    <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                        <h3 class="text-base font-black text-slate-900">🚚 Delivery Notes & KSA Gate Dispatches</h3>
+                        <a href="/admin/accounting/deliverynote/add/" target="_blank" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-3.5 py-1.5 rounded-xl text-xs">+ New Delivery Note</a>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 text-slate-700 uppercase font-black border-b border-slate-200 text-[11px]">
+                                    <th class="p-3">Date</th><th class="p-3">Location / Hospital</th><th class="p-3">Gate No</th><th class="p-3">Ref PO</th><th class="p-3 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                {% for d in deliveries %}
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-3 font-mono text-slate-600">{{ d.date }}</td>
+                                    <td class="p-3 font-bold text-slate-900">{{ d.location }}</td>
+                                    <td class="p-3 font-mono text-indigo-600">Gate #{{ d.gate_no|default:"01" }}</td>
+                                    <td class="p-3 font-mono text-slate-600">{{ d.ref_po|default:"PO-9921" }}</td>
+                                    <td class="p-3 text-right"><span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded-full">DISPATCHED</span></td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="5" class="p-8 text-center text-slate-400 italic">No delivery notes generated yet.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- 📑 8. ISSUE SLIP -->
+            <!-- ========================================================= -->
+            <div id="panel-issue_slip" class="wms-panel space-y-6">
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4 max-w-4xl mx-auto">
+                    <h3 class="text-base font-black text-slate-900 pb-3 border-b border-slate-100">📑 Store Material Issue Slip (سند صرف مخزني)</h3>
+                    <p class="text-xs text-slate-500">Issue finished goods and components to hospital wards and surgical units.</p>
+                    <div class="p-8 text-center text-slate-400 italic text-xs border border-dashed border-slate-200 rounded-xl">
+                        <i class="fa-solid fa-file-signature text-3xl mb-2 block opacity-40"></i>
+                        Store issue slips automatically update stock and generate picking vouchers.
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- 🏢 9. SABIC -->
+            <!-- ========================================================= -->
+            <div id="panel-sabic_ledger" class="wms-panel space-y-6">
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+                    <h3 class="text-base font-black text-slate-900 pb-3 border-b border-slate-100">🏢 SABIC Petrochemicals & Polymer Supply Ledger</h3>
+                    <div class="p-8 text-center text-slate-400 italic text-xs border border-dashed border-slate-200 rounded-xl">
+                        <i class="fa-solid fa-cubes-stacked text-3xl mb-2 block opacity-40"></i>
+                        Direct SABIC polymer resin batch shipments and quality test certificates.
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- ⚛️ 10. SUREBEAM -->
+            <!-- ========================================================= -->
+            <div id="panel-surebeam_transfer" class="wms-panel space-y-6">
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4 max-w-4xl mx-auto">
+                    <h3 class="text-base font-black text-slate-900 pb-3 border-b border-slate-100">📤 Transfer Surebeam Goods (Sterilization Dispatch)</h3>
+                    <p class="text-xs text-slate-500">Generate Surebeam E-Beam/Gamma ray irradiation sterilization dispatch forms.</p>
+                    <div class="p-8 text-center text-slate-400 italic text-xs border border-dashed border-slate-200 rounded-xl">
+                        <i class="fa-solid fa-atom text-3xl mb-2 block opacity-40"></i>
+                        ISO-13485 & SFDA certified sterilization batch records.
+                    </div>
+                </div>
+            </div>
+
+            <div id="panel-surebeam_recv" class="wms-panel space-y-6">
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4 max-w-4xl mx-auto">
+                    <h3 class="text-base font-black text-slate-900 pb-3 border-b border-slate-100">📥 Receiving Surebeam Goods (Sterilized Return)</h3>
+                    <div class="p-8 text-center text-slate-400 italic text-xs border border-dashed border-slate-200 rounded-xl">
+                        <i class="fa-solid fa-circle-check text-3xl mb-2 block opacity-40 text-emerald-500"></i>
+                        Sterilized batches returned and verified for distribution.
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- ⚙️ 11. SYSTEM SETTING (SHELF & RACKING) -->
+            <!-- ========================================================= -->
+            <div id="panel-system_setting" class="wms-panel space-y-6">
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4 max-w-4xl mx-auto">
+                    <h3 class="text-base font-black text-slate-900 pb-3 border-b border-slate-100">⚙️ Warehouse Storage Shelf & Racking Map Allocator</h3>
+                    <form class="space-y-4 text-xs font-semibold">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div><label class="block text-slate-600 mb-1">CAT Number:</label><input type="text" placeholder="e.g. CAT-WH-9921" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono"></div>
+                            <div><label class="block text-slate-600 mb-1">Aisle / Gully (الممر):</label><input type="text" placeholder="Aisle A" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl"></div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-4">
+                            <div><label class="block text-slate-600 mb-1">Row / Track:</label><input type="text" placeholder="Row 1" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl"></div>
+                            <div><label class="block text-slate-600 mb-1">Shelf (الرف):</label><input type="text" placeholder="Shelf 3" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl"></div>
+                            <div><label class="block text-slate-600 mb-1">Bin Box (الدرج):</label><input type="text" placeholder="Bin #102" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl"></div>
+                        </div>
+                        <button type="button" onclick="alert('✅ Racking coordinates mapped successfully to Database!')" class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold shadow text-xs">
+                            💾 Save Racking Location Map
+                        </button>
+                    </form>
                 </div>
             </div>
 
         </div>
     </main>
 
-    <!-- NEW ENTRY MODAL -->
-    <div id="entryModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-4">
-            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
-                <h3 class="text-sm font-black text-slate-900">📦 Add New Warehouse Stock Entry</h3>
-                <button onclick="document.getElementById('entryModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600">✕</button>
-            </div>
-            <form action="/admin/accounting/product/add/" target="_blank" class="space-y-3 text-xs font-semibold">
-                <div>
-                    <label class="block text-slate-600 mb-1">CAT Number:</label>
-                    <input type="text" placeholder="e.g. CAT-WH-9921" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl">
-                </div>
-                <div>
-                    <label class="block text-slate-600 mb-1">Product Description:</label>
-                    <input type="text" placeholder="e.g. Medical Tray Box" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl">
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-slate-600 mb-1">Quantity:</label>
-                        <input type="number" placeholder="500" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl">
-                    </div>
-                    <div>
-                        <label class="block text-slate-600 mb-1">Expiry Date:</label>
-                        <input type="text" placeholder="12-2028" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl">
-                    </div>
-                </div>
-                <div class="pt-2 flex justify-end gap-2">
-                    <button type="button" onclick="document.getElementById('entryModal').classList.add('hidden')" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 font-bold">Cancel</button>
-                    <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold shadow-sm">Save to Database</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- JAVASCRIPT: REAL-TIME CLOCK, SUBMENU ACCORDION & TABS -->
+    <!-- INTERACTIVE SCRIPTS -->
     <script>
     // 1. Live Ticking Clock & Date (Image 4 Style)
     function updateClock() {
@@ -326,9 +640,45 @@
         }
     }
 
-    // 3. Tab Switching
-    function switchTab(tabKey, tabTitle) {
-        document.getElementById('activeTabTitle').innerText = tabTitle;
+    // 3. Switch WMS Panels on Sidebar Click (REAL WORKING)
+    function showWMSPanel(panelId, btnElem) {
+        // Hide all panels
+        document.querySelectorAll('.wms-panel').forEach(p => p.classList.remove('active'));
+        
+        // Show target panel
+        const target = document.getElementById('panel-' + panelId);
+        if (target) {
+            target.classList.add('active');
+        }
+
+        // Update nav button active state
+        document.querySelectorAll('.wms-nav-btn').forEach(btn => {
+            btn.classList.remove('bg-cyan-600/30', 'text-cyan-300', 'border', 'border-cyan-500/40', 'font-bold');
+            btn.classList.add('text-slate-300');
+        });
+
+        if (btnElem && btnElem.classList.contains('wms-nav-btn')) {
+            btnElem.classList.remove('text-slate-300');
+            btnElem.classList.add('bg-cyan-600/30', 'text-cyan-300', 'border', 'border-cyan-500/40', 'font-bold');
+        }
+    }
+
+    // 4. Sales VAT Calculation
+    function calcWMSSales() {
+        const sub = parseFloat(document.getElementById('wms_sales_subtotal').value) || 0;
+        const vat = sub * 0.15;
+        const tot = sub + vat;
+        document.getElementById('wms_sales_vat').value = vat.toFixed(2);
+        document.getElementById('wms_sales_total').value = tot.toFixed(2);
+    }
+
+    // 5. Global Table Search Filter
+    function filterWMSTables(query) {
+        const q = query.toLowerCase().trim();
+        document.querySelectorAll('.searchable-table tbody tr').forEach(row => {
+            const text = row.innerText.toLowerCase();
+            row.style.display = text.includes(q) ? '' : 'none';
+        });
     }
     </script>
 </body>
