@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full">
+<html lang="en" class="h-full" id="htmlRoot" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -44,7 +44,7 @@
             <nav class="space-y-1 text-xs font-semibold">
                 <a href="/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-indigo-600 text-white font-bold shadow-sm shadow-indigo-600/30">
                     <i class="fa-solid fa-gauge-high w-4 text-center"></i>
-                    <span class="nav-label">Dashboard</span>
+                    <span class="nav-label" data-i18n="dashboard">Dashboard</span>
                 </a>
 
                 <!-- 1. SALES ACCORDION DROPDOWN -->
@@ -52,17 +52,17 @@
                     <button type="button" class="sidebar-dropdown-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition group" data-target="sales-submenu">
                         <div class="flex items-center gap-3">
                             <i class="fa-solid fa-cart-shopping w-4 text-center group-hover:text-indigo-400 transition"></i>
-                            <span class="nav-label">Sales</span>
+                            <span class="nav-label" data-i18n="sales">Sales</span>
                         </div>
                         <i class="fa-solid fa-chevron-down text-[10px] nav-label transition-transform duration-200"></i>
                     </button>
                     <!-- Sales Submenu Items -->
                     <div id="sales-submenu" class="hidden pl-8 pr-2 py-1 space-y-1 text-[11px] bg-slate-900/40 rounded-xl my-1">
-                        <a href="/invoices/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-white transition">Invoices</a>
-                        <a href="/invoices/create/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-indigo-300 font-bold transition">+ Create Invoice</a>
-                        <a href="/sales/price-lists/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-white transition">Price Lists</a>
-                        <a href="/sales/recurring/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-white transition">Recurring Invoices</a>
-                        <a href="/statement/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-white transition">Customer Statements</a>
+                        <a href="/invoices/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-white transition" data-i18n="invoices">Invoices</a>
+                        <a href="/invoices/create/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-indigo-300 font-bold transition" data-i18n="create_invoice">+ Create Invoice</a>
+                        <a href="/sales/price-lists/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-white transition" data-i18n="price_lists">Price Lists</a>
+                        <a href="/sales/recurring/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-white transition" data-i18n="recurring_invoices">Recurring Invoices</a>
+                        <a href="/statement/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-white transition" data-i18n="statements">Customer Statements</a>
                     </div>
                 </div>
                 
@@ -71,31 +71,31 @@
                     <button type="button" class="sidebar-dropdown-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition group" data-target="purchases-submenu">
                         <div class="flex items-center gap-3">
                             <i class="fa-solid fa-bag-shopping w-4 text-center group-hover:text-emerald-400 transition"></i>
-                            <span class="nav-label">Purchases</span>
+                            <span class="nav-label" data-i18n="purchases">Purchases</span>
                         </div>
                         <i class="fa-solid fa-chevron-down text-[10px] nav-label transition-transform duration-200"></i>
                     </button>
                     <!-- Purchases Submenu Items -->
                     <div id="purchases-submenu" class="hidden pl-8 pr-2 py-1 space-y-1 text-[11px] bg-slate-900/40 rounded-xl my-1">
-                        <a href="/admin/accounting/purchasebill/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-white transition">Purchase Bills</a>
-                        <a href="/admin/accounting/directexpense/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-white transition">Direct Expenses</a>
-                        <a href="/admin/accounting/supplier/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-white transition">Suppliers Directory</a>
+                        <a href="/admin/accounting/purchasebill/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-white transition" data-i18n="purchase_bills">Purchase Bills</a>
+                        <a href="/admin/accounting/directexpense/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-white transition" data-i18n="direct_expenses">Direct Expenses</a>
+                        <a href="/admin/accounting/supplier/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-white transition" data-i18n="suppliers">Suppliers Directory</a>
                     </div>
                 </div>
 
                 <a href="/admin/accounting/directexpense/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
                     <i class="fa-solid fa-receipt w-4 text-center"></i>
-                    <span class="nav-label">Expenses</span>
+                    <span class="nav-label" data-i18n="expenses">Expenses</span>
                 </a>
 
                 <a href="/admin/accounting/customer/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
                     <i class="fa-solid fa-users w-4 text-center"></i>
-                    <span class="nav-label">Contacts & Customers</span>
+                    <span class="nav-label" data-i18n="contacts">Contacts & Customers</span>
                 </a>
 
                 <a href="/admin/accounting/product/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
                     <i class="fa-solid fa-boxes-stacked w-4 text-center"></i>
-                    <span class="nav-label">Items & Inventory</span>
+                    <span class="nav-label" data-i18n="inventory">Items & Inventory</span>
                 </a>
 
                 <!-- 3. BANKING ACCORDION DROPDOWN -->
@@ -103,41 +103,41 @@
                     <button type="button" class="sidebar-dropdown-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition group" data-target="banking-submenu">
                         <div class="flex items-center gap-3">
                             <i class="fa-solid fa-building-columns w-4 text-center group-hover:text-cyan-400 transition"></i>
-                            <span class="nav-label">Banking</span>
+                            <span class="nav-label" data-i18n="banking">Banking</span>
                         </div>
                         <i class="fa-solid fa-chevron-down text-[10px] nav-label transition-transform duration-200"></i>
                     </button>
                     <!-- Banking Submenu Items -->
                     <div id="banking-submenu" class="hidden pl-8 pr-2 py-1 space-y-1 text-[11px] bg-slate-900/40 rounded-xl my-1">
-                        <a href="/banking/transfer/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-white transition">Bank Accounts</a>
-                        <a href="/banking/transfer/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-white transition">Fund Transfers</a>
-                        <a href="/banking/transfer/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-white transition">Reconciliation</a>
+                        <a href="/banking/transfer/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-white transition" data-i18n="bank_accounts">Bank Accounts</a>
+                        <a href="/banking/transfer/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-white transition" data-i18n="transfers">Fund Transfers</a>
+                        <a href="/banking/transfer/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-white transition" data-i18n="reconciliation">Reconciliation</a>
                     </div>
                 </div>
 
                 <a href="/admin/accounting/account/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
                     <i class="fa-solid fa-calculator w-4 text-center"></i>
-                    <span class="nav-label">Accounting</span>
+                    <span class="nav-label" data-i18n="accounting">Accounting</span>
                 </a>
 
                 <a href="/reports/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
                     <i class="fa-solid fa-chart-pie w-4 text-center"></i>
-                    <span class="nav-label">Reports</span>
+                    <span class="nav-label" data-i18n="reports">Reports</span>
                 </a>
 
                 <a href="/vat/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
                     <i class="fa-solid fa-percent w-4 text-center text-amber-400"></i>
-                    <span class="text-amber-400 nav-label">VAT Declaration</span>
+                    <span class="text-amber-400 nav-label" data-i18n="vat_declaration">VAT Declaration</span>
                 </a>
 
                 <a href="/reports/aging/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
                     <i class="fa-solid fa-clock-rotate-left w-4 text-center"></i>
-                    <span class="nav-label">Debt Aging</span>
+                    <span class="nav-label" data-i18n="debt_aging">Debt Aging</span>
                 </a>
 
                 <a href="/settings/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
                     <i class="fa-solid fa-gear w-4 text-center text-indigo-400"></i>
-                    <span class="text-indigo-400 font-bold nav-label">Settings & Divisions</span>
+                    <span class="text-indigo-400 font-bold nav-label" data-i18n="settings_divisions">Settings & Divisions</span>
                 </a>
             </nav>
         </div>
@@ -145,7 +145,7 @@
         <!-- Plan Badge -->
         <div id="plan-badge" class="p-4 border-t border-slate-800/80 bg-[#080d1a]">
             <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700/50">
-                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Your Plan</span>
+                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block" data-i18n="your_plan">YOUR PLAN</span>
                 <span class="text-sm font-black text-indigo-400">Qoyod Pro</span>
             </div>
         </div>
@@ -166,10 +166,10 @@
             <!-- Top Actions & Profile -->
             <div class="flex items-center gap-3.5">
                 
-                <!-- Language Toggle -->
+                <!-- 1-Click Dynamic Language Switcher Button -->
                 <button id="langToggleBtn" class="bg-indigo-50 text-indigo-600 hover:bg-indigo-100 font-bold px-3 py-1.5 rounded-xl text-xs flex items-center gap-1.5 transition">
                     <i class="fa-solid fa-globe text-xs"></i>
-                    <span>العربية</span>
+                    <span id="langBtnText">العربية</span>
                 </button>
 
                 <!-- Quick Plus Action with Dropdown -->
@@ -180,19 +180,19 @@
                     <!-- Quick Plus Dropdown -->
                     <div id="quickPlusMenu" class="hidden absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-2xl shadow-xl py-2 z-50 text-xs">
                         <a href="/invoices/create/" class="flex items-center gap-2.5 px-4 py-2 hover:bg-slate-50 text-slate-700 font-bold">
-                            <i class="fa-solid fa-file-invoice text-indigo-600 w-4"></i> + New Invoice
+                            <i class="fa-solid fa-file-invoice text-indigo-600 w-4"></i> <span data-i18n="create_invoice">+ New Invoice</span>
                         </a>
                         <a href="/admin/accounting/purchasebill/add/" class="flex items-center gap-2.5 px-4 py-2 hover:bg-slate-50 text-slate-700 font-bold">
-                            <i class="fa-solid fa-bag-shopping text-blue-600 w-4"></i> + Add Purchase Bill
+                            <i class="fa-solid fa-bag-shopping text-blue-600 w-4"></i> <span data-i18n="add_purchase_bill">+ Purchase Bill</span>
                         </a>
                         <a href="/admin/accounting/directexpense/add/" class="flex items-center gap-2.5 px-4 py-2 hover:bg-slate-50 text-slate-700 font-bold">
-                            <i class="fa-solid fa-receipt text-amber-600 w-4"></i> + Add Expense
+                            <i class="fa-solid fa-receipt text-amber-600 w-4"></i> <span data-i18n="add_expense_menu">+ Add Expense</span>
                         </a>
                         <a href="/admin/accounting/customer/add/" class="flex items-center gap-2.5 px-4 py-2 hover:bg-slate-50 text-slate-700 font-bold">
-                            <i class="fa-solid fa-user-plus text-cyan-600 w-4"></i> + New Contact
+                            <i class="fa-solid fa-user-plus text-cyan-600 w-4"></i> <span data-i18n="new_contact_menu">+ New Contact</span>
                         </a>
                         <a href="/admin/accounting/product/add/" class="flex items-center gap-2.5 px-4 py-2 hover:bg-slate-50 text-slate-700 font-bold">
-                            <i class="fa-solid fa-box text-emerald-600 w-4"></i> + Add Product
+                            <i class="fa-solid fa-box text-emerald-600 w-4"></i> <span data-i18n="add_product_menu">+ Add Product</span>
                         </a>
                     </div>
                 </div>
@@ -205,8 +205,8 @@
                     <!-- Notification Dropdown -->
                     <div id="notifMenu" class="hidden absolute right-0 mt-2 w-72 bg-white border border-slate-200 rounded-2xl shadow-xl p-4 z-50 text-xs">
                         <div class="flex justify-between items-center mb-2 pb-2 border-b border-slate-100">
-                            <span class="font-bold text-slate-900">Notifications</span>
-                            <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">All clear</span>
+                            <span class="font-bold text-slate-900" data-i18n="notifications_title">Notifications</span>
+                            <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full" data-i18n="all_clear">All clear</span>
                         </div>
                         <p class="text-slate-500 text-[11px] py-2">✓ ZATCA 15% Tax & e-Invoicing engine live.</p>
                         <p class="text-slate-500 text-[11px] py-1">✓ All factory division databases operational.</p>
@@ -240,17 +240,17 @@
                     <h1 class="text-2xl font-black text-slate-900 flex items-center gap-2">
                         <span id="dynamic-greeting">Good Morning</span>, Shamim 👋
                     </h1>
-                    <p class="text-xs text-slate-500 mt-0.5">Welcome back to your Qoyod ERP Dashboard</p>
+                    <p class="text-xs text-slate-500 mt-0.5" data-i18n="welcome_sub">Welcome back to your Qoyod ERP Dashboard</p>
                 </div>
                 <div class="flex items-center gap-3">
                     <select class="bg-white border border-slate-200 text-xs font-bold text-slate-700 px-3 py-2 rounded-xl focus:outline-none shadow-sm cursor-pointer">
-                        <option>This Month</option>
-                        <option>Last Month</option>
-                        <option>This Quarter</option>
-                        <option>This Year</option>
+                        <option data-i18n="this_month">This Month</option>
+                        <option data-i18n="last_month">Last Month</option>
+                        <option data-i18n="this_quarter">This Quarter</option>
+                        <option data-i18n="this_year">This Year</option>
                     </select>
                     <a href="/invoices/create/" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-4 py-2 rounded-xl text-xs shadow flex items-center gap-2 transition">
-                        <i class="fa-solid fa-plus"></i> + New Invoice
+                        <i class="fa-solid fa-plus"></i> <span data-i18n="create_invoice">+ New Invoice</span>
                     </a>
                 </div>
             </div>
@@ -259,53 +259,53 @@
             <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
                 <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm relative overflow-hidden">
                     <div class="flex justify-between items-start mb-2">
-                        <span class="text-xs font-bold text-slate-500">Total Sales</span>
+                        <span class="text-xs font-bold text-slate-500" data-i18n="total_sales">Total Sales</span>
                         <div class="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs">
                             <i class="fa-solid fa-file-invoice"></i>
                         </div>
                     </div>
                     <div class="text-2xl font-black text-slate-900 font-mono">SAR {{ total_sales|floatformat:2|default:"0.00" }}</div>
-                    <div class="text-[11px] font-bold text-emerald-600 mt-2 flex items-center gap-1">
-                        <i class="fa-solid fa-arrow-trend-up"></i> Real-time Invoiced Sales
+                    <div class="text-[11px] font-bold text-emerald-600 mt-2 flex items-center gap-1" data-i18n="sales_sub">
+                        ▲ Real-time Invoiced Sales
                     </div>
                 </div>
 
                 <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm relative overflow-hidden">
                     <div class="flex justify-between items-start mb-2">
-                        <span class="text-xs font-bold text-slate-500">Total Purchases</span>
+                        <span class="text-xs font-bold text-slate-500" data-i18n="total_purchases">Total Purchases</span>
                         <div class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs">
                             <i class="fa-solid fa-cart-flatbed"></i>
                         </div>
                     </div>
                     <div class="text-2xl font-black text-slate-900 font-mono">SAR {{ total_purchases|floatformat:2|default:"0.00" }}</div>
-                    <div class="text-[11px] font-bold text-emerald-600 mt-2 flex items-center gap-1">
-                        <i class="fa-solid fa-arrow-trend-up"></i> Vendor Billed Purchases
+                    <div class="text-[11px] font-bold text-emerald-600 mt-2 flex items-center gap-1" data-i18n="purchases_sub">
+                        ▲ Vendor Billed Purchases
                     </div>
                 </div>
 
                 <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm relative overflow-hidden">
                     <div class="flex justify-between items-start mb-2">
-                        <span class="text-xs font-bold text-slate-500">Total Expenses</span>
+                        <span class="text-xs font-bold text-slate-500" data-i18n="total_expenses">Total Expenses</span>
                         <div class="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-xs">
                             <i class="fa-solid fa-receipt"></i>
                         </div>
                     </div>
                     <div class="text-2xl font-black text-slate-900 font-mono">SAR {{ total_expenses|floatformat:2|default:"0.00" }}</div>
-                    <div class="text-[11px] font-bold text-amber-600 mt-2 flex items-center gap-1">
+                    <div class="text-[11px] font-bold text-amber-600 mt-2 flex items-center gap-1" data-i18n="expenses_sub">
                         ● Direct Expense Claims
                     </div>
                 </div>
 
                 <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm relative overflow-hidden">
                     <div class="flex justify-between items-start mb-2">
-                        <span class="text-xs font-bold text-slate-500">Net Profit</span>
+                        <span class="text-xs font-bold text-slate-500" data-i18n="net_profit">Net Profit</span>
                         <div class="w-7 h-7 rounded-lg bg-cyan-50 text-cyan-600 flex items-center justify-center text-xs">
                             <i class="fa-solid fa-chart-line"></i>
                         </div>
                     </div>
                     <div class="text-2xl font-black text-slate-900 font-mono">SAR {{ net_profit|floatformat:2|default:"0.00" }}</div>
-                    <div class="text-[11px] font-bold text-emerald-600 mt-2 flex items-center gap-1">
-                        <i class="fa-solid fa-arrow-trend-up"></i> Net Trading Earnings
+                    <div class="text-[11px] font-bold text-emerald-600 mt-2 flex items-center gap-1" data-i18n="profit_sub">
+                        ▲ Net Trading Earnings
                     </div>
                 </div>
             </div>
@@ -316,8 +316,8 @@
                 <!-- 1. Sales Overview Chart (5 cols) -->
                 <div class="lg:col-span-5 bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex flex-col justify-between">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-sm font-black text-slate-900">Sales Overview</h3>
-                        <span class="text-[11px] font-bold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-lg">Live Trend ▾</span>
+                        <h3 class="text-sm font-black text-slate-900" data-i18n="sales_overview">Sales Overview</h3>
+                        <span class="text-[11px] font-bold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-lg" data-i18n="live_trend">Live Trend ▾</span>
                     </div>
                     <div class="h-44 flex items-center justify-center border-b border-dashed border-slate-200 mb-2">
                         <div class="w-full h-1 bg-indigo-500 relative flex justify-between items-center">
@@ -336,58 +336,58 @@
                 <!-- 2. Top Customers (4 cols) -->
                 <div class="lg:col-span-4 bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex flex-col justify-between">
                     <div class="flex justify-between items-center">
-                        <h3 class="text-sm font-black text-slate-900">Top Customers</h3>
-                        <a href="/admin/accounting/customer/" class="text-xs font-bold text-indigo-600 hover:underline">View All</a>
+                        <h3 class="text-sm font-black text-slate-900" data-i18n="top_customers">Top Customers</h3>
+                        <a href="/admin/accounting/customer/" class="text-xs font-bold text-indigo-600 hover:underline" data-i18n="view_all">View All</a>
                     </div>
                     <div class="text-center py-12 text-slate-400 flex flex-col items-center justify-center">
                         <div class="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center text-slate-300 mb-2 text-xl">
                             <i class="fa-solid fa-users"></i>
                         </div>
-                        <p class="text-xs text-slate-400 italic font-medium">No customer purchases yet.</p>
+                        <p class="text-xs text-slate-400 italic font-medium" data-i18n="no_customers">No customer purchases yet.</p>
                     </div>
                     <div class="h-2"></div>
                 </div>
 
                 <!-- 3. Quick Links (3 cols with 9 balanced buttons) -->
                 <div class="lg:col-span-3 bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-                    <h3 class="text-sm font-black text-slate-900 mb-3">Quick Links</h3>
+                    <h3 class="text-sm font-black text-slate-900 mb-3" data-i18n="quick_links">Quick Links</h3>
                     <div class="grid grid-cols-3 gap-2 text-center">
                         <a href="/invoices/create/" class="p-2 rounded-xl border border-slate-100 hover:bg-slate-50 flex flex-col items-center gap-1 transition group">
                             <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs group-hover:scale-110 transition"><i class="fa-solid fa-file-invoice"></i></div>
-                            <span class="text-[10px] font-bold text-slate-700 leading-tight">Create Invoice</span>
+                            <span class="text-[10px] font-bold text-slate-700 leading-tight" data-i18n="create_invoice">Create Invoice</span>
                         </a>
                         <a href="/admin/accounting/purchasebill/" class="p-2 rounded-xl border border-slate-100 hover:bg-slate-50 flex flex-col items-center gap-1 transition group">
                             <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-xs group-hover:scale-110 transition"><i class="fa-solid fa-cart-shopping"></i></div>
-                            <span class="text-[10px] font-bold text-slate-700 leading-tight">Purchases</span>
+                            <span class="text-[10px] font-bold text-slate-700 leading-tight" data-i18n="purchases_link">Purchases</span>
                         </a>
                         <a href="/admin/accounting/directexpense/" class="p-2 rounded-xl border border-slate-100 hover:bg-slate-50 flex flex-col items-center gap-1 transition group">
                             <div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-xs group-hover:scale-110 transition"><i class="fa-solid fa-receipt"></i></div>
-                            <span class="text-[10px] font-bold text-slate-700 leading-tight">Add Expense</span>
+                            <span class="text-[10px] font-bold text-slate-700 leading-tight" data-i18n="add_expense_link">Add Expense</span>
                         </a>
                         <a href="/admin/accounting/customer/add/" class="p-2 rounded-xl border border-slate-100 hover:bg-slate-50 flex flex-col items-center gap-1 transition group">
                             <div class="w-8 h-8 rounded-lg bg-cyan-50 text-cyan-600 flex items-center justify-center text-xs group-hover:scale-110 transition"><i class="fa-solid fa-user-plus"></i></div>
-                            <span class="text-[10px] font-bold text-slate-700 leading-tight">New Contact</span>
+                            <span class="text-[10px] font-bold text-slate-700 leading-tight" data-i18n="new_contact_link">New Contact</span>
                         </a>
                         <a href="/banking/transfer/" class="p-2 rounded-xl border border-slate-100 hover:bg-slate-50 flex flex-col items-center gap-1 transition group">
                             <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs group-hover:scale-110 transition"><i class="fa-solid fa-building-columns"></i></div>
-                            <span class="text-[10px] font-bold text-slate-700 leading-tight">Bank Transfer</span>
+                            <span class="text-[10px] font-bold text-slate-700 leading-tight" data-i18n="bank_transfer_link">Bank Transfer</span>
                         </a>
                         <a href="/reports/" class="p-2 rounded-xl border border-slate-100 hover:bg-slate-50 flex flex-col items-center gap-1 transition group">
                             <div class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center text-xs group-hover:scale-110 transition"><i class="fa-solid fa-chart-pie"></i></div>
-                            <span class="text-[10px] font-bold text-slate-700 leading-tight">Reports</span>
+                            <span class="text-[10px] font-bold text-slate-700 leading-tight" data-i18n="reports_link">Reports</span>
                         </a>
                         <a href="/scanner/" class="p-2 rounded-xl border border-cyan-200 bg-cyan-50/40 hover:bg-cyan-100/70 flex flex-col items-center gap-1 transition group relative">
                             <span class="absolute -top-1.5 -right-1 text-[8px] bg-cyan-500 text-white font-black px-1 py-0.2 rounded-full uppercase shadow-xs">AI</span>
                             <div class="w-8 h-8 rounded-lg bg-cyan-100 text-cyan-700 flex items-center justify-center text-xs group-hover:scale-110 transition"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
-                            <span class="text-[10px] font-bold text-cyan-950 leading-tight">AI Scanner</span>
+                            <span class="text-[10px] font-bold text-cyan-950 leading-tight" data-i18n="ai_scanner_link">AI Scanner</span>
                         </a>
                         <a href="/vat/" class="p-2 rounded-xl border border-amber-200 bg-amber-50/40 hover:bg-amber-100/70 flex flex-col items-center gap-1 transition group">
                             <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center text-xs group-hover:scale-110 transition"><i class="fa-solid fa-percent"></i></div>
-                            <span class="text-[10px] font-bold text-amber-950 leading-tight">VAT Return</span>
+                            <span class="text-[10px] font-bold text-amber-950 leading-tight" data-i18n="vat_return_link">VAT Return</span>
                         </a>
                         <a href="/reports/aging/" class="p-2 rounded-xl border border-indigo-200 bg-indigo-50/40 hover:bg-indigo-100/70 flex flex-col items-center gap-1 transition group">
                             <div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center text-xs group-hover:scale-110 transition"><i class="fa-solid fa-clock-rotate-left"></i></div>
-                            <span class="text-[10px] font-bold text-indigo-950 leading-tight">Debt Aging</span>
+                            <span class="text-[10px] font-bold text-indigo-950 leading-tight" data-i18n="debt_aging_link">Debt Aging</span>
                         </a>
                     </div>
                 </div>
@@ -399,10 +399,10 @@
                 <!-- Bank Accounts -->
                 <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex flex-col justify-between">
                     <div class="flex justify-between items-center">
-                        <h3 class="text-xs font-black text-slate-900">Bank Accounts</h3>
-                        <a href="/banking/transfer/" class="text-[11px] font-bold text-indigo-600 hover:underline">Manage</a>
+                        <h3 class="text-xs font-black text-slate-900" data-i18n="bank_accounts">Bank Accounts</h3>
+                        <a href="/banking/transfer/" class="text-[11px] font-bold text-indigo-600 hover:underline" data-i18n="manage_link">Manage</a>
                     </div>
-                    <div class="text-center py-6 text-slate-400 text-xs italic">
+                    <div class="text-center py-6 text-slate-400 text-xs italic" data-i18n="no_bank_accounts">
                         No bank accounts configured.
                     </div>
                 </div>
@@ -410,21 +410,21 @@
                 <!-- Cash Flow -->
                 <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
                     <div class="flex justify-between items-center mb-3">
-                        <h3 class="text-xs font-black text-slate-900">Cash Flow</h3>
-                        <span class="text-[10px] font-bold text-slate-400">Ledger</span>
+                        <h3 class="text-xs font-black text-slate-900" data-i18n="cash_flow">Cash Flow</h3>
+                        <span class="text-[10px] font-bold text-slate-400" data-i18n="ledger_tag">Ledger</span>
                     </div>
                     <div class="space-y-1.5 text-xs">
                         <div class="flex justify-between font-bold">
-                            <span class="text-emerald-600">❖ Cash In</span>
+                            <span class="text-emerald-600" data-i18n="cash_in">❖ Cash In</span>
                             <span class="font-mono">SAR 0.00</span>
                         </div>
                         <div class="flex justify-between font-bold">
-                            <span class="text-rose-500">❖ Cash Out</span>
+                            <span class="text-rose-500" data-i18n="cash_out">❖ Cash Out</span>
                             <span class="font-mono">SAR 0.00</span>
                         </div>
                     </div>
                     <div class="border-t border-slate-100 mt-3 pt-2 flex justify-between items-center text-xs font-black">
-                        <span>Net Cash Flow</span>
+                        <span data-i18n="net_cash_flow">Net Cash Flow</span>
                         <span class="text-emerald-600 font-mono">SAR 0.00</span>
                     </div>
                 </div>
@@ -432,10 +432,10 @@
                 <!-- Recent Sales -->
                 <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex flex-col justify-between">
                     <div class="flex justify-between items-center">
-                        <h3 class="text-xs font-black text-slate-900">Recent Sales</h3>
-                        <a href="/invoices/" class="text-[11px] font-bold text-indigo-600 hover:underline">View All</a>
+                        <h3 class="text-xs font-black text-slate-900" data-i18n="recent_sales">Recent Sales</h3>
+                        <a href="/invoices/" class="text-[11px] font-bold text-indigo-600 hover:underline" data-i18n="view_all">View All</a>
                     </div>
-                    <div class="text-center py-6 text-slate-400 text-xs italic">
+                    <div class="text-center py-6 text-slate-400 text-xs italic" data-i18n="no_recent_sales">
                         No recent sales invoices.
                     </div>
                 </div>
@@ -443,21 +443,21 @@
                 <!-- ZATCA 15% VAT Return -->
                 <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
                     <div class="flex justify-between items-center mb-3">
-                        <h3 class="text-xs font-black text-slate-900">ZATCA 15% VAT Return</h3>
-                        <a href="/vat/" class="text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-lg hover:bg-amber-100 transition">File Return</a>
+                        <h3 class="text-xs font-black text-slate-900" data-i18n="zatca_box_title">ZATCA 15% VAT Return</h3>
+                        <a href="/vat/" class="text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-lg hover:bg-amber-100 transition" data-i18n="file_return_btn">File Return</a>
                     </div>
                     <div class="space-y-1 text-xs">
                         <div class="flex justify-between text-slate-500">
-                            <span>Output VAT:</span>
+                            <span data-i18n="output_vat_lbl">Output VAT:</span>
                             <span class="font-mono font-bold text-slate-900">SAR 0.00</span>
                         </div>
                         <div class="flex justify-between text-slate-500">
-                            <span>Input VAT:</span>
+                            <span data-i18n="input_vat_lbl">Input VAT:</span>
                             <span class="font-mono font-bold text-slate-900">SAR 0.00</span>
                         </div>
                     </div>
                     <div class="border-t border-slate-100 mt-2.5 pt-2 flex justify-between items-center text-xs font-black">
-                        <span>Net VAT Due:</span>
+                        <span data-i18n="net_vat_due_lbl">Net VAT Due:</span>
                         <span class="text-amber-600 font-mono">SAR 0.00</span>
                     </div>
                 </div>
@@ -466,19 +466,214 @@
         </div>
     </main>
 
-    <!-- FULL INTERACTIVE ACCORDION & DROPDOWN JAVASCRIPT ENGINE -->
+    <!-- COMPLETE REAL-TIME TRANSLATION & INTERACTIVE JAVASCRIPT ENGINE -->
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // 1. Dynamic Greeting
+    const i18nData = {
+        en: {
+            lang_btn: "العربية",
+            dashboard: "Dashboard",
+            sales: "Sales",
+            invoices: "Invoices",
+            create_invoice: "+ Create Invoice",
+            price_lists: "Price Lists",
+            recurring_invoices: "Recurring Invoices",
+            statements: "Customer Statements",
+            purchases: "Purchases",
+            purchase_bills: "Purchase Bills",
+            direct_expenses: "Direct Expenses",
+            suppliers: "Suppliers Directory",
+            expenses: "Expenses",
+            contacts: "Contacts & Customers",
+            inventory: "Items & Inventory",
+            banking: "Banking",
+            bank_accounts: "Bank Accounts",
+            transfers: "Fund Transfers",
+            reconciliation: "Reconciliation",
+            accounting: "Accounting",
+            reports: "Reports",
+            vat_declaration: "VAT Declaration",
+            debt_aging: "Debt Aging",
+            settings_divisions: "Settings & Divisions",
+            your_plan: "YOUR PLAN",
+            welcome_sub: "Welcome back to your Qoyod ERP Dashboard",
+            total_sales: "Total Sales",
+            sales_sub: "▲ Real-time Invoiced Sales",
+            total_purchases: "Total Purchases",
+            purchases_sub: "▲ Vendor Billed Purchases",
+            total_expenses: "Total Expenses",
+            expenses_sub: "● Direct Expense Claims",
+            net_profit: "Net Profit",
+            profit_sub: "▲ Net Trading Earnings",
+            sales_overview: "Sales Overview",
+            live_trend: "Live Trend ▾",
+            top_customers: "Top Customers",
+            view_all: "View All",
+            no_customers: "No customer purchases yet.",
+            quick_links: "Quick Links",
+            purchases_link: "Purchases",
+            add_expense_link: "Add Expense",
+            new_contact_link: "New Contact",
+            bank_transfer_link: "Bank Transfer",
+            reports_link: "Reports",
+            ai_scanner_link: "AI Scanner",
+            vat_return_link: "VAT Return",
+            debt_aging_link: "Debt Aging",
+            manage_link: "Manage",
+            no_bank_accounts: "No bank accounts configured.",
+            cash_flow: "Cash Flow",
+            ledger_tag: "Ledger",
+            cash_in: "❖ Cash In",
+            cash_out: "❖ Cash Out",
+            net_cash_flow: "Net Cash Flow",
+            recent_sales: "Recent Sales",
+            no_recent_sales: "No recent sales invoices.",
+            zatca_box_title: "ZATCA 15% VAT Return",
+            file_return_btn: "File Return",
+            output_vat_lbl: "Output VAT:",
+            input_vat_lbl: "Input VAT:",
+            net_vat_due_lbl: "Net VAT Due:",
+            notifications_title: "Notifications",
+            all_clear: "All clear",
+            add_purchase_bill: "+ Purchase Bill",
+            add_expense_menu: "+ Add Expense",
+            new_contact_menu: "+ New Contact",
+            add_product_menu: "+ Add Product",
+            this_month: "This Month",
+            last_month: "Last Month",
+            this_quarter: "This Quarter",
+            this_year: "This Year",
+            search_ph: "Search in Qoyod..."
+        },
+        ar: {
+            lang_btn: "English",
+            dashboard: "لوحة التحكم",
+            sales: "المبيعات",
+            invoices: "فواتير المبيعات",
+            create_invoice: "+ إنشاء فاتورة",
+            price_lists: "قوائم الأسعار",
+            recurring_invoices: "الفواتير الدورية",
+            statements: "كشف حساب العملاء",
+            purchases: "المشتريات",
+            purchase_bills: "فواتير الشراء",
+            direct_expenses: "المصروفات المباشرة",
+            suppliers: "دليل الموردين",
+            expenses: "المصروفات",
+            contacts: "جهات الاتصال والعملاء",
+            inventory: "المنتجات والمخزون",
+            banking: "البنوك",
+            bank_accounts: "الحسابات البنكية",
+            transfers: "التحويلات البنكية",
+            reconciliation: "تسوية الحسابات",
+            accounting: "المحاسبة",
+            reports: "التقارير",
+            vat_declaration: "الإقرار الضريبي",
+            debt_aging: "أعمار الديون",
+            settings_divisions: "الإعدادات والفروع",
+            your_plan: "خطتك الحالية",
+            welcome_sub: "مرحبًا بك في لوحة تحكم نظام قيود المحاسبي",
+            total_sales: "إجمالي المبيعات",
+            sales_sub: "▲ مبيعات فورية معتمدة",
+            total_purchases: "إجمالي المشتريات",
+            purchases_sub: "▲ فواتير المشتريات الموردة",
+            total_expenses: "إجمالي المصروفات",
+            expenses_sub: "● مطالبات المصروفات المباشرة",
+            net_profit: "صافي الأرباح",
+            profit_sub: "▲ صافي أرباح العمليات",
+            sales_overview: "نظرة عامة على المبيعات",
+            live_trend: "المؤشر المباشر ▾",
+            top_customers: "أهم العملاء",
+            view_all: "عرض الكل",
+            no_customers: "لا توجد مشتريات عملاء مسجلة بعد.",
+            quick_links: "روابط سريعة",
+            purchases_link: "المشتريات",
+            add_expense_link: "إضافة مصروف",
+            new_contact_link: "جهة اتصال جديدة",
+            bank_transfer_link: "تحويل بنكي",
+            reports_link: "التقارير",
+            ai_scanner_link: "المسح الذكي",
+            vat_return_link: "إقرار الضريبة",
+            debt_aging_link: "أعمار الديون",
+            manage_link: "إدارة",
+            no_bank_accounts: "لم يتم تكوين حسابات بنكية.",
+            cash_flow: "التدفق النقدي",
+            ledger_tag: "دفتر الأستاذ",
+            cash_in: "❖ النقد الداخل",
+            cash_out: "❖ النقد الخارج",
+            net_cash_flow: "صافي التدفق النقدي",
+            recent_sales: "أحدث المبيعات",
+            no_recent_sales: "لا توجد فواتير مبيعات حديثة.",
+            zatca_box_title: "إقرار ضريبة القيمة المضافة 15%",
+            file_return_btn: "تقديم الإقرار",
+            output_vat_lbl: "ضريبة المخرجات:",
+            input_vat_lbl: "ضريبة المدخلات:",
+            net_vat_due_lbl: "صافي الضريبة المستحقة:",
+            notifications_title: "التنبيهات",
+            all_clear: "النظام سليم",
+            add_purchase_bill: "+ فاتورة شراء",
+            add_expense_menu: "+ إضافة مصروف",
+            new_contact_menu: "+ جهة اتصال جديدة",
+            add_product_menu: "+ إضافة منتج",
+            this_month: "هذا الشهر",
+            last_month: "الشهر السابق",
+            this_quarter: "هذا الربع",
+            this_year: "هذا العام",
+            search_ph: "البحث في قيود..."
+        }
+    };
+
+    function applyLanguage(lang) {
+        const root = document.getElementById('htmlRoot');
+        const langBtnText = document.getElementById('langBtnText');
+        const searchInput = document.getElementById('globalSearch');
+        
+        root.setAttribute('lang', lang);
+        root.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+        
+        if (langBtnText) langBtnText.innerText = i18nData[lang].lang_btn;
+        if (searchInput) searchInput.setAttribute('placeholder', i18nData[lang].search_ph);
+
+        // Update all translation keys
+        document.querySelectorAll('[data-i18n]').forEach(elem => {
+            const key = elem.getAttribute('data-i18n');
+            if (i18nData[lang][key]) {
+                elem.innerText = i18nData[lang][key];
+            }
+        });
+
+        // Dynamic Greeting Translation
         const hour = new Date().getHours();
         const elem = document.getElementById('dynamic-greeting');
         if (elem) {
-            if (hour >= 5 && hour < 12) elem.innerText = 'Good Morning';
-            else if (hour >= 12 && hour < 17) elem.innerText = 'Good Afternoon';
-            else elem.innerText = 'Good Evening';
+            if (lang === 'ar') {
+                if (hour >= 5 && hour < 12) elem.innerText = 'صباح الخير';
+                else if (hour >= 12 && hour < 17) elem.innerText = 'مساء الخير';
+                else elem.innerText = 'مساء الخير';
+            } else {
+                if (hour >= 5 && hour < 12) elem.innerText = 'Good Morning';
+                else if (hour >= 12 && hour < 17) elem.innerText = 'Good Afternoon';
+                else elem.innerText = 'Good Evening';
+            }
         }
 
-        // 2. Sidebar Accordion Dropdown Toggles (Sales, Purchases, Banking)
+        localStorage.setItem('qoyod_lang', lang);
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Load saved language or default to English
+        const savedLang = localStorage.getItem('qoyod_lang') || 'en';
+        applyLanguage(savedLang);
+
+        // Language Switcher Click Event
+        const langToggleBtn = document.getElementById('langToggleBtn');
+        if (langToggleBtn) {
+            langToggleBtn.addEventListener('click', function() {
+                const currentLang = localStorage.getItem('qoyod_lang') || 'en';
+                const nextLang = currentLang === 'en' ? 'ar' : 'en';
+                applyLanguage(nextLang);
+            });
+        }
+
+        // Sidebar Dropdowns (Accordion)
         document.querySelectorAll('.sidebar-dropdown-btn').forEach(btn => {
             btn.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -490,8 +685,6 @@
                 
                 if (targetSubmenu) {
                     const isHidden = targetSubmenu.classList.contains('hidden');
-                    
-                    // Close other submenus first (Accordion behavior)
                     document.querySelectorAll('[id$="-submenu"]').forEach(sm => {
                         if (sm.id !== targetId) sm.classList.add('hidden');
                     });
@@ -499,16 +692,13 @@
                         if (ch !== chevron) ch.classList.remove('rotate-180');
                     });
 
-                    // Toggle clicked submenu
                     targetSubmenu.classList.toggle('hidden');
-                    if (chevron) {
-                        chevron.classList.toggle('rotate-180', isHidden);
-                    }
+                    if (chevron) chevron.classList.toggle('rotate-180', isHidden);
                 }
             });
         });
 
-        // 3. 3-Dot (☰) Sidebar Collapse / Expand Toggle
+        // 3-Dot (☰) Sidebar Toggle
         const sidebar = document.getElementById('sidebar');
         const sidebarToggle = document.getElementById('sidebarToggle');
         const navLabels = document.querySelectorAll('.nav-label');
@@ -535,7 +725,7 @@
             });
         }
 
-        // 4. Quick Plus (+) Button Dropdown
+        // Quick Plus Dropdown
         const quickPlusBtn = document.getElementById('quickPlusBtn');
         const quickPlusMenu = document.getElementById('quickPlusMenu');
         if (quickPlusBtn && quickPlusMenu) {
@@ -546,7 +736,7 @@
             });
         }
 
-        // 5. Notification Bell Dropdown
+        // Notification Bell Dropdown
         const notifBtn = document.getElementById('notifBtn');
         const notifMenu = document.getElementById('notifMenu');
         if (notifBtn && notifMenu) {
@@ -557,13 +747,13 @@
             });
         }
 
-        // Close dropdowns on outside click
+        // Close dropdowns on click outside
         document.addEventListener('click', function() {
             if (quickPlusMenu) quickPlusMenu.classList.add('hidden');
             if (notifMenu) notifMenu.classList.add('hidden');
         });
 
-        // 6. Cmd/Ctrl + K Global Search Focus
+        // Cmd/Ctrl + K Focus Search
         window.addEventListener('keydown', function(e) {
             if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
                 e.preventDefault();
@@ -571,14 +761,6 @@
                 if (searchInput) searchInput.focus();
             }
         });
-
-        // 7. Language Switcher Notice
-        const langToggleBtn = document.getElementById('langToggleBtn');
-        if (langToggleBtn) {
-            langToggleBtn.addEventListener('click', function() {
-                alert('Language toggle: Arabic RTL and English Cairo font are supported.');
-            });
-        }
     });
     </script>
 </body>
