@@ -11,27 +11,51 @@
         body { font-family: 'Roboto', sans-serif; }
     </style>
 </head>
-<body class="bg-white text-slate-800 min-h-screen flex flex-col antialiased">
+<body class="bg-[#fdfdfd] text-slate-800 min-h-screen flex flex-col antialiased">
 
-    <!-- DJANGO ADMIN HEADER (Exact Image 4 Style) -->
+    <!-- DJANGO ADMIN HEADER WITH SINGLE CLEAN DIVISION SELECTOR -->
     <header class="bg-[#417690] text-white px-6 py-3 flex justify-between items-center shadow-xs">
         <div class="flex items-center gap-6">
-            <a href="/admin/" class="text-xl font-medium tracking-wide text-[#ffc]">Django administration</a>
+            <a href="/settings/" class="text-xl font-medium tracking-wide text-[#ffc]">Django administration</a>
             <a href="/" class="text-xs bg-[#205067] hover:bg-[#1b4356] px-3 py-1.5 rounded text-white font-bold flex items-center gap-1.5 transition">
                 <i class="fa-solid fa-house"></i> View Qoyod Site
             </a>
         </div>
 
-        <!-- FACTORY DIVISION SHORTCUT ICONS IN HEADER -->
-        <div class="flex items-center gap-2 bg-[#2d5f77] px-3 py-1 rounded-lg border border-[#4d86a2]">
-            <span class="text-[10px] uppercase font-bold text-slate-200 mr-1">Divisions:</span>
-            <a href="/division/warehouse/" title="Warehouse WMS" class="text-lg hover:scale-125 transition p-1">🏭</a>
-            <a href="/division/media/" title="Media Division" class="text-lg hover:scale-125 transition p-1">📺</a>
-            <a href="/division/plastic/" title="Plastic Division" class="text-lg hover:scale-125 transition p-1">♻️</a>
-            <a href="/division/cosmetic/" title="Cosmetic Division" class="text-lg hover:scale-125 transition p-1">💄</a>
-            <a href="/division/powder/" title="Powder Division" class="text-lg hover:scale-125 transition p-1">🧪</a>
-            <span class="text-slate-400">|</span>
-            <a href="/super-admin/" title="Super Admin Suite" class="text-lg hover:scale-125 transition p-1">👑</a>
+        <!-- SINGLE CLEAN DIVISION DROPDOWN (Replaces crowded icons) -->
+        <div class="relative">
+            <button id="divDropdownBtn" class="bg-[#2d5f77] hover:bg-[#205067] text-white px-3.5 py-1.5 rounded-lg border border-[#4d86a2] text-xs font-bold flex items-center gap-2 transition">
+                <span id="currentDivIcon">🏢</span>
+                <span id="currentDivName">6 Divisions Hub</span>
+                <i class="fa-solid fa-chevron-down text-[10px] ml-1"></i>
+            </button>
+
+            <!-- Dropdown Menu for 6 Divisions -->
+            <div id="divDropdownMenu" class="hidden absolute right-0 mt-2 w-56 bg-white border border-slate-200 rounded-xl shadow-xl py-2 z-50 text-xs text-slate-700">
+                <button onclick="switchDivisionView('all', '🏢', '6 Divisions Hub')" class="w-full text-left px-4 py-2 hover:bg-slate-50 font-bold text-indigo-600 flex items-center gap-2">
+                    <span>🏢</span> All Modules Overview
+                </button>
+                <div class="border-t border-slate-100 my-1"></div>
+                <button onclick="switchDivisionView('warehouse', '🏭', 'Warehouse WMS')" class="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2 font-medium">
+                    <span>🏭</span> Warehouse Division
+                </button>
+                <button onclick="switchDivisionView('media', '📺', 'Media Division')" class="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2 font-medium">
+                    <span>📺</span> Media Division
+                </button>
+                <button onclick="switchDivisionView('plastic', '♻️', 'Plastic Division')" class="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2 font-medium">
+                    <span>♻️</span> Plastic Division
+                </button>
+                <button onclick="switchDivisionView('cosmetic', '💄', 'Cosmetic Division')" class="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2 font-medium">
+                    <span>💄</span> Cosmetic Division
+                </button>
+                <button onclick="switchDivisionView('powder', '🧪', 'Powder Division')" class="w-full text-left px-4 py-2 hover:bg-slate-50 flex items-center gap-2 font-medium">
+                    <span>🧪</span> Powder Division
+                </button>
+                <div class="border-t border-slate-100 my-1"></div>
+                <button onclick="switchDivisionView('superadmin', '👑', 'Super Admin Suite')" class="w-full text-left px-4 py-2 hover:bg-amber-50 text-amber-700 flex items-center gap-2 font-bold">
+                    <span>👑</span> Super Admin Suite
+                </button>
+            </div>
         </div>
 
         <!-- User Controls -->
@@ -43,33 +67,53 @@
         </div>
     </header>
 
-    <!-- MAIN BODY CONTAINER (Exact Image 4 Layout) -->
+    <!-- MAIN BODY CONTAINER (Exact Image 2 Structure) -->
     <main class="flex-1 max-w-7xl w-full mx-auto p-6 space-y-6">
         
-        <h2 class="text-xl font-normal text-slate-700">Site administration</h2>
+        <div class="flex justify-between items-center">
+            <h2 class="text-xl font-normal text-slate-700">Site administration</h2>
+            <!-- Quick Division Direct Links Bar -->
+            <div class="flex items-center gap-2 text-xs font-bold">
+                <a href="/division/warehouse/" class="px-2.5 py-1 bg-slate-100 hover:bg-cyan-50 text-slate-700 rounded-lg border border-slate-200">🏭 Warehouse</a>
+                <a href="/division/media/" class="px-2.5 py-1 bg-slate-100 hover:bg-emerald-50 text-slate-700 rounded-lg border border-slate-200">📺 Media</a>
+                <a href="/division/plastic/" class="px-2.5 py-1 bg-slate-100 hover:bg-blue-50 text-slate-700 rounded-lg border border-slate-200">♻️ Plastic</a>
+                <a href="/division/cosmetic/" class="px-2.5 py-1 bg-slate-100 hover:bg-pink-50 text-slate-700 rounded-lg border border-slate-200">💄 Cosmetic</a>
+                <a href="/division/powder/" class="px-2.5 py-1 bg-slate-100 hover:bg-amber-50 text-slate-700 rounded-lg border border-slate-200">🧪 Powder</a>
+                <a href="/super-admin/" class="px-2.5 py-1 bg-amber-100 hover:bg-amber-200 text-amber-900 rounded-lg border border-amber-300">👑 Super Admin</a>
+            </div>
+        </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
-            <!-- LEFT: ACCOUNTING MODELS TABLE (Exact Image 4) -->
-            <div class="lg:col-span-8 border border-slate-200 rounded shadow-xs overflow-hidden">
-                <div class="bg-[#417690] text-white px-4 py-2.5 font-bold text-xs uppercase tracking-wider">
-                    ACCOUNTING
+            <!-- LEFT: ACCOUNTING MODELS TABLE WITH + Add, ✎ Change, 👁️ Show, 🟢 Active (Exact Image 2) -->
+            <div class="lg:col-span-8 border border-slate-200 rounded shadow-xs overflow-hidden bg-white">
+                <div class="bg-[#417690] text-white px-4 py-2.5 font-bold text-xs uppercase tracking-wider flex justify-between items-center">
+                    <span id="tableSectionTitle">ACCOUNTING & FACTORY MODULES</span>
+                    <span class="text-[10px] text-slate-200 font-normal">All 6 Divisions Synchronized</span>
                 </div>
                 
                 <table class="w-full text-left text-xs border-collapse">
-                    <tbody class="divide-y divide-slate-100">
+                    <tbody class="divide-y divide-slate-100" id="modelTableBody">
                         {% for item in model_list %}
-                        <tr class="hover:bg-[#f9f9f9]">
+                        <tr class="hover:bg-[#f9f9f9] model-row" data-div="{{ item.division }}">
+                            <!-- Model Name -->
                             <td class="p-3 font-semibold text-[#417690]">
                                 <a href="{{ item.admin_url }}" class="hover:underline">{{ item.name }}</a>
                             </td>
-                            <td class="p-3 text-right space-x-3 w-40">
-                                <a href="{{ item.add_url }}" class="text-emerald-700 hover:underline font-medium">
+                            <!-- 4 Actions: + Add | ✎ Change | 👁️ Show | 🟢 Active -->
+                            <td class="p-3 text-right space-x-3 w-80">
+                                <a href="{{ item.add_url }}" class="text-emerald-700 hover:underline font-bold" title="Add new record">
                                     <strong class="text-emerald-600">+</strong> Add
                                 </a>
-                                <a href="{{ item.admin_url }}" class="text-amber-700 hover:underline font-medium">
+                                <a href="{{ item.admin_url }}" class="text-amber-700 hover:underline font-bold" title="Change or edit records">
                                     ✎ Change
                                 </a>
+                                <a href="{{ item.show_url }}" class="text-indigo-600 hover:underline font-bold" title="Show list/view">
+                                    👁️ Show
+                                </a>
+                                <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-black rounded-full uppercase" title="Status">
+                                    ● Active
+                                </span>
                             </td>
                         </tr>
                         {% endfor %}
@@ -77,7 +121,7 @@
                 </table>
             </div>
 
-            <!-- RIGHT: RECENT ACTIONS PANEL (Exact Image 4) -->
+            <!-- RIGHT: RECENT ACTIONS PANEL (Exact Image 2) -->
             <div class="lg:col-span-4 bg-[#f8f8f8] border border-slate-200 rounded p-4 shadow-xs space-y-3">
                 <h3 class="font-bold text-slate-700 text-sm pb-2 border-b border-slate-200">Recent actions</h3>
                 <div class="text-xs text-slate-500">
@@ -89,6 +133,39 @@
         </div>
 
     </main>
+
+    <!-- JAVASCRIPT FOR SINGLE DROPDOWN & DIVISION FILTERING -->
+    <script>
+    const divDropdownBtn = document.getElementById('divDropdownBtn');
+    const divDropdownMenu = document.getElementById('divDropdownMenu');
+
+    if (divDropdownBtn && divDropdownMenu) {
+        divDropdownBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            divDropdownMenu.classList.toggle('hidden');
+        });
+
+        document.addEventListener('click', function() {
+            divDropdownMenu.classList.add('hidden');
+        });
+    }
+
+    function switchDivisionView(divKey, icon, name) {
+        document.getElementById('currentDivIcon').innerText = icon;
+        document.getElementById('currentDivName').innerText = name;
+        document.getElementById('tableSectionTitle').innerText = name.toUpperCase();
+
+        const rows = document.querySelectorAll('.model-row');
+        rows.forEach(row => {
+            const rowDiv = row.getAttribute('data-div');
+            if (divKey === 'all' || rowDiv === divKey || rowDiv === 'all') {
+                row.classList.remove('hidden');
+            } else {
+                row.classList.add('hidden');
+            }
+        });
+    }
+    </script>
 
 </body>
 </html>
