@@ -1,0 +1,176 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}{{ block.super }}
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl w-full mx-auto space-y-6">
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- MAIN TABLE AREA -->
+        <div class="lg:col-span-8 space-y-6">
+
+            <!-- 1. IMAGE 2 EXACT 6 DIVISIONS TABLE (Toggled by 👤 Icon) -->
+            <div id="divisionsTableCard" class="hidden border border-slate-200 rounded shadow-xs overflow-hidden bg-white">
+                <div class="bg-[#417690] text-white px-4 py-2.5 font-bold text-xs uppercase tracking-wider flex justify-between items-center">
+                    <span>SAMCO FACTORY DIVISIONS (6 DIVISIONS)</span>
+                    <span class="text-[10px] text-slate-200 font-normal">ALL 6 DIVISIONS SYNCHRONIZED</span>
+                </div>
+                
+                <table class="w-full text-left text-xs border-collapse">
+                    <tbody class="divide-y divide-slate-100">
+                        <tr class="hover:bg-[#f9f9f9]">
+                            <td class="p-3.5 font-semibold text-[#417690]">
+                                <a href="/division/warehouse/" class="hover:underline flex items-center gap-2.5 text-sm">
+                                    <span class="text-lg">🏭</span> <span>Warehouse Division</span>
+                                </a>
+                            </td>
+                            <td class="p-3.5 text-right space-x-3 w-80">
+                                <a href="/admin/accounting/product/add/" class="text-emerald-700 hover:underline font-bold"><strong class="text-emerald-600">+</strong> Add</a>
+                                <a href="/admin/accounting/product/" class="text-amber-700 hover:underline font-bold">✎ Change</a>
+                                <a href="/division/warehouse/" class="text-indigo-600 hover:underline font-bold">👁️ Show</a>
+                                <span class="px-2.5 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-black rounded-full uppercase">● ACTIVE</span>
+                            </td>
+                        </tr>
+
+                        <tr class="hover:bg-[#f9f9f9]">
+                            <td class="p-3.5 font-semibold text-[#417690]">
+                                <a href="/division/media/" class="hover:underline flex items-center gap-2.5 text-sm">
+                                    <span class="text-lg">📺</span> <span>Media Division</span>
+                                </a>
+                            </td>
+                            <td class="p-3.5 text-right space-x-3 w-80">
+                                <a href="/admin/accounting/transferslip/add/" class="text-emerald-700 hover:underline font-bold"><strong class="text-emerald-600">+</strong> Add</a>
+                                <a href="/admin/accounting/transferslip/" class="text-amber-700 hover:underline font-bold">✎ Change</a>
+                                <a href="/division/media/" class="text-indigo-600 hover:underline font-bold">👁️ Show</a>
+                                <span class="px-2.5 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-black rounded-full uppercase">● ACTIVE</span>
+                            </td>
+                        </tr>
+
+                        <tr class="hover:bg-[#f9f9f9]">
+                            <td class="p-3.5 font-semibold text-[#417690]">
+                                <a href="/division/plastic/" class="hover:underline flex items-center gap-2.5 text-sm">
+                                    <span class="text-lg">♻️</span> <span>Plastic Division</span>
+                                </a>
+                            </td>
+                            <td class="p-3.5 text-right space-x-3 w-80">
+                                <a href="/admin/accounting/rejectlog/add/" class="text-emerald-700 hover:underline font-bold"><strong class="text-emerald-600">+</strong> Add</a>
+                                <a href="/admin/accounting/rejectlog/" class="text-amber-700 hover:underline font-bold">✎ Change</a>
+                                <a href="/division/plastic/" class="text-indigo-600 hover:underline font-bold">👁️ Show</a>
+                                <span class="px-2.5 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-black rounded-full uppercase">● ACTIVE</span>
+                            </td>
+                        </tr>
+
+                        <tr class="hover:bg-[#f9f9f9]">
+                            <td class="p-3.5 font-semibold text-[#417690]">
+                                <a href="/division/cosmetic/" class="hover:underline flex items-center gap-2.5 text-sm">
+                                    <span class="text-lg">💄</span> <span>Cosmetic Division</span>
+                                </a>
+                            </td>
+                            <td class="p-3.5 text-right space-x-3 w-80">
+                                <a href="/admin/accounting/worker/add/" class="text-emerald-700 hover:underline font-bold"><strong class="text-emerald-600">+</strong> Add</a>
+                                <a href="/admin/accounting/worker/" class="text-amber-700 hover:underline font-bold">✎ Change</a>
+                                <a href="/division/cosmetic/" class="text-indigo-600 hover:underline font-bold">👁️ Show</a>
+                                <span class="px-2.5 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-black rounded-full uppercase">● ACTIVE</span>
+                            </td>
+                        </tr>
+
+                        <tr class="hover:bg-[#f9f9f9]">
+                            <td class="p-3.5 font-semibold text-[#417690]">
+                                <a href="/division/powder/" class="hover:underline flex items-center gap-2.5 text-sm">
+                                    <span class="text-lg">🧪</span> <span>Powder Division</span>
+                                </a>
+                            </td>
+                            <td class="p-3.5 text-right space-x-3 w-80">
+                                <a href="/admin/accounting/supplier/add/" class="text-emerald-700 hover:underline font-bold"><strong class="text-emerald-600">+</strong> Add</a>
+                                <a href="/admin/accounting/supplier/" class="text-amber-700 hover:underline font-bold">✎ Change</a>
+                                <a href="/division/powder/" class="text-indigo-600 hover:underline font-bold">👁️ Show</a>
+                                <span class="px-2.5 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-black rounded-full uppercase">● ACTIVE</span>
+                            </td>
+                        </tr>
+
+                        <tr class="hover:bg-[#f9f9f9]">
+                            <td class="p-3.5 font-semibold text-[#417690]">
+                                <a href="/super-admin/" class="hover:underline flex items-center gap-2.5 text-sm font-bold text-amber-700">
+                                    <span class="text-lg">👑</span> <span>Super Admin Suite</span>
+                                </a>
+                            </td>
+                            <td class="p-3.5 text-right space-x-3 w-80">
+                                <a href="/invoices/create/" class="text-emerald-700 hover:underline font-bold"><strong class="text-emerald-600">+</strong> Add</a>
+                                <a href="/super-admin/" class="text-amber-700 hover:underline font-bold">✎ Change</a>
+                                <a href="/super-admin/" class="text-indigo-600 hover:underline font-bold">👁️ Show</a>
+                                <span class="px-2.5 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-black rounded-full uppercase">● ACTIVE</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 2. DEFAULT ACCOUNTING MODELS LIST -->
+            <div id="standardAdminTableCard" class="border border-slate-200 rounded shadow-xs overflow-hidden bg-white">
+                <div class="bg-[#417690] text-white px-4 py-2.5 font-bold text-xs uppercase tracking-wider">
+                    ACCOUNTING
+                </div>
+                
+                <table class="w-full text-left text-xs border-collapse">
+                    <tbody class="divide-y divide-slate-100">
+                        <tr class="hover:bg-[#f9f9f9]"><td class="p-3 font-semibold text-[#417690]"><a href="/admin/accounting/account/" class="hover:underline">Accounts</a></td><td class="p-3 text-right space-x-3 w-40"><a href="/admin/accounting/account/add/" class="text-emerald-700 hover:underline font-medium"><strong class="text-emerald-600">+</strong> Add</a><a href="/admin/accounting/account/" class="text-amber-700 hover:underline font-medium">✎ Change</a></td></tr>
+                        <tr class="hover:bg-[#f9f9f9]"><td class="p-3 font-semibold text-[#417690]"><a href="/admin/accounting/attendancelog/" class="hover:underline">Attendance logs</a></td><td class="p-3 text-right space-x-3 w-40"><a href="/admin/accounting/attendancelog/add/" class="text-emerald-700 hover:underline font-medium"><strong class="text-emerald-600">+</strong> Add</a><a href="/admin/accounting/attendancelog/" class="text-amber-700 hover:underline font-medium">✎ Change</a></td></tr>
+                        <tr class="hover:bg-[#f9f9f9]"><td class="p-3 font-semibold text-[#417690]"><a href="/admin/accounting/companysettings/" class="hover:underline">Company Settings</a></td><td class="p-3 text-right space-x-3 w-40"><a href="/admin/accounting/companysettings/add/" class="text-emerald-700 hover:underline font-medium"><strong class="text-emerald-600">+</strong> Add</a><a href="/admin/accounting/companysettings/" class="text-amber-700 hover:underline font-medium">✎ Change</a></td></tr>
+                        <tr class="hover:bg-[#f9f9f9]"><td class="p-3 font-semibold text-[#417690]"><a href="/admin/accounting/customer/" class="hover:underline">Customers</a></td><td class="p-3 text-right space-x-3 w-40"><a href="/admin/accounting/customer/add/" class="text-emerald-700 hover:underline font-medium"><strong class="text-emerald-600">+</strong> Add</a><a href="/admin/accounting/customer/" class="text-amber-700 hover:underline font-medium">✎ Change</a></td></tr>
+                        <tr class="hover:bg-[#f9f9f9]"><td class="p-3 font-semibold text-[#417690]"><a href="/admin/accounting/deliverynote/" class="hover:underline">Delivery notes</a></td><td class="p-3 text-right space-x-3 w-40"><a href="/admin/accounting/deliverynote/add/" class="text-emerald-700 hover:underline font-medium"><strong class="text-emerald-600">+</strong> Add</a><a href="/admin/accounting/deliverynote/" class="text-amber-700 hover:underline font-medium">✎ Change</a></td></tr>
+                        <tr class="hover:bg-[#f9f9f9]"><td class="p-3 font-semibold text-[#417690]"><a href="/admin/accounting/directexpense/" class="hover:underline">Direct expenses</a></td><td class="p-3 text-right space-x-3 w-40"><a href="/admin/accounting/directexpense/add/" class="text-emerald-700 hover:underline font-medium"><strong class="text-emerald-600">+</strong> Add</a><a href="/admin/accounting/directexpense/" class="text-amber-700 hover:underline font-medium">✎ Change</a></td></tr>
+                        <tr class="hover:bg-[#f9f9f9]"><td class="p-3 font-semibold text-[#417690]"><a href="/admin/accounting/invoice/" class="hover:underline">Invoices</a></td><td class="p-3 text-right space-x-3 w-40"><a href="/invoices/create/" class="text-emerald-700 hover:underline font-medium"><strong class="text-emerald-600">+</strong> Add</a><a href="/admin/accounting/invoice/" class="text-amber-700 hover:underline font-medium">✎ Change</a></td></tr>
+                        <tr class="hover:bg-[#f9f9f9]"><td class="p-3 font-semibold text-[#417690]"><a href="/admin/accounting/journalentry/" class="hover:underline">Journal Entries</a></td><td class="p-3 text-right space-x-3 w-40"><a href="/admin/accounting/journalentry/add/" class="text-emerald-700 hover:underline font-medium"><strong class="text-emerald-600">+</strong> Add</a><a href="/admin/accounting/journalentry/" class="text-amber-700 hover:underline font-medium">✎ Change</a></td></tr>
+                        <tr class="hover:bg-[#f9f9f9]"><td class="p-3 font-semibold text-[#417690]"><a href="/admin/accounting/pricelist/" class="hover:underline">Price lists</a></td><td class="p-3 text-right space-x-3 w-40"><a href="/admin/accounting/pricelist/add/" class="text-emerald-700 hover:underline font-medium"><strong class="text-emerald-600">+</strong> Add</a><a href="/admin/accounting/pricelist/" class="text-amber-700 hover:underline font-medium">✎ Change</a></td></tr>
+                        <tr class="hover:bg-[#f9f9f9]"><td class="p-3 font-semibold text-[#417690]"><a href="/admin/accounting/product/" class="hover:underline">Products</a></td><td class="p-3 text-right space-x-3 w-40"><a href="/admin/accounting/product/add/" class="text-emerald-700 hover:underline font-medium"><strong class="text-emerald-600">+</strong> Add</a><a href="/admin/accounting/product/" class="text-amber-700 hover:underline font-medium">✎ Change</a></td></tr>
+                        <tr class="hover:bg-[#f9f9f9]"><td class="p-3 font-semibold text-[#417690]"><a href="/admin/accounting/purchasebill/" class="hover:underline">Purchase bills</a></td><td class="p-3 text-right space-x-3 w-40"><a href="/admin/accounting/purchasebill/add/" class="text-emerald-700 hover:underline font-medium"><strong class="text-emerald-600">+</strong> Add</a><a href="/admin/accounting/purchasebill/" class="text-amber-700 hover:underline font-medium">✎ Change</a></td></tr>
+                        <tr class="hover:bg-[#f9f9f9]"><td class="p-3 font-semibold text-[#417690]"><a href="/admin/accounting/quotation/" class="hover:underline">Quotations</a></td><td class="p-3 text-right space-x-3 w-40"><a href="/admin/accounting/quotation/add/" class="text-emerald-700 hover:underline font-medium"><strong class="text-emerald-600">+</strong> Add</a><a href="/admin/accounting/quotation/" class="text-amber-700 hover:underline font-medium">✎ Change</a></td></tr>
+                        <tr class="hover:bg-[#f9f9f9]"><td class="p-3 font-semibold text-[#417690]"><a href="/admin/accounting/recurringinvoice/" class="hover:underline">Recurring invoices</a></td><td class="p-3 text-right space-x-3 w-40"><a href="/admin/accounting/recurringinvoice/add/" class="text-emerald-700 hover:underline font-medium"><strong class="text-emerald-600">+</strong> Add</a><a href="/admin/accounting/recurringinvoice/" class="text-amber-700 hover:underline font-medium">✎ Change</a></td></tr>
+                        <tr class="hover:bg-[#f9f9f9]"><td class="p-3 font-semibold text-[#417690]"><a href="/admin/accounting/rejectlog/" class="hover:underline">Reject logs</a></td><td class="p-3 text-right space-x-3 w-40"><a href="/admin/accounting/rejectlog/add/" class="text-emerald-700 hover:underline font-medium"><strong class="text-emerald-600">+</strong> Add</a><a href="/admin/accounting/rejectlog/" class="text-amber-700 hover:underline font-medium">✎ Change</a></td></tr>
+                        <tr class="hover:bg-[#f9f9f9]"><td class="p-3 font-semibold text-[#417690]"><a href="/admin/accounting/salarysheet/" class="hover:underline">Salary sheets</a></td><td class="p-3 text-right space-x-3 w-40"><a href="/admin/accounting/salarysheet/add/" class="text-emerald-700 hover:underline font-medium"><strong class="text-emerald-600">+</strong> Add</a><a href="/admin/accounting/salarysheet/" class="text-amber-700 hover:underline font-medium">✎ Change</a></td></tr>
+                        <tr class="hover:bg-[#f9f9f9]"><td class="p-3 font-semibold text-[#417690]"><a href="/admin/accounting/supplier/" class="hover:underline">Suppliers</a></td><td class="p-3 text-right space-x-3 w-40"><a href="/admin/accounting/supplier/add/" class="text-emerald-700 hover:underline font-medium"><strong class="text-emerald-600">+</strong> Add</a><a href="/admin/accounting/supplier/" class="text-amber-700 hover:underline font-medium">✎ Change</a></td></tr>
+                        <tr class="hover:bg-[#f9f9f9]"><td class="p-3 font-semibold text-[#417690]"><a href="/admin/accounting/transferslip/" class="hover:underline">Transfer slips</a></td><td class="p-3 text-right space-x-3 w-40"><a href="/admin/accounting/transferslip/add/" class="text-emerald-700 hover:underline font-medium"><strong class="text-emerald-600">+</strong> Add</a><a href="/admin/accounting/transferslip/" class="text-amber-700 hover:underline font-medium">✎ Change</a></td></tr>
+                        <tr class="hover:bg-[#f9f9f9]"><td class="p-3 font-semibold text-[#417690]"><a href="/admin/accounting/vehiclebill/" class="hover:underline">Vehicle bills</a></td><td class="p-3 text-right space-x-3 w-40"><a href="/admin/accounting/vehiclebill/add/" class="text-emerald-700 hover:underline font-medium"><strong class="text-emerald-600">+</strong> Add</a><a href="/admin/accounting/vehiclebill/" class="text-amber-700 hover:underline font-medium">✎ Change</a></td></tr>
+                        <tr class="hover:bg-[#f9f9f9]"><td class="p-3 font-semibold text-[#417690]"><a href="/admin/accounting/worker/" class="hover:underline">Workers</a></td><td class="p-3 text-right space-x-3 w-40"><a href="/admin/accounting/worker/add/" class="text-emerald-700 hover:underline font-medium"><strong class="text-emerald-600">+</strong> Add</a><a href="/admin/accounting/worker/" class="text-amber-700 hover:underline font-medium">✎ Change</a></td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+        <!-- RIGHT: RECENT ACTIONS PANEL -->
+        <div class="lg:col-span-4 bg-[#f8f8f8] border border-slate-200 rounded p-4 shadow-xs space-y-3">
+            <h3 class="font-bold text-slate-700 text-sm pb-2 border-b border-slate-200">Recent actions</h3>
+            <div class="text-xs text-slate-500">
+                <span class="font-bold text-slate-700 block mb-1">My actions</span>
+                <p class="italic text-slate-400">None available</p>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- JAVASCRIPT: CLICK 👤 ICON TO TOGGLE 6 DIVISIONS TABLE (IMAGE 2) -->
+<script>
+function toggleDivisionViewFromIcon() {
+    const divCard = document.getElementById('divisionsTableCard');
+    const stdCard = document.getElementById('standardAdminTableCard');
+    
+    if (divCard && stdCard) {
+        if (divCard.classList.contains('hidden')) {
+            divCard.classList.remove('hidden');
+            stdCard.classList.add('hidden');
+        } else {
+            divCard.classList.add('hidden');
+            stdCard.classList.remove('hidden');
+        }
+    }
+}
+</script>
+{% endblock %}

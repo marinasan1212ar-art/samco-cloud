@@ -11,6 +11,6 @@
 {% endblock %}
 
 {% block welcome-msg %}
-<span style="font-size: 15px; margin-right: 4px; vertical-align: middle;">👤</span>{% translate 'Welcome,' %}
+<span id="userIconBtn" onclick="toggleDivisionViewFromIcon()" title="Click to view 6 Divisions" class="cursor-pointer hover:scale-125 transition inline-block" style="font-size: 17px; margin-right: 6px; vertical-align: middle; cursor: pointer;">👤</span>{% translate 'Welcome,' %}
 <strong>{% firstof user.get_short_name user.get_username %}</strong>.
 {% endblock %}
