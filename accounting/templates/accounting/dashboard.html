@@ -40,78 +40,105 @@
                 </button>
             </div>
 
-            <!-- Standard Navigation Links -->
+            <!-- Standard Navigation Links with Interactive Dropdowns -->
             <nav class="space-y-1 text-xs font-semibold">
                 <a href="/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-indigo-600 text-white font-bold shadow-sm shadow-indigo-600/30">
                     <i class="fa-solid fa-gauge-high w-4 text-center"></i>
                     <span class="nav-label">Dashboard</span>
                 </a>
 
-                <div class="space-y-1 pt-1">
-                    <a href="/invoices/" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
+                <!-- 1. SALES ACCORDION DROPDOWN -->
+                <div class="pt-1">
+                    <button type="button" class="sidebar-dropdown-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition group" data-target="sales-submenu">
                         <div class="flex items-center gap-3">
-                            <i class="fa-solid fa-cart-shopping w-4 text-center"></i>
+                            <i class="fa-solid fa-cart-shopping w-4 text-center group-hover:text-indigo-400 transition"></i>
                             <span class="nav-label">Sales</span>
                         </div>
-                        <i class="fa-solid fa-chevron-down text-[10px] nav-label"></i>
-                    </a>
-                    
-                    <a href="/admin/accounting/purchasebill/" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
+                        <i class="fa-solid fa-chevron-down text-[10px] nav-label transition-transform duration-200"></i>
+                    </button>
+                    <!-- Sales Submenu Items -->
+                    <div id="sales-submenu" class="hidden pl-8 pr-2 py-1 space-y-1 text-[11px] bg-slate-900/40 rounded-xl my-1">
+                        <a href="/invoices/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-white transition">Invoices</a>
+                        <a href="/invoices/create/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-indigo-300 font-bold transition">+ Create Invoice</a>
+                        <a href="/sales/price-lists/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-white transition">Price Lists</a>
+                        <a href="/sales/recurring/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-white transition">Recurring Invoices</a>
+                        <a href="/statement/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-white transition">Customer Statements</a>
+                    </div>
+                </div>
+                
+                <!-- 2. PURCHASES ACCORDION DROPDOWN -->
+                <div>
+                    <button type="button" class="sidebar-dropdown-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition group" data-target="purchases-submenu">
                         <div class="flex items-center gap-3">
-                            <i class="fa-solid fa-bag-shopping w-4 text-center"></i>
+                            <i class="fa-solid fa-bag-shopping w-4 text-center group-hover:text-emerald-400 transition"></i>
                             <span class="nav-label">Purchases</span>
                         </div>
-                        <i class="fa-solid fa-chevron-down text-[10px] nav-label"></i>
-                    </a>
+                        <i class="fa-solid fa-chevron-down text-[10px] nav-label transition-transform duration-200"></i>
+                    </button>
+                    <!-- Purchases Submenu Items -->
+                    <div id="purchases-submenu" class="hidden pl-8 pr-2 py-1 space-y-1 text-[11px] bg-slate-900/40 rounded-xl my-1">
+                        <a href="/admin/accounting/purchasebill/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-white transition">Purchase Bills</a>
+                        <a href="/admin/accounting/directexpense/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-white transition">Direct Expenses</a>
+                        <a href="/admin/accounting/supplier/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-white transition">Suppliers Directory</a>
+                    </div>
+                </div>
 
-                    <a href="/admin/accounting/directexpense/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
-                        <i class="fa-solid fa-receipt w-4 text-center"></i>
-                        <span class="nav-label">Expenses</span>
-                    </a>
+                <a href="/admin/accounting/directexpense/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
+                    <i class="fa-solid fa-receipt w-4 text-center"></i>
+                    <span class="nav-label">Expenses</span>
+                </a>
 
-                    <a href="/admin/accounting/customer/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
-                        <i class="fa-solid fa-users w-4 text-center"></i>
-                        <span class="nav-label">Contacts & Customers</span>
-                    </a>
+                <a href="/admin/accounting/customer/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
+                    <i class="fa-solid fa-users w-4 text-center"></i>
+                    <span class="nav-label">Contacts & Customers</span>
+                </a>
 
-                    <a href="/admin/accounting/product/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
-                        <i class="fa-solid fa-boxes-stacked w-4 text-center"></i>
-                        <span class="nav-label">Items & Inventory</span>
-                    </a>
+                <a href="/admin/accounting/product/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
+                    <i class="fa-solid fa-boxes-stacked w-4 text-center"></i>
+                    <span class="nav-label">Items & Inventory</span>
+                </a>
 
-                    <a href="/banking/transfer/" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
+                <!-- 3. BANKING ACCORDION DROPDOWN -->
+                <div>
+                    <button type="button" class="sidebar-dropdown-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition group" data-target="banking-submenu">
                         <div class="flex items-center gap-3">
-                            <i class="fa-solid fa-building-columns w-4 text-center"></i>
+                            <i class="fa-solid fa-building-columns w-4 text-center group-hover:text-cyan-400 transition"></i>
                             <span class="nav-label">Banking</span>
                         </div>
-                        <i class="fa-solid fa-chevron-down text-[10px] nav-label"></i>
-                    </a>
-
-                    <a href="/admin/accounting/account/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
-                        <i class="fa-solid fa-calculator w-4 text-center"></i>
-                        <span class="nav-label">Accounting</span>
-                    </a>
-
-                    <a href="/reports/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
-                        <i class="fa-solid fa-chart-pie w-4 text-center"></i>
-                        <span class="nav-label">Reports</span>
-                    </a>
-
-                    <a href="/vat/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
-                        <i class="fa-solid fa-percent w-4 text-center text-amber-400"></i>
-                        <span class="text-amber-400 nav-label">VAT Declaration</span>
-                    </a>
-
-                    <a href="/reports/aging/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
-                        <i class="fa-solid fa-clock-rotate-left w-4 text-center"></i>
-                        <span class="nav-label">Debt Aging</span>
-                    </a>
-
-                    <a href="/settings/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
-                        <i class="fa-solid fa-gear w-4 text-center text-indigo-400"></i>
-                        <span class="text-indigo-400 font-bold nav-label">Settings & Divisions</span>
-                    </a>
+                        <i class="fa-solid fa-chevron-down text-[10px] nav-label transition-transform duration-200"></i>
+                    </button>
+                    <!-- Banking Submenu Items -->
+                    <div id="banking-submenu" class="hidden pl-8 pr-2 py-1 space-y-1 text-[11px] bg-slate-900/40 rounded-xl my-1">
+                        <a href="/banking/transfer/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-white transition">Bank Accounts</a>
+                        <a href="/banking/transfer/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-white transition">Fund Transfers</a>
+                        <a href="/banking/transfer/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-white transition">Reconciliation</a>
+                    </div>
                 </div>
+
+                <a href="/admin/accounting/account/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
+                    <i class="fa-solid fa-calculator w-4 text-center"></i>
+                    <span class="nav-label">Accounting</span>
+                </a>
+
+                <a href="/reports/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
+                    <i class="fa-solid fa-chart-pie w-4 text-center"></i>
+                    <span class="nav-label">Reports</span>
+                </a>
+
+                <a href="/vat/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
+                    <i class="fa-solid fa-percent w-4 text-center text-amber-400"></i>
+                    <span class="text-amber-400 nav-label">VAT Declaration</span>
+                </a>
+
+                <a href="/reports/aging/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
+                    <i class="fa-solid fa-clock-rotate-left w-4 text-center"></i>
+                    <span class="nav-label">Debt Aging</span>
+                </a>
+
+                <a href="/settings/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
+                    <i class="fa-solid fa-gear w-4 text-center text-indigo-400"></i>
+                    <span class="text-indigo-400 font-bold nav-label">Settings & Divisions</span>
+                </a>
             </nav>
         </div>
 
@@ -204,7 +231,7 @@
             </div>
         </header>
 
-        <!-- DASHBOARD BODY (Scrollable with proper top spacing) -->
+        <!-- DASHBOARD BODY (Scrollable with clean spacing) -->
         <div class="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
             
             <!-- GREETING & QUICK ACTIONS BAR -->
@@ -439,7 +466,7 @@
         </div>
     </main>
 
-    <!-- FULL INTERACTIVE JAVASCRIPT ENGINE (3-Dot Toggle, Dropdowns, Shortcuts) -->
+    <!-- FULL INTERACTIVE ACCORDION & DROPDOWN JAVASCRIPT ENGINE -->
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         // 1. Dynamic Greeting
@@ -451,7 +478,37 @@
             else elem.innerText = 'Good Evening';
         }
 
-        // 2. 3-Dot (☰) Sidebar Collapse / Expand Toggle
+        // 2. Sidebar Accordion Dropdown Toggles (Sales, Purchases, Banking)
+        document.querySelectorAll('.sidebar-dropdown-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const targetId = this.getAttribute('data-target');
+                const targetSubmenu = document.getElementById(targetId);
+                const chevron = this.querySelector('.fa-chevron-down');
+                
+                if (targetSubmenu) {
+                    const isHidden = targetSubmenu.classList.contains('hidden');
+                    
+                    // Close other submenus first (Accordion behavior)
+                    document.querySelectorAll('[id$="-submenu"]').forEach(sm => {
+                        if (sm.id !== targetId) sm.classList.add('hidden');
+                    });
+                    document.querySelectorAll('.sidebar-dropdown-btn .fa-chevron-down').forEach(ch => {
+                        if (ch !== chevron) ch.classList.remove('rotate-180');
+                    });
+
+                    // Toggle clicked submenu
+                    targetSubmenu.classList.toggle('hidden');
+                    if (chevron) {
+                        chevron.classList.toggle('rotate-180', isHidden);
+                    }
+                }
+            });
+        });
+
+        // 3. 3-Dot (☰) Sidebar Collapse / Expand Toggle
         const sidebar = document.getElementById('sidebar');
         const sidebarToggle = document.getElementById('sidebarToggle');
         const navLabels = document.querySelectorAll('.nav-label');
@@ -465,6 +522,7 @@
                     sidebar.classList.remove('w-64');
                     sidebar.classList.add('w-20');
                     navLabels.forEach(lbl => lbl.classList.add('hidden'));
+                    document.querySelectorAll('[id$="-submenu"]').forEach(sm => sm.classList.add('hidden'));
                     if (logoSubtitles) logoSubtitles.classList.add('hidden');
                     if (planBadge) planBadge.classList.add('hidden');
                 } else {
@@ -477,7 +535,7 @@
             });
         }
 
-        // 3. Quick Plus (+) Button Dropdown
+        // 4. Quick Plus (+) Button Dropdown
         const quickPlusBtn = document.getElementById('quickPlusBtn');
         const quickPlusMenu = document.getElementById('quickPlusMenu');
         if (quickPlusBtn && quickPlusMenu) {
@@ -488,7 +546,7 @@
             });
         }
 
-        // 4. Notification Bell Dropdown
+        // 5. Notification Bell Dropdown
         const notifBtn = document.getElementById('notifBtn');
         const notifMenu = document.getElementById('notifMenu');
         if (notifBtn && notifMenu) {
@@ -505,7 +563,7 @@
             if (notifMenu) notifMenu.classList.add('hidden');
         });
 
-        // 5. Cmd/Ctrl + K Global Search Focus
+        // 6. Cmd/Ctrl + K Global Search Focus
         window.addEventListener('keydown', function(e) {
             if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
                 e.preventDefault();
@@ -514,7 +572,7 @@
             }
         });
 
-        // 6. Language Toggle Switcher
+        // 7. Language Switcher Notice
         const langToggleBtn = document.getElementById('langToggleBtn');
         if (langToggleBtn) {
             langToggleBtn.addEventListener('click', function() {
