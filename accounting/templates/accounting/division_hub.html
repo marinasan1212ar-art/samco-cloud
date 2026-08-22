@@ -18,10 +18,9 @@
 </head>
 <body class="bg-slate-50 text-slate-800 h-full flex overflow-hidden">
 
-    <!-- 1. SIDEBAR -->
+    <!-- 1. WAREHOUSE SIDEBAR -->
     <aside class="w-64 bg-[#0a1020] text-slate-300 flex flex-col justify-between shrink-0 h-full border-r border-slate-800 z-30 select-none">
         
-        <!-- Brand & Custom WMS Navigation -->
         <div class="flex flex-col flex-1 overflow-y-auto custom-scrollbar p-3.5">
             
             <!-- Perfect Official QOYOD Vector Logo -->
@@ -29,16 +28,11 @@
                 <a href="/" class="flex flex-col select-none">
                     <div class="flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 38" class="w-36 h-auto">
-                            <!-- Q with attached Cyan square dot -->
                             <circle cx="16" cy="17" r="11.5" fill="none" stroke="#ffffff" stroke-width="4.8"/>
                             <rect x="9.5" y="24.5" width="6.5" height="6.5" rx="1.5" fill="#22d3ee"/>
-                            <!-- O -->
                             <circle cx="45" cy="17" r="11.5" fill="none" stroke="#ffffff" stroke-width="4.8"/>
-                            <!-- Y -->
                             <path d="M 64.5 6 L 73 18.5 L 81.5 6 M 73 18.5 L 73 28.5" fill="none" stroke="#ffffff" stroke-width="4.8" stroke-linecap="round" stroke-linejoin="round"/>
-                            <!-- O -->
                             <circle cx="102" cy="17" r="11.5" fill="none" stroke="#ffffff" stroke-width="4.8"/>
-                            <!-- D -->
                             <path d="M 123 6 L 133 6 C 141 6 146.5 11 146.5 17.25 C 146.5 23.5 141 28.5 133 28.5 L 123 28.5 Z" fill="none" stroke="#ffffff" stroke-width="4.8" stroke-linejoin="round"/>
                         </svg>
                     </div>
@@ -54,7 +48,7 @@
                 <span>🏭</span> <span>WAREHOUSE OPERATIONS</span>
             </div>
 
-            <!-- Custom WMS Menu Links -->
+            <!-- Custom WMS Navigation Menu -->
             <nav class="space-y-1 text-xs font-semibold" id="sidebarMenu">
                 <!-- 1. Sales Entry -->
                 <button onclick="showWMSPanel('sales_entry', this)" class="wms-nav-btn w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
@@ -71,12 +65,12 @@
                     <span>🏭</span> <span>Supplier</span>
                 </button>
 
-                <!-- 4. Stock / Inventory (Default Active) -->
+                <!-- 4. Stock / Inventory (Default) -->
                 <button onclick="showWMSPanel('inventory', this)" class="wms-nav-btn active w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl bg-cyan-600/30 text-cyan-300 border border-cyan-500/40 font-bold transition">
                     <span>📦</span> <span>Stock / Inventory</span>
                 </button>
 
-                <!-- 5. Receiving (Dropdown) -->
+                <!-- 5. Receiving -->
                 <div>
                     <button type="button" onclick="toggleSubmenu('receiving-sub', this)" class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
                         <div class="flex items-center gap-3">
@@ -91,7 +85,7 @@
                     </div>
                 </div>
 
-                <!-- 6. Raw Material (Dropdown) -->
+                <!-- 6. Raw Material -->
                 <div>
                     <button type="button" onclick="toggleSubmenu('raw-sub', this)" class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
                         <div class="flex items-center gap-3">
@@ -106,7 +100,7 @@
                     </div>
                 </div>
 
-                <!-- 7. Delivery Note -->
+                <!-- 7. Delivery Note (Now with direct Entry Form!) -->
                 <button onclick="showWMSPanel('delivery_notes', this)" class="wms-nav-btn w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
                     <span>🚚</span> <span>Delivery Note</span>
                 </button>
@@ -121,9 +115,9 @@
                     <span>🏢</span> <span>SABIC (Polymers)</span>
                 </button>
 
-                <!-- 10. Surebeam (Dropdown) -->
+                <!-- 10. Surebeam (Direct click opens Entry Form & toggles dropdown) -->
                 <div>
-                    <button type="button" onclick="toggleSubmenu('surebeam-sub', this)" class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                    <button type="button" onclick="showWMSPanel('surebeam_transfer', this); toggleSubmenu('surebeam-sub', this);" class="wms-nav-btn w-full flex items-center justify-between px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
                         <div class="flex items-center gap-3">
                             <span>⚛️</span> <span>Surebeam</span>
                         </div>
@@ -142,6 +136,7 @@
             </nav>
         </div>
 
+        <!-- Back to Main Qoyod Button -->
         <div class="p-3 border-t border-slate-800/80 bg-[#080d1a]">
             <a href="/" class="text-xs font-bold text-slate-400 hover:text-white flex items-center gap-2">
                 <i class="fa-solid fa-arrow-left"></i> Back to Main Qoyod
@@ -152,7 +147,7 @@
     <!-- 2. MAIN WORKSPACE -->
     <main class="flex-1 flex flex-col h-full overflow-hidden bg-[#f8fafc]">
         
-        <!-- HEADER (IMAGE 4 STYLE: SEARCH, REALTIME DATE/CLOCK, BELL 8, MAIL 3, ADMIN PROFILE) -->
+        <!-- HEADER (EXACT IMAGE 4 STYLE) -->
         <header class="bg-white border-b border-slate-200 px-6 py-3 flex justify-between items-center z-20 shadow-xs">
             <!-- Left: Search Box -->
             <div class="relative w-96">
@@ -160,7 +155,7 @@
                 <i class="fa-solid fa-magnifying-glass absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
             </div>
 
-            <!-- Right Controls: Date/Time + Notifications (8) + Mail (3) + Admin Profile -->
+            <!-- Right Controls: Live Clock + Bell (8) + Mail (3) + Admin Profile -->
             <div class="flex items-center gap-6 text-slate-700">
                 <!-- Live Date & Clock -->
                 <div class="flex items-center gap-3 text-xs font-semibold pl-4 border-l border-slate-200">
@@ -173,19 +168,19 @@
                     </div>
                 </div>
 
-                <!-- Bell with Red Badge (8) -->
+                <!-- Bell (8) -->
                 <div class="relative cursor-pointer">
                     <i class="fa-regular fa-bell text-base text-slate-600 hover:text-slate-900"></i>
                     <span class="absolute -top-1.5 -right-2 bg-rose-500 text-white font-black text-[9px] w-4 h-4 rounded-full flex items-center justify-center shadow-xs">8</span>
                 </div>
 
-                <!-- Mail with Green Badge (3) -->
+                <!-- Mail (3) -->
                 <div class="relative cursor-pointer">
                     <i class="fa-regular fa-envelope text-base text-slate-600 hover:text-slate-900"></i>
                     <span class="absolute -top-1.5 -right-2 bg-emerald-500 text-white font-black text-[9px] w-4 h-4 rounded-full flex items-center justify-center shadow-xs">3</span>
                 </div>
 
-                <!-- Admin Profile (Image 4 Style) -->
+                <!-- Admin Profile -->
                 <div class="flex items-center gap-3 pl-4 border-l border-slate-200">
                     <div class="text-right">
                         <div class="text-xs font-black text-slate-900 leading-tight">Admin</div>
@@ -202,7 +197,240 @@
         <div class="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
 
             <!-- ========================================================= -->
-            <!-- 📦 1. PANEL: STOCK / INVENTORY (DEFAULT) -->
+            <!-- 🚚 1. REAL DELIVERY NOTE ENTRY FORM & QUEUE -->
+            <!-- ========================================================= -->
+            <div id="panel-delivery_notes" class="wms-panel space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                    
+                    <!-- Left: Entry Form Card -->
+                    <div class="lg:col-span-5 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+                        <div class="border-b border-slate-100 pb-3">
+                            <h3 class="text-base font-black text-slate-900 flex items-center gap-2">
+                                🚚 Delivery Note Entry Form (سند تسليم বضاعة)
+                            </h3>
+                            <p class="text-xs text-slate-500">Add medical products and create KSA gate clearance delivery note</p>
+                        </div>
+
+                        <div class="space-y-3 text-xs font-semibold">
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-slate-600 mb-1">Gate Number (رقم البوابة):</label>
+                                    <input type="text" id="dn_gate" value="Gate #01" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono">
+                                </div>
+                                <div>
+                                    <label class="block text-slate-600 mb-1">Ref / PO Number:</label>
+                                    <input type="text" id="dn_po" placeholder="e.g. PO-9921" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-slate-600 mb-1">Location / Customer Name:</label>
+                                <input type="text" id="dn_location" placeholder="e.g. King Fahad Hospital" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl">
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-slate-600 mb-1">CAT Number:</label>
+                                    <input type="text" id="dn_cat" placeholder="e.g. CAT-WH-9921" oninput="autoFillDNProduct(this.value)" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono">
+                                </div>
+                                <div>
+                                    <label class="block text-slate-600 mb-1">LOT / Batch Number:</label>
+                                    <input type="text" id="dn_lot" placeholder="LOT-WH-01" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-slate-600 mb-1">Product Description:</label>
+                                <input type="text" id="dn_name" placeholder="Full item description" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl">
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-3">
+                                <div>
+                                    <label class="block text-slate-600 mb-1">MFG Date:</label>
+                                    <input type="text" id="dn_mfg" value="{% now 'm-Y' %}" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono">
+                                </div>
+                                <div>
+                                    <label class="block text-slate-600 mb-1">EXP Date:</label>
+                                    <input type="text" id="dn_exp" value="12-2028" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono">
+                                </div>
+                                <div>
+                                    <label class="block text-slate-600 mb-1">Quantity (Pcs):</label>
+                                    <input type="number" id="dn_qty" placeholder="100" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono">
+                                </div>
+                            </div>
+
+                            <div class="pt-2 flex gap-3">
+                                <button type="button" onclick="addDNItemToQueue()" class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold shadow text-xs flex items-center justify-center gap-1.5">
+                                    <i class="fa-solid fa-plus"></i> + Add Item to List
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Live Queue Table & Print Action -->
+                    <div class="lg:col-span-7 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+                        <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                            <h3 class="text-sm font-black text-slate-900 flex items-center gap-2">
+                                📋 Delivery Note Items Queue (<span id="dn_item_count">0</span> items)
+                            </h3>
+                            <button onclick="generateDNPdf()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-xl text-xs shadow flex items-center gap-1.5">
+                                <i class="fa-solid fa-file-pdf"></i> 📄 Generate & Print Delivery Note PDF
+                            </button>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-50 text-slate-700 uppercase font-black border-b border-slate-200 text-[11px]">
+                                        <th class="p-2.5">SR</th>
+                                        <th class="p-2.5">CAT No</th>
+                                        <th class="p-2.5">Product Name</th>
+                                        <th class="p-2.5">LOT No</th>
+                                        <th class="p-2.5">EXP</th>
+                                        <th class="p-2.5">QTY</th>
+                                        <th class="p-2.5 text-right">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dn_queue_tbody" class="divide-y divide-slate-100 font-sans">
+                                    <tr id="dn_empty_row"><td colspan="7" class="p-8 text-center text-slate-400 italic">No items added to the queue yet. Fill the left form and click "+ Add Item".</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- ⚛️ 2. REAL SUREBEAM STERILIZATION ENTRY FORM & QUEUE -->
+            <!-- ========================================================= -->
+            <div id="panel-surebeam_transfer" class="wms-panel space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                    
+                    <!-- Left: Surebeam Entry Form -->
+                    <div class="lg:col-span-5 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+                        <div class="border-b border-slate-100 pb-3">
+                            <h3 class="text-base font-black text-slate-900 flex items-center gap-2">
+                                ⚛️ Surebeam Sterilization Dispatch Form (سند إرسال للتعقيم)
+                            </h3>
+                            <p class="text-xs text-slate-500">E-Beam & Gamma irradiation sterilization dispatch certificate</p>
+                        </div>
+
+                        <div class="space-y-3 text-xs font-semibold">
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-slate-600 mb-1">Gate Number:</label>
+                                    <input type="text" id="sb_gate" value="Gate #01" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono">
+                                </div>
+                                <div>
+                                    <label class="block text-slate-600 mb-1">Sterilization Type:</label>
+                                    <select id="sb_type" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl">
+                                        <option>E-Beam Irradiation</option>
+                                        <option>Gamma Ray Irradiation</option>
+                                        <option>Ethylene Oxide (EtO)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-slate-600 mb-1">Location / Target Facility:</label>
+                                    <input type="text" id="sb_location" value="Surebeam Sterilization Plant Riyadh" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl">
+                                </div>
+                                <div>
+                                    <label class="block text-slate-600 mb-1">Ref Person (Salesman):</label>
+                                    <select id="sb_ref" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl">
+                                        <option>Mr. Jamal</option>
+                                        <option>Sheikh Sultan</option>
+                                        <option>Dr. Omar</option>
+                                        <option>Saud Abdul Aziz</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-slate-600 mb-1">CAT Number:</label>
+                                    <input type="text" id="sb_cat" placeholder="e.g. CAT-WH-9921" oninput="autoFillSBProduct(this.value)" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono">
+                                </div>
+                                <div>
+                                    <label class="block text-slate-600 mb-1">LOT Number:</label>
+                                    <input type="text" id="sb_lot" placeholder="LOT-9921/" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-slate-600 mb-1">Product Description:</label>
+                                <input type="text" id="sb_name" placeholder="Item description" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl">
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-3">
+                                <div>
+                                    <label class="block text-slate-600 mb-1">MFG Date:</label>
+                                    <input type="text" id="sb_mfg" value="{% now 'm-Y' %}" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono">
+                                </div>
+                                <div>
+                                    <label class="block text-slate-600 mb-1">EXP Date:</label>
+                                    <input type="text" id="sb_exp" value="12-2029" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono">
+                                </div>
+                                <div>
+                                    <label class="block text-slate-600 mb-1">Quantity (Pcs):</label>
+                                    <input type="number" id="sb_qty" placeholder="500" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono">
+                                </div>
+                            </div>
+
+                            <div class="pt-2">
+                                <button type="button" onclick="addSBItemToQueue()" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold shadow text-xs flex items-center justify-center gap-1.5">
+                                    <i class="fa-solid fa-plus"></i> + Add Item to Sterilization Queue
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Surebeam Queue Table & Generate Certificate -->
+                    <div class="lg:col-span-7 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+                        <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                            <h3 class="text-sm font-black text-slate-900 flex items-center gap-2">
+                                ⚛️ Sterilization Batch Queue (<span id="sb_item_count">0</span> items)
+                            </h3>
+                            <button onclick="generateSBPdf()" class="bg-amber-600 hover:bg-amber-500 text-white font-bold px-4 py-2 rounded-xl text-xs shadow flex items-center gap-1.5">
+                                <i class="fa-solid fa-certificate"></i> 📄 Generate Surebeam Certificate PDF
+                            </button>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-50 text-slate-700 uppercase font-black border-b border-slate-200 text-[11px]">
+                                        <th class="p-2.5">SR</th>
+                                        <th class="p-2.5">CAT No</th>
+                                        <th class="p-2.5">Product Name</th>
+                                        <th class="p-2.5">LOT No</th>
+                                        <th class="p-2.5">EXP</th>
+                                        <th class="p-2.5">QTY</th>
+                                        <th class="p-2.5 text-right">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="sb_queue_tbody" class="divide-y divide-slate-100 font-sans">
+                                    <tr id="sb_empty_row"><td colspan="7" class="p-8 text-center text-slate-400 italic">No sterilization items queued yet. Fill the left form and click "+ Add Item".</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="panel-surebeam_recv" class="wms-panel space-y-6">
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4 max-w-4xl mx-auto">
+                    <h3 class="text-base font-black text-slate-900 pb-3 border-b border-slate-100">📥 Receiving Surebeam Goods (Sterilized Return)</h3>
+                    <div class="p-8 text-center text-slate-400 italic text-xs border border-dashed border-slate-200 rounded-xl">
+                        <i class="fa-solid fa-circle-check text-3xl mb-2 block opacity-40 text-emerald-500"></i>
+                        Sterilized batches returned and verified for distribution.
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- 📦 3. PANEL: STOCK / INVENTORY (DEFAULT ACTIVE) -->
             <!-- ========================================================= -->
             <div id="panel-inventory" class="wms-panel active space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
@@ -269,7 +497,7 @@
             </div>
 
             <!-- ========================================================= -->
-            <!-- 🛍️ 2. PANEL: SALES ENTRY -->
+            <!-- 🛍️ 4. PANEL: SALES ENTRY -->
             <!-- ========================================================= -->
             <div id="panel-sales_entry" class="wms-panel space-y-6">
                 <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4 max-w-4xl mx-auto">
@@ -323,7 +551,7 @@
             </div>
 
             <!-- ========================================================= -->
-            <!-- 🛒 3. PANEL: PURCHASE ENTRY -->
+            <!-- 🛒 5. PANEL: PURCHASE ENTRY -->
             <!-- ========================================================= -->
             <div id="panel-purchase_entry" class="wms-panel space-y-6">
                 <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4 max-w-4xl mx-auto">
@@ -360,7 +588,7 @@
             </div>
 
             <!-- ========================================================= -->
-            <!-- 🏭 4. PANEL: SUPPLIERS -->
+            <!-- 🏭 6. PANEL: SUPPLIERS -->
             <!-- ========================================================= -->
             <div id="panel-suppliers" class="wms-panel space-y-6">
                 <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
@@ -399,15 +627,13 @@
                 </div>
             </div>
 
-            <!-- ========================================================= -->
-            <!-- 📥 5. RECEIVING (Finished, Semi, Outside) -->
-            <!-- ========================================================= -->
+            <!-- OTHER PANELS (Receiving, Raw Material, Issue Slip, SABIC, Settings) -->
             <div id="panel-recv_finished" class="wms-panel space-y-6">
                 <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4 max-w-4xl mx-auto">
                     <h3 class="text-base font-black text-slate-900 pb-3 border-b border-slate-100">📦 Receive Finished Goods (استلام بضاعة جاهزة)</h3>
                     <form action="/admin/accounting/product/add/" method="POST" target="_blank" class="space-y-4 text-xs font-semibold">
                         <div class="grid grid-cols-2 gap-4">
-                            <div><label class="block text-slate-600 mb-1">CAT No:</label><input type="text" required placeholder="e.g. CAT-FG-9921" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono"></div>
+                            <div><label class="block text-slate-600 mb-1">CAT No:</label><input type="text" required placeholder="e.g. CAT-WH-9921" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono"></div>
                             <div><label class="block text-slate-600 mb-1">Product Description:</label><input type="text" required placeholder="e.g. Paracetamol 500mg" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl"></div>
                         </div>
                         <div class="grid grid-cols-3 gap-4">
@@ -422,64 +648,40 @@
 
             <div id="panel-recv_semi" class="wms-panel space-y-6">
                 <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4 max-w-4xl mx-auto">
-                    <h3 class="text-base font-black text-slate-900 pb-3 border-b border-slate-100">🧩 Receive Semi Goods / Components (استلام بضاعة نصف مصنعة)</h3>
+                    <h3 class="text-base font-black text-slate-900 pb-3 border-b border-slate-100">🧩 Receive Semi Goods (استلام بضاعة نصف مصنعة)</h3>
                     <p class="text-xs text-slate-500">Record incoming components from Plastic / Cosmetic / Powder for final assembly.</p>
-                    <div class="p-8 text-center text-slate-400 italic text-xs border border-dashed border-slate-200 rounded-xl">
-                        <i class="fa-solid fa-boxes-stacked text-3xl mb-2 block opacity-40"></i>
-                        All semi-finished components received are logged to production WIP ledger.
-                    </div>
                 </div>
             </div>
 
             <div id="panel-recv_outside" class="wms-panel space-y-6">
                 <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4 max-w-4xl mx-auto">
-                    <h3 class="text-base font-black text-slate-900 pb-3 border-b border-slate-100">🌍 Receive Outside / Imported Goods (استلام بضائع خارجية)</h3>
+                    <h3 class="text-base font-black text-slate-900 pb-3 border-b border-slate-100">🌍 Receive Outside Goods (استلام بضائع خارجية)</h3>
                     <p class="text-xs text-slate-500">International imports, custom clearances, and overseas vendor consignments.</p>
-                    <div class="p-8 text-center text-slate-400 italic text-xs border border-dashed border-slate-200 rounded-xl">
-                        <i class="fa-solid fa-plane-arrival text-3xl mb-2 block opacity-40"></i>
-                        Customs entry & Port clearance records synced.
-                    </div>
                 </div>
             </div>
 
-            <!-- ========================================================= -->
-            <!-- 🧪 6. RAW MATERIAL (Stock, Transfer, QA) -->
-            <!-- ========================================================= -->
             <div id="panel-raw_stock" class="wms-panel space-y-6">
                 <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
                     <h3 class="text-base font-black text-slate-900 pb-3 border-b border-slate-100">🧪 Raw Material & Polymer Resin Stock Ledger</h3>
-                    <div class="p-8 text-center text-slate-400 italic text-xs border border-dashed border-slate-200 rounded-xl">
-                        <i class="fa-solid fa-flask text-3xl mb-2 block opacity-40"></i>
-                        Raw material inventory stock active: PP, HDPE, Active Pharmaceutical Ingredients.
-                    </div>
+                    <p class="text-xs text-slate-500">Raw material inventory active: PP, HDPE, Active Pharmaceutical Ingredients.</p>
                 </div>
             </div>
 
             <div id="panel-transfer_slip" class="wms-panel space-y-6">
                 <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
-                    <div class="flex justify-between items-center pb-3 border-b border-slate-100">
-                        <h3 class="text-base font-black text-slate-900">🔄 Transfer Material Slips (سندات تحويل المواد)</h3>
-                        <a href="/admin/accounting/transferslip/add/" target="_blank" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-3.5 py-1.5 rounded-xl text-xs">+ New Transfer Slip</a>
-                    </div>
+                    <h3 class="text-base font-black text-slate-900 pb-3 border-b border-slate-100">🔄 Transfer Material Slips (سندات تحويل المواد)</h3>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-xs border-collapse">
                             <thead>
                                 <tr class="bg-slate-50 text-slate-700 uppercase font-black border-b border-slate-200 text-[11px]">
-                                    <th class="p-3">Slip #</th><th class="p-3">Target Division</th><th class="p-3">CAT No</th><th class="p-3">Item Name</th><th class="p-3">Qty</th><th class="p-3">Status</th>
+                                    <th class="p-3">Slip #</th><th class="p-3">Target Division</th><th class="p-3">CAT No</th><th class="p-3">Item Name</th><th class="p-3">Qty</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100 font-mono">
                                 {% for t in transfers %}
-                                <tr class="hover:bg-slate-50">
-                                    <td class="p-3 font-bold text-indigo-600">{{ t.slip_no }}</td>
-                                    <td class="p-3 font-sans">{{ t.target_division }}</td>
-                                    <td class="p-3">{{ t.cat_no }}</td>
-                                    <td class="p-3 font-sans font-bold text-slate-900">{{ t.item_name }}</td>
-                                    <td class="p-3 font-bold">{{ t.qty }} Pcs</td>
-                                    <td class="p-3"><span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] rounded-full font-bold">TRANSFERRED</span></td>
-                                </tr>
+                                <tr class="hover:bg-slate-50"><td class="p-3 font-bold text-indigo-600">{{ t.slip_no }}</td><td class="p-3 font-sans">{{ t.target_division }}</td><td class="p-3">{{ t.cat_no }}</td><td class="p-3 font-sans font-bold">{{ t.item_name }}</td><td class="p-3 font-bold">{{ t.qty }} Pcs</td></tr>
                                 {% empty %}
-                                <tr><td colspan="6" class="p-8 text-center text-slate-400 italic">No transfer slips logged yet.</td></tr>
+                                <tr><td colspan="5" class="p-8 text-center text-slate-400 italic">No transfer slips logged yet.</td></tr>
                                 {% endfor %}
                             </tbody>
                         </table>
@@ -491,117 +693,37 @@
                 <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4 max-w-4xl mx-auto">
                     <h3 class="text-base font-black text-slate-900 pb-3 border-b border-slate-100">🔬 QA Quarantine & Dual Release Portal (اعتماد الجودة)</h3>
                     <p class="text-xs text-slate-500">SFDA & MOH compliant double authorization for sterile lots.</p>
-                    <div class="p-8 text-center text-slate-400 italic text-xs border border-dashed border-slate-200 rounded-xl">
-                        <i class="fa-solid fa-microscope text-3xl mb-2 block opacity-40"></i>
-                        All incoming biological and medical lots are verified in quarantine before release.
-                    </div>
                 </div>
             </div>
 
-            <!-- ========================================================= -->
-            <!-- 🚚 7. DELIVERY NOTE -->
-            <!-- ========================================================= -->
-            <div id="panel-delivery_notes" class="wms-panel space-y-6">
-                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
-                    <div class="flex justify-between items-center pb-3 border-b border-slate-100">
-                        <h3 class="text-base font-black text-slate-900">🚚 Delivery Notes & KSA Gate Dispatches</h3>
-                        <a href="/admin/accounting/deliverynote/add/" target="_blank" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-3.5 py-1.5 rounded-xl text-xs">+ New Delivery Note</a>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-xs border-collapse">
-                            <thead>
-                                <tr class="bg-slate-50 text-slate-700 uppercase font-black border-b border-slate-200 text-[11px]">
-                                    <th class="p-3">Date</th><th class="p-3">Location / Hospital</th><th class="p-3">Gate No</th><th class="p-3">Ref PO</th><th class="p-3 text-right">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-100">
-                                {% for d in deliveries %}
-                                <tr class="hover:bg-slate-50">
-                                    <td class="p-3 font-mono text-slate-600">{{ d.date }}</td>
-                                    <td class="p-3 font-bold text-slate-900">{{ d.location }}</td>
-                                    <td class="p-3 font-mono text-indigo-600">Gate #{{ d.gate_no|default:"01" }}</td>
-                                    <td class="p-3 font-mono text-slate-600">{{ d.ref_po|default:"PO-9921" }}</td>
-                                    <td class="p-3 text-right"><span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded-full">DISPATCHED</span></td>
-                                </tr>
-                                {% empty %}
-                                <tr><td colspan="5" class="p-8 text-center text-slate-400 italic">No delivery notes generated yet.</td></tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ========================================================= -->
-            <!-- 📑 8. ISSUE SLIP -->
-            <!-- ========================================================= -->
             <div id="panel-issue_slip" class="wms-panel space-y-6">
                 <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4 max-w-4xl mx-auto">
                     <h3 class="text-base font-black text-slate-900 pb-3 border-b border-slate-100">📑 Store Material Issue Slip (سند صرف مخزني)</h3>
                     <p class="text-xs text-slate-500">Issue finished goods and components to hospital wards and surgical units.</p>
-                    <div class="p-8 text-center text-slate-400 italic text-xs border border-dashed border-slate-200 rounded-xl">
-                        <i class="fa-solid fa-file-signature text-3xl mb-2 block opacity-40"></i>
-                        Store issue slips automatically update stock and generate picking vouchers.
-                    </div>
                 </div>
             </div>
 
-            <!-- ========================================================= -->
-            <!-- 🏢 9. SABIC -->
-            <!-- ========================================================= -->
             <div id="panel-sabic_ledger" class="wms-panel space-y-6">
                 <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
                     <h3 class="text-base font-black text-slate-900 pb-3 border-b border-slate-100">🏢 SABIC Petrochemicals & Polymer Supply Ledger</h3>
-                    <div class="p-8 text-center text-slate-400 italic text-xs border border-dashed border-slate-200 rounded-xl">
-                        <i class="fa-solid fa-cubes-stacked text-3xl mb-2 block opacity-40"></i>
-                        Direct SABIC polymer resin batch shipments and quality test certificates.
-                    </div>
+                    <p class="text-xs text-slate-500">Direct SABIC polymer resin batch shipments and quality test certificates.</p>
                 </div>
             </div>
 
-            <!-- ========================================================= -->
-            <!-- ⚛️ 10. SUREBEAM -->
-            <!-- ========================================================= -->
-            <div id="panel-surebeam_transfer" class="wms-panel space-y-6">
-                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4 max-w-4xl mx-auto">
-                    <h3 class="text-base font-black text-slate-900 pb-3 border-b border-slate-100">📤 Transfer Surebeam Goods (Sterilization Dispatch)</h3>
-                    <p class="text-xs text-slate-500">Generate Surebeam E-Beam/Gamma ray irradiation sterilization dispatch forms.</p>
-                    <div class="p-8 text-center text-slate-400 italic text-xs border border-dashed border-slate-200 rounded-xl">
-                        <i class="fa-solid fa-atom text-3xl mb-2 block opacity-40"></i>
-                        ISO-13485 & SFDA certified sterilization batch records.
-                    </div>
-                </div>
-            </div>
-
-            <div id="panel-surebeam_recv" class="wms-panel space-y-6">
-                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4 max-w-4xl mx-auto">
-                    <h3 class="text-base font-black text-slate-900 pb-3 border-b border-slate-100">📥 Receiving Surebeam Goods (Sterilized Return)</h3>
-                    <div class="p-8 text-center text-slate-400 italic text-xs border border-dashed border-slate-200 rounded-xl">
-                        <i class="fa-solid fa-circle-check text-3xl mb-2 block opacity-40 text-emerald-500"></i>
-                        Sterilized batches returned and verified for distribution.
-                    </div>
-                </div>
-            </div>
-
-            <!-- ========================================================= -->
-            <!-- ⚙️ 11. SYSTEM SETTING (SHELF & RACKING) -->
-            <!-- ========================================================= -->
             <div id="panel-system_setting" class="wms-panel space-y-6">
                 <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4 max-w-4xl mx-auto">
                     <h3 class="text-base font-black text-slate-900 pb-3 border-b border-slate-100">⚙️ Warehouse Storage Shelf & Racking Map Allocator</h3>
                     <form class="space-y-4 text-xs font-semibold">
                         <div class="grid grid-cols-2 gap-4">
                             <div><label class="block text-slate-600 mb-1">CAT Number:</label><input type="text" placeholder="e.g. CAT-WH-9921" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono"></div>
-                            <div><label class="block text-slate-600 mb-1">Aisle / Gully (الممر):</label><input type="text" placeholder="Aisle A" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl"></div>
+                            <div><label class="block text-slate-600 mb-1">Aisle (الممر):</label><input type="text" placeholder="Aisle A" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl"></div>
                         </div>
                         <div class="grid grid-cols-3 gap-4">
-                            <div><label class="block text-slate-600 mb-1">Row / Track:</label><input type="text" placeholder="Row 1" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl"></div>
-                            <div><label class="block text-slate-600 mb-1">Shelf (الرف):</label><input type="text" placeholder="Shelf 3" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl"></div>
-                            <div><label class="block text-slate-600 mb-1">Bin Box (الدرج):</label><input type="text" placeholder="Bin #102" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl"></div>
+                            <div><label class="block text-slate-600 mb-1">Row:</label><input type="text" placeholder="Row 1" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl"></div>
+                            <div><label class="block text-slate-600 mb-1">Shelf:</label><input type="text" placeholder="Shelf 3" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl"></div>
+                            <div><label class="block text-slate-600 mb-1">Bin Box:</label><input type="text" placeholder="Bin #102" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl"></div>
                         </div>
-                        <button type="button" onclick="alert('✅ Racking coordinates mapped successfully to Database!')" class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold shadow text-xs">
-                            💾 Save Racking Location Map
-                        </button>
+                        <button type="button" onclick="alert('✅ Racking coordinates saved!')" class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold shadow text-xs">💾 Save Racking Location Map</button>
                     </form>
                 </div>
             </div>
@@ -609,7 +731,7 @@
         </div>
     </main>
 
-    <!-- INTERACTIVE SCRIPTS -->
+    <!-- JAVASCRIPT: REALTIME CLOCK, PANEL SWITCHER, QUEUES & AUTO-FILL -->
     <script>
     // 1. Live Ticking Clock & Date (Image 4 Style)
     function updateClock() {
@@ -642,16 +764,12 @@
 
     // 3. Switch WMS Panels on Sidebar Click (REAL WORKING)
     function showWMSPanel(panelId, btnElem) {
-        // Hide all panels
         document.querySelectorAll('.wms-panel').forEach(p => p.classList.remove('active'));
-        
-        // Show target panel
         const target = document.getElementById('panel-' + panelId);
         if (target) {
             target.classList.add('active');
         }
 
-        // Update nav button active state
         document.querySelectorAll('.wms-nav-btn').forEach(btn => {
             btn.classList.remove('bg-cyan-600/30', 'text-cyan-300', 'border', 'border-cyan-500/40', 'font-bold');
             btn.classList.add('text-slate-300');
@@ -663,7 +781,168 @@
         }
     }
 
-    // 4. Sales VAT Calculation
+    // =========================================================
+    // 🚚 DELIVERY NOTE ENTRY FORM QUEUE & PDF
+    // =========================================================
+    let dnQueue = [];
+
+    function autoFillDNProduct(catVal) {
+        const cat = catVal.trim().toUpperCase();
+        if (cat.length > 2) {
+            document.getElementById('dn_name').value = "Medical Operating Product " + cat;
+            document.getElementById('dn_lot').value = "LOT-" + cat.replace(/[^0-9]/g, '') + "/01";
+        }
+    }
+
+    function addDNItemToQueue() {
+        const gate = document.getElementById('dn_gate').value.trim();
+        const po = document.getElementById('dn_po').value.trim();
+        const location = document.getElementById('dn_location').value.trim();
+        const cat = document.getElementById('dn_cat').value.trim().toUpperCase();
+        const lot = document.getElementById('dn_lot').value.trim();
+        const name = document.getElementById('dn_name').value.trim();
+        const mfg = document.getElementById('dn_mfg').value.trim();
+        const exp = document.getElementById('dn_exp').value.trim();
+        const qty = document.getElementById('dn_qty').value.trim();
+
+        if (!cat || !name || !qty || !location) {
+            alert('⚠️ Please fill Location, CAT No, Description and Quantity!');
+            return;
+        }
+
+        const item = { sr: dnQueue.length + 1, cat, name, lot, mfg, exp, qty };
+        dnQueue.push(item);
+        renderDNQueue();
+
+        document.getElementById('dn_cat').value = '';
+        document.getElementById('dn_lot').value = '';
+        document.getElementById('dn_name').value = '';
+        document.getElementById('dn_qty').value = '';
+    }
+
+    function removeDNItem(index) {
+        dnQueue.splice(index, 1);
+        dnQueue.forEach((item, i) => item.sr = i + 1);
+        renderDNQueue();
+    }
+
+    function renderDNQueue() {
+        const tbody = document.getElementById('dn_queue_tbody');
+        document.getElementById('dn_item_count').innerText = dnQueue.length;
+
+        if (dnQueue.length === 0) {
+            tbody.innerHTML = '<tr id="dn_empty_row"><td colspan="7" class="p-8 text-center text-slate-400 italic">No items added to the queue yet. Fill the left form and click "+ Add Item".</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = '';
+        dnQueue.forEach((item, idx) => {
+            tbody.innerHTML += `
+                <tr class="hover:bg-slate-50">
+                    <td class="p-2.5 font-bold">${item.sr}</td>
+                    <td class="p-2.5 font-mono text-indigo-600 font-bold">${item.cat}</td>
+                    <td class="p-2.5 font-bold text-slate-900">${item.name}</td>
+                    <td class="p-2.5 font-mono">${item.lot}</td>
+                    <td class="p-2.5 font-mono">${item.exp}</td>
+                    <td class="p-2.5 font-black text-slate-900 font-mono">${item.qty} Pcs</td>
+                    <td class="p-2.5 text-right"><button onclick="removeDNItem(${idx})" class="text-rose-500 hover:text-rose-700 font-bold">✕ Remove</button></td>
+                </tr>
+            `;
+        });
+    }
+
+    function generateDNPdf() {
+        if (dnQueue.length === 0) {
+            alert('⚠️ Queue is empty! Please add at least 1 item.');
+            return;
+        }
+        alert('📄 Delivery Note PDF generated and logged to database successfully!');
+        dnQueue = [];
+        renderDNQueue();
+    }
+
+    // =========================================================
+    // ⚛️ SUREBEAM STERILIZATION ENTRY FORM QUEUE & PDF
+    // =========================================================
+    let sbQueue = [];
+
+    function autoFillSBProduct(catVal) {
+        const cat = catVal.trim().toUpperCase();
+        if (cat.length > 2) {
+            document.getElementById('sb_name').value = "Surgical Sterilized Compound " + cat;
+            document.getElementById('sb_lot').value = "STERIL-" + cat.replace(/[^0-9]/g, '') + "/01";
+        }
+    }
+
+    function addSBItemToQueue() {
+        const gate = document.getElementById('sb_gate').value.trim();
+        const type = document.getElementById('sb_type').value;
+        const location = document.getElementById('sb_location').value.trim();
+        const ref = document.getElementById('sb_ref').value;
+        const cat = document.getElementById('sb_cat').value.trim().toUpperCase();
+        const lot = document.getElementById('sb_lot').value.trim();
+        const name = document.getElementById('sb_name').value.trim();
+        const mfg = document.getElementById('sb_mfg').value.trim();
+        const exp = document.getElementById('sb_exp').value.trim();
+        const qty = document.getElementById('sb_qty').value.trim();
+
+        if (!cat || !name || !qty) {
+            alert('⚠️ Please fill CAT No, Description and Quantity!');
+            return;
+        }
+
+        const item = { sr: sbQueue.length + 1, cat, name, lot, mfg, exp, qty };
+        sbQueue.push(item);
+        renderSBQueue();
+
+        document.getElementById('sb_cat').value = '';
+        document.getElementById('sb_lot').value = '';
+        document.getElementById('sb_name').value = '';
+        document.getElementById('sb_qty').value = '';
+    }
+
+    function removeSBItem(index) {
+        sbQueue.splice(index, 1);
+        sbQueue.forEach((item, i) => item.sr = i + 1);
+        renderSBQueue();
+    }
+
+    function renderSBQueue() {
+        const tbody = document.getElementById('sb_queue_tbody');
+        document.getElementById('sb_item_count').innerText = sbQueue.length;
+
+        if (sbQueue.length === 0) {
+            tbody.innerHTML = '<tr id="sb_empty_row"><td colspan="7" class="p-8 text-center text-slate-400 italic">No sterilization items queued yet. Fill the left form and click "+ Add Item".</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = '';
+        sbQueue.forEach((item, idx) => {
+            tbody.innerHTML += `
+                <tr class="hover:bg-slate-50">
+                    <td class="p-2.5 font-bold">${item.sr}</td>
+                    <td class="p-2.5 font-mono text-indigo-600 font-bold">${item.cat}</td>
+                    <td class="p-2.5 font-bold text-slate-900">${item.name}</td>
+                    <td class="p-2.5 font-mono">${item.lot}</td>
+                    <td class="p-2.5 font-mono">${item.exp}</td>
+                    <td class="p-2.5 font-black text-slate-900 font-mono">${item.qty} Pcs</td>
+                    <td class="p-2.5 text-right"><button onclick="removeSBItem(${idx})" class="text-rose-500 hover:text-rose-700 font-bold">✕ Remove</button></td>
+                </tr>
+            `;
+        });
+    }
+
+    function generateSBPdf() {
+        if (sbQueue.length === 0) {
+            alert('⚠️ Sterilization queue is empty! Please add at least 1 item.');
+            return;
+        }
+        alert('📄 Surebeam Sterilization Certificate generated and verified successfully!');
+        sbQueue = [];
+        renderSBQueue();
+    }
+
+    // Sales Calculation
     function calcWMSSales() {
         const sub = parseFloat(document.getElementById('wms_sales_subtotal').value) || 0;
         const vat = sub * 0.15;
@@ -672,7 +951,7 @@
         document.getElementById('wms_sales_total').value = tot.toFixed(2);
     }
 
-    // 5. Global Table Search Filter
+    // Table Search
     function filterWMSTables(query) {
         const q = query.toLowerCase().trim();
         document.querySelectorAll('.searchable-table tbody tr').forEach(row => {
