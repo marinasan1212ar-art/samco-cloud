@@ -18,7 +18,7 @@
     </div>
 
     <div class="max-w-6xl mx-auto space-y-6">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl flex justify-between items-center">
+        <div class="bg-gradient-to-b from-[#0a0f1d] via-[#0d1527] to-[#060a12] border border-slate-800 rounded-2xl p-6 shadow-xl flex justify-between items-center">
             <div>
                 <h1 class="text-xl md:text-2xl font-black text-white">🏦 {% if is_ar %}المطابقة والتسوية البنكية{% else %}Bank Statement Reconciliation Hub{% endif %}</h1>
                 <p class="text-xs text-slate-400 mt-1">Automated Bank Matching & Transaction Clearing (Quyod Engine)</p>
@@ -35,7 +35,7 @@
         </div>
 
         <!-- CSV Statement Upload Box -->
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
+        <div class="bg-gradient-to-b from-[#0a0f1d] via-[#0d1527] to-[#060a12] border border-slate-800 rounded-2xl p-6 shadow-xl">
             <h3 class="text-sm font-bold text-sky-400 mb-3"><i class="fa-solid fa-file-csv"></i> Upload Bank Statement (CSV File):</h3>
             <form method="POST" enctype="multipart/form-data" class="flex flex-col sm:flex-row gap-3 items-center text-xs">
                 {% csrf_token %}
@@ -47,7 +47,7 @@
         </div>
 
         <!-- Reconciliation Table -->
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl overflow-hidden">
+        <div class="bg-gradient-to-b from-[#0a0f1d] via-[#0d1527] to-[#060a12] border border-slate-800 rounded-2xl p-6 shadow-xl overflow-hidden">
             <h3 class="text-sm font-bold text-white mb-4">📋 Bank Statement Lines vs System Ledgers</h3>
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-xs">

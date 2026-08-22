@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QOYOD - SAMCO Cloud ERP</title>
+    <title>SAMCO - SAMCO Cloud ERP</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;900&family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
@@ -16,13 +16,13 @@
 </head>
 <body class="bg-slate-50 text-slate-800 h-full flex overflow-hidden">
 
-    <!-- 1. QOYOD SIDEBAR -->
+    <!-- 1. SAMCO SIDEBAR -->
     <aside id="sidebar" class="w-64 bg-[#0a1020] text-slate-300 flex flex-col justify-between shrink-0 h-full border-r border-slate-800 z-30 select-none transition-all duration-300">
         
         <!-- Top Logo & Navigation -->
         <div class="flex flex-col flex-1 overflow-y-auto custom-scrollbar p-4">
             
-            <!-- Exact Perfect QOYOD Vector Logo -->
+            <!-- Exact Perfect SAMCO Vector Logo -->
             <div class="flex items-center justify-between pb-4 border-b border-slate-800/80 mb-4 px-1">
                 <a href="/" id="logo-container" class="flex flex-col overflow-hidden select-none">
                     <div class="flex items-center">
@@ -45,8 +45,8 @@
                         </svg>
                     </div>
                     <div id="logo-subtitles" class="mt-1 leading-tight transition-opacity duration-200">
-                        <span class="text-[9.5px] font-bold text-slate-100 tracking-[0.18em] block" dir="rtl">أفضل تجربة أعمال</span>
-                        <span class="text-[7.2px] font-medium text-slate-400 tracking-[0.06em] block mt-0.5">Best Business Experience</span>
+                        <span class="text-[9.5px] font-bold text-slate-100 tracking-[0.18em] block" dir="rtl">Cloud ERP System</span>
+                        <span class="text-[7.2px] font-medium text-slate-400 tracking-[0.06em] block mt-0.5">Cloud ERP System</span>
                     </div>
                 </a>
                 <button id="sidebarToggle" class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800/80 transition" title="Toggle Sidebar">
@@ -70,7 +70,7 @@
                         </div>
                         <i class="fa-solid fa-chevron-down text-[10px] nav-label transition-transform duration-200"></i>
                     </button>
-                    <div id="sales-submenu" class="hidden pl-8 pr-2 py-1 space-y-1 text-[11px] bg-slate-900/40 rounded-xl my-1">
+                    <div id="sales-submenu" class="hidden pl-8 pr-2 py-1 space-y-1 text-[11px] bg-gradient-to-b from-[#0a0f1d] via-[#0d1527] to-[#060a12]/40 rounded-xl my-1">
                         <a href="/invoices/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-white transition" data-i18n="invoices">Invoices</a>
                         <a href="/invoices/create/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-indigo-300 font-bold transition" data-i18n="create_invoice">+ Create Invoice</a>
                         <a href="/sales/price-lists/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-white transition" data-i18n="price_lists">Price Lists</a>
@@ -88,7 +88,7 @@
                         </div>
                         <i class="fa-solid fa-chevron-down text-[10px] nav-label transition-transform duration-200"></i>
                     </button>
-                    <div id="purchases-submenu" class="hidden pl-8 pr-2 py-1 space-y-1 text-[11px] bg-slate-900/40 rounded-xl my-1">
+                    <div id="purchases-submenu" class="hidden pl-8 pr-2 py-1 space-y-1 text-[11px] bg-gradient-to-b from-[#0a0f1d] via-[#0d1527] to-[#060a12]/40 rounded-xl my-1">
                         <a href="/admin/accounting/purchasebill/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-white transition" data-i18n="purchase_bills">Purchase Bills</a>
                         <a href="/admin/accounting/directexpense/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-white transition" data-i18n="direct_expenses">Direct Expenses</a>
                         <a href="/admin/accounting/supplier/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-white transition" data-i18n="suppliers">Suppliers Directory</a>
@@ -119,7 +119,7 @@
                         </div>
                         <i class="fa-solid fa-chevron-down text-[10px] nav-label transition-transform duration-200"></i>
                     </button>
-                    <div id="banking-submenu" class="hidden pl-8 pr-2 py-1 space-y-1 text-[11px] bg-slate-900/40 rounded-xl my-1">
+                    <div id="banking-submenu" class="hidden pl-8 pr-2 py-1 space-y-1 text-[11px] bg-gradient-to-b from-[#0a0f1d] via-[#0d1527] to-[#060a12]/40 rounded-xl my-1">
                         <a href="/banking/transfer/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-white transition" data-i18n="bank_accounts">Bank Accounts</a>
                         <a href="/banking/transfer/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-white transition" data-i18n="transfers">Fund Transfers</a>
                         <a href="/banking/transfer/" class="block py-1.5 px-3 rounded-lg text-slate-400 hover:bg-slate-800/80 hover:text-white transition" data-i18n="reconciliation">Reconciliation</a>
@@ -157,7 +157,7 @@
         <div id="plan-badge" class="p-4 border-t border-slate-800/80 bg-[#080d1a]">
             <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700/50">
                 <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block" data-i18n="your_plan">YOUR PLAN</span>
-                <span class="text-sm font-black text-indigo-400">Qoyod Pro</span>
+                <span class="text-sm font-black text-indigo-400">SAMCO Pro</span>
             </div>
         </div>
     </aside>
@@ -169,7 +169,7 @@
         <header class="bg-white border-b border-slate-200 px-6 py-3.5 flex justify-between items-center z-20 relative">
             <div class="relative w-80">
                 <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                <input id="globalSearch" type="text" placeholder="Search in Qoyod..." class="w-full pl-9 pr-12 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+                <input id="globalSearch" type="text" placeholder="Search in SAMCO ERP..." class="w-full pl-9 pr-12 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
                 <span class="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-mono bg-white border border-slate-200 px-1.5 py-0.5 rounded text-slate-400 font-bold cursor-pointer" onclick="document.getElementById('globalSearch').focus()">⌘ K</span>
             </div>
 
@@ -241,7 +241,7 @@
                     <h1 class="text-2xl font-black text-slate-900 flex items-center gap-1.5">
                         <span id="dynamic-greeting">Good Afternoon</span>, Shamim 👋
                     </h1>
-                    <p class="text-xs text-slate-500 mt-0.5" data-i18n="welcome_sub">Welcome back to your Qoyod ERP Dashboard</p>
+                    <p class="text-xs text-slate-500 mt-0.5" data-i18n="welcome_sub">Welcome back to your SAMCO ERP Dashboard</p>
                 </div>
                 <div class="flex items-center gap-3">
                     <select class="bg-white border border-slate-200 text-xs font-bold text-slate-700 px-3 py-2 rounded-xl focus:outline-none shadow-sm cursor-pointer">
@@ -492,7 +492,7 @@
             debt_aging: "Debt Aging",
             settings: "Settings",
             your_plan: "YOUR PLAN",
-            welcome_sub: "Welcome back to your Qoyod ERP Dashboard",
+            welcome_sub: "Welcome back to your SAMCO ERP Dashboard",
             total_sales: "Total Sales",
             sales_sub: "▲ Real-time Invoiced Sales",
             total_purchases: "Total Purchases",
@@ -539,7 +539,7 @@
             last_month: "Last Month",
             this_quarter: "This Quarter",
             this_year: "This Year",
-            search_ph: "Search in Qoyod..."
+            search_ph: "Search in SAMCO ERP..."
         },
         ar: {
             lang_btn: "English",
@@ -644,17 +644,17 @@
             elem.innerText = greeting;
         }
 
-        localStorage.setItem('qoyod_lang', lang);
+        localStorage.setItem('samco_lang', lang);
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-        const savedLang = localStorage.getItem('qoyod_lang') || 'en';
+        const savedLang = localStorage.getItem('samco_lang') || 'en';
         applyLanguage(savedLang);
 
         const langToggleBtn = document.getElementById('langToggleBtn');
         if (langToggleBtn) {
             langToggleBtn.addEventListener('click', function() {
-                const currentLang = localStorage.getItem('qoyod_lang') || 'en';
+                const currentLang = localStorage.getItem('samco_lang') || 'en';
                 applyLanguage(currentLang === 'en' ? 'ar' : 'en');
             });
         }

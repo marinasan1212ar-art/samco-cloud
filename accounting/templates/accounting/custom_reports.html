@@ -32,7 +32,7 @@
     <div class="max-w-6xl mx-auto space-y-6">
         
         <!-- Header Banner -->
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 print-card">
+        <div class="bg-gradient-to-b from-[#0a0f1d] via-[#0d1527] to-[#060a12] border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 print-card">
             <div>
                 <h1 class="text-xl md:text-2xl font-black text-white">{{ company.company_name_en }}</h1>
                 <p class="text-sm font-bold text-slate-400" dir="rtl">{{ company.company_name_ar }}</p>
@@ -45,7 +45,7 @@
         </div>
 
         <!-- 🔍 DYNAMIC FILTER CARD (Mobile Optimized, No-Print) -->
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl no-print">
+        <div class="bg-gradient-to-b from-[#0a0f1d] via-[#0d1527] to-[#060a12] border border-slate-800 rounded-2xl p-5 shadow-xl no-print">
             <form method="GET" action="/custom-reports/" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 text-xs">
                 <!-- Report Type -->
                 <div>
@@ -91,22 +91,22 @@
 
         <!-- 📊 KPI METRIC SUMMARY CARDS -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 print-card">
+            <div class="bg-gradient-to-b from-[#0a0f1d] via-[#0d1527] to-[#060a12] border border-slate-800 rounded-2xl p-4 print-card">
                 <span class="text-slate-400 font-bold uppercase">{% if is_ar %}المبلغ الصافي الخاضع للضريبة{% else %}Net Subtotal (Excl. VAT){% endif %}</span>
                 <p class="text-xl font-black text-white mt-1">{{ tot_amount|floatformat:2 }} <span class="text-xs text-cyan-400">SAR</span></p>
             </div>
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 print-card">
+            <div class="bg-gradient-to-b from-[#0a0f1d] via-[#0d1527] to-[#060a12] border border-slate-800 rounded-2xl p-4 print-card">
                 <span class="text-slate-400 font-bold uppercase">{% if is_ar %}ضريبة القيمة المضافة (15%){% else %}Total 15% VAT Tax{% endif %}</span>
                 <p class="text-xl font-black text-amber-400 mt-1">{{ tot_vat|floatformat:2 }} <span class="text-xs text-slate-400">SAR</span></p>
             </div>
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 print-card">
+            <div class="bg-gradient-to-b from-[#0a0f1d] via-[#0d1527] to-[#060a12] border border-slate-800 rounded-2xl p-4 print-card">
                 <span class="text-slate-400 font-bold uppercase">{% if is_ar %}المجموع الإجمالي الشامل{% else %}Grand Total (With VAT){% endif %}</span>
                 <p class="text-xl font-black text-emerald-400 mt-1">{{ tot_grand|floatformat:2 }} <span class="text-xs text-slate-400">SAR</span></p>
             </div>
         </div>
 
         <!-- 📋 REPORT DATA TABLE -->
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl print-card overflow-hidden">
+        <div class="bg-gradient-to-b from-[#0a0f1d] via-[#0d1527] to-[#060a12] border border-slate-800 rounded-2xl p-6 shadow-xl print-card overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-xs border-collapse">
                     <thead>

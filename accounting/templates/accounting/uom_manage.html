@@ -15,7 +15,7 @@
     </div>
 
     <div class="max-w-4xl mx-auto space-y-6">
-        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl">
+        <div class="bg-gradient-to-b from-[#0a0f1d] via-[#0d1527] to-[#060a12] border border-slate-800 rounded-3xl p-6 shadow-2xl">
             <h1 class="text-lg font-black text-white mb-1">📏 {% if is_ar %}وحدات القياس (Units of Measure / UOM){% else %}Units of Measure Management{% endif %}</h1>
             <p class="text-xs text-slate-400 mb-6">Manage packaging units (Cartons, Boxes, Dozens, Pieces) for sales and purchasing.</p>
 
@@ -33,7 +33,7 @@
                 {% for u in units %}
                 <div class="flex justify-between items-center p-3 bg-slate-800/60 rounded-xl border border-slate-700 text-xs">
                     <span class="font-bold text-white">{{ u.name }}</span>
-                    <span class="px-3 py-1 bg-slate-900 text-cyan-400 font-mono font-bold rounded-lg border border-slate-700">{{ u.symbol }}</span>
+                    <span class="px-3 py-1 bg-gradient-to-b from-[#0a0f1d] via-[#0d1527] to-[#060a12] text-cyan-400 font-mono font-bold rounded-lg border border-slate-700">{{ u.symbol }}</span>
                 </div>
                 {% empty %}
                 <p class="text-slate-500 text-xs italic text-center py-4">No units added yet. Standard base unit is Pieces (Pcs).</p>

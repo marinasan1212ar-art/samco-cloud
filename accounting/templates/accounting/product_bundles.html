@@ -18,7 +18,7 @@
     </div>
 
     <div class="max-w-6xl mx-auto space-y-6">
-        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl">
+        <div class="bg-gradient-to-b from-[#0a0f1d] via-[#0d1527] to-[#060a12] border border-slate-800 rounded-3xl p-6 shadow-2xl">
             <h1 class="text-lg font-black text-white mb-1">📦 {% if is_ar %}المنتجات المجمعة والباقات (Combo Kits / Bundles){% else %}Product Bundles & Combo Kits (Quyod Engine){% endif %}</h1>
             <p class="text-xs text-slate-400 mb-6">Create promotional bundles that automatically deduct individual component stocks upon sale.</p>
 
@@ -82,7 +82,7 @@
         <!-- Bundle Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {% for b in bundle_products %}
-            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-xl space-y-3">
+            <div class="bg-gradient-to-b from-[#0a0f1d] via-[#0d1527] to-[#060a12] border border-slate-800 rounded-3xl p-5 shadow-xl space-y-3">
                 <div class="flex justify-between items-start">
                     <div>
                         <h3 class="font-black text-sm text-white">{{ b.name }}</h3>
@@ -103,7 +103,7 @@
                 </div>
             </div>
             {% empty %}
-            <div class="col-span-full bg-slate-900 border border-slate-800 rounded-3xl p-8 text-center text-slate-500 italic text-xs">
+            <div class="col-span-full bg-gradient-to-b from-[#0a0f1d] via-[#0d1527] to-[#060a12] border border-slate-800 rounded-3xl p-8 text-center text-slate-500 italic text-xs">
                 No product bundles created yet. Create a combo kit above!
             </div>
             {% endfor %}
