@@ -17,38 +17,41 @@
 <body class="bg-slate-50 text-slate-800 h-full flex overflow-hidden">
 
     <!-- 1. SAMCO SIDEBAR -->
-    <aside id="sidebar" class="w-64 bg-[#0a1020] text-slate-300 flex flex-col justify-between shrink-0 h-full border-r border-slate-800 z-30 select-none transition-all duration-300">
-        
-        <!-- Top Logo & Navigation -->
-        <div class="flex flex-col flex-1 overflow-y-auto custom-scrollbar p-4">
-            
-            <!-- Exact Perfect SAMCO Vector Logo -->
-            <div class="flex items-center justify-between pb-4 border-b border-slate-800/80 mb-4 px-1">
-                <a href="/" id="logo-container" class="flex flex-col overflow-hidden select-none">
-                    <div class="flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 38" class="w-36 h-auto">
-                            <!-- Q Ring & Snug Attached Cyan Square Dot -->
-                            <circle cx="16" cy="17" r="11.5" fill="none" stroke="#ffffff" stroke-width="4.8"/>
-                            <rect x="9.5" y="24.5" width="6.5" height="6.5" rx="1.5" fill="#22d3ee"/>
-                            
-                            <!-- O -->
-                            <circle cx="45" cy="17" r="11.5" fill="none" stroke="#ffffff" stroke-width="4.8"/>
-                            
-                            <!-- Y -->
-                            <path d="M 64.5 6 L 73 18.5 L 81.5 6 M 73 18.5 L 73 28.5" fill="none" stroke="#ffffff" stroke-width="4.8" stroke-linecap="round" stroke-linejoin="round"/>
-                            
-                            <!-- O -->
-                            <circle cx="102" cy="17" r="11.5" fill="none" stroke="#ffffff" stroke-width="4.8"/>
-                            
-                            <!-- D -->
-                            <path d="M 123 6 L 133 6 C 141 6 146.5 11 146.5 17.25 C 146.5 23.5 141 28.5 133 28.5 L 123 28.5 Z" fill="none" stroke="#ffffff" stroke-width="4.8" stroke-linejoin="round"/>
-                        </svg>
-                    </div>
-                    <div id="logo-subtitles" class="mt-1 leading-tight transition-opacity duration-200">
-                        <span class="text-[9.5px] font-bold text-slate-100 tracking-[0.18em] block" dir="rtl">Cloud ERP System</span>
-                        <span class="text-[7.2px] font-medium text-slate-400 tracking-[0.06em] block mt-0.5">Cloud ERP System</span>
-                    </div>
-                </a>
+    <aside id="sidebar" class="w-64 bg-[#0a1020] text-slate-300 flex flex-col justify-between shrink-0 h-full border-r border-slate-800 z-30 select-none transition-all duration-300"><!-- SAMCO LUXURY BRANDING LOGO -->
+<div class="samco-brand-wrapper" style="display: flex; align-items: center; gap: 12px; padding: 6px 0;">
+  <!-- Stylized S Icon Box -->
+  <div style="width: 44px; height: 44px; min-width: 44px; border-radius: 12px; background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #7928ca 100%); padding: 2px; box-shadow: 0 0 20px rgba(0, 242, 254, 0.4); display: flex; align-items: center; justify-content: center;">
+    <div style="width: 100%; height: 100%; background: #070d19; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+      <svg width="26" height="26" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Top S Curve (Cyan/Teal) -->
+        <path d="M78 28C72 14 55 8 36 12C20 15 10 28 12 42C13 49 18 54 26 57L48 64C56 67 59 71 58 76C57 82 48 86 36 84C24 82 18 73 18 73L6 81C6 81 16 95 38 98C60 101 73 89 75 74C77 62 70 54 58 50L38 43C31 40 28 37 29 32C30 26 38 23 48 24C60 25 67 33 67 33L78 28Z" fill="url(#samco_s_grad)"/>
+        <!-- Swoosh Accent -->
+        <path d="M88 45C85 30 75 22 75 22L66 31C66 31 73 37 75 48C77 60 70 70 70 70L81 78C81 78 91 63 88 45Z" fill="url(#samco_accent_grad)"/>
+        <defs>
+          <linearGradient id="samco_s_grad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="0.5" stop-color="#38EF7D"/>
+            <stop offset="1" stop-color="#4FACFE"/>
+          </linearGradient>
+          <linearGradient id="samco_accent_grad" x1="60" y1="20" x2="90" y2="80" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="1" stop-color="#7928CA"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+  </div>
+
+  <!-- SAMCO Text Branding -->
+  <div style="display: flex; flex-direction: column; justify-content: center;">
+    <span style="font-size: 25px; font-weight: 900; letter-spacing: 2.5px; line-height: 1.05; text-transform: uppercase; background: linear-gradient(135deg, #00f2fe 0%, #38ef7d 45%, #4facfe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 10px rgba(0, 242, 254, 0.45)); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+      SAMCO
+    </span>
+    <span style="font-size: 8.5px; font-weight: 700; color: #64748b; letter-spacing: 2px; text-transform: uppercase; margin-top: 3px;">
+      CLOUD ERP SYSTEM
+    </span>
+  </div>
+</div></a>
                 <button id="sidebarToggle" class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800/80 transition" title="Toggle Sidebar">
                     <i class="fa-solid fa-bars text-lg"></i>
                 </button>
@@ -56,10 +59,41 @@
 
             <!-- Standard Navigation Links with Interactive Dropdowns -->
             <nav class="space-y-1 text-xs font-semibold">
-                <a href="/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-indigo-600 text-white font-bold shadow-sm shadow-indigo-600/30">
-                    <i class="fa-solid fa-gauge-high w-4 text-center"></i>
-                    <span class="nav-label" data-i18n="dashboard">Dashboard</span>
-                </a>
+                <a href="/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-indigo-600 text-white font-bold shadow-sm shadow-indigo-600/30"><!-- SAMCO LUXURY BRANDING LOGO -->
+<div class="samco-brand-wrapper" style="display: flex; align-items: center; gap: 12px; padding: 6px 0;">
+  <!-- Stylized S Icon Box -->
+  <div style="width: 44px; height: 44px; min-width: 44px; border-radius: 12px; background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #7928ca 100%); padding: 2px; box-shadow: 0 0 20px rgba(0, 242, 254, 0.4); display: flex; align-items: center; justify-content: center;">
+    <div style="width: 100%; height: 100%; background: #070d19; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+      <svg width="26" height="26" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Top S Curve (Cyan/Teal) -->
+        <path d="M78 28C72 14 55 8 36 12C20 15 10 28 12 42C13 49 18 54 26 57L48 64C56 67 59 71 58 76C57 82 48 86 36 84C24 82 18 73 18 73L6 81C6 81 16 95 38 98C60 101 73 89 75 74C77 62 70 54 58 50L38 43C31 40 28 37 29 32C30 26 38 23 48 24C60 25 67 33 67 33L78 28Z" fill="url(#samco_s_grad)"/>
+        <!-- Swoosh Accent -->
+        <path d="M88 45C85 30 75 22 75 22L66 31C66 31 73 37 75 48C77 60 70 70 70 70L81 78C81 78 91 63 88 45Z" fill="url(#samco_accent_grad)"/>
+        <defs>
+          <linearGradient id="samco_s_grad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="0.5" stop-color="#38EF7D"/>
+            <stop offset="1" stop-color="#4FACFE"/>
+          </linearGradient>
+          <linearGradient id="samco_accent_grad" x1="60" y1="20" x2="90" y2="80" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="1" stop-color="#7928CA"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+  </div>
+
+  <!-- SAMCO Text Branding -->
+  <div style="display: flex; flex-direction: column; justify-content: center;">
+    <span style="font-size: 25px; font-weight: 900; letter-spacing: 2.5px; line-height: 1.05; text-transform: uppercase; background: linear-gradient(135deg, #00f2fe 0%, #38ef7d 45%, #4facfe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 10px rgba(0, 242, 254, 0.45)); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+      SAMCO
+    </span>
+    <span style="font-size: 8.5px; font-weight: 700; color: #64748b; letter-spacing: 2px; text-transform: uppercase; margin-top: 3px;">
+      CLOUD ERP SYSTEM
+    </span>
+  </div>
+</div></a>
 
                 <!-- 1. SALES DROPDOWN -->
                 <div class="pt-1">
@@ -95,20 +129,113 @@
                     </div>
                 </div>
 
-                <a href="/admin/accounting/directexpense/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
-                    <i class="fa-solid fa-receipt w-4 text-center"></i>
-                    <span class="nav-label" data-i18n="expenses">Expenses</span>
-                </a>
+                <a href="/admin/accounting/directexpense/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition"><!-- SAMCO LUXURY BRANDING LOGO -->
+<div class="samco-brand-wrapper" style="display: flex; align-items: center; gap: 12px; padding: 6px 0;">
+  <!-- Stylized S Icon Box -->
+  <div style="width: 44px; height: 44px; min-width: 44px; border-radius: 12px; background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #7928ca 100%); padding: 2px; box-shadow: 0 0 20px rgba(0, 242, 254, 0.4); display: flex; align-items: center; justify-content: center;">
+    <div style="width: 100%; height: 100%; background: #070d19; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+      <svg width="26" height="26" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Top S Curve (Cyan/Teal) -->
+        <path d="M78 28C72 14 55 8 36 12C20 15 10 28 12 42C13 49 18 54 26 57L48 64C56 67 59 71 58 76C57 82 48 86 36 84C24 82 18 73 18 73L6 81C6 81 16 95 38 98C60 101 73 89 75 74C77 62 70 54 58 50L38 43C31 40 28 37 29 32C30 26 38 23 48 24C60 25 67 33 67 33L78 28Z" fill="url(#samco_s_grad)"/>
+        <!-- Swoosh Accent -->
+        <path d="M88 45C85 30 75 22 75 22L66 31C66 31 73 37 75 48C77 60 70 70 70 70L81 78C81 78 91 63 88 45Z" fill="url(#samco_accent_grad)"/>
+        <defs>
+          <linearGradient id="samco_s_grad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="0.5" stop-color="#38EF7D"/>
+            <stop offset="1" stop-color="#4FACFE"/>
+          </linearGradient>
+          <linearGradient id="samco_accent_grad" x1="60" y1="20" x2="90" y2="80" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="1" stop-color="#7928CA"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+  </div>
 
-                <a href="/admin/accounting/customer/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
-                    <i class="fa-solid fa-users w-4 text-center"></i>
-                    <span class="nav-label" data-i18n="contacts">Contacts & Customers</span>
-                </a>
+  <!-- SAMCO Text Branding -->
+  <div style="display: flex; flex-direction: column; justify-content: center;">
+    <span style="font-size: 25px; font-weight: 900; letter-spacing: 2.5px; line-height: 1.05; text-transform: uppercase; background: linear-gradient(135deg, #00f2fe 0%, #38ef7d 45%, #4facfe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 10px rgba(0, 242, 254, 0.45)); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+      SAMCO
+    </span>
+    <span style="font-size: 8.5px; font-weight: 700; color: #64748b; letter-spacing: 2px; text-transform: uppercase; margin-top: 3px;">
+      CLOUD ERP SYSTEM
+    </span>
+  </div>
+</div></a>
 
-                <a href="/admin/accounting/product/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
-                    <i class="fa-solid fa-boxes-stacked w-4 text-center"></i>
-                    <span class="nav-label" data-i18n="inventory">Items & Inventory</span>
-                </a>
+                <a href="/admin/accounting/customer/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition"><!-- SAMCO LUXURY BRANDING LOGO -->
+<div class="samco-brand-wrapper" style="display: flex; align-items: center; gap: 12px; padding: 6px 0;">
+  <!-- Stylized S Icon Box -->
+  <div style="width: 44px; height: 44px; min-width: 44px; border-radius: 12px; background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #7928ca 100%); padding: 2px; box-shadow: 0 0 20px rgba(0, 242, 254, 0.4); display: flex; align-items: center; justify-content: center;">
+    <div style="width: 100%; height: 100%; background: #070d19; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+      <svg width="26" height="26" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Top S Curve (Cyan/Teal) -->
+        <path d="M78 28C72 14 55 8 36 12C20 15 10 28 12 42C13 49 18 54 26 57L48 64C56 67 59 71 58 76C57 82 48 86 36 84C24 82 18 73 18 73L6 81C6 81 16 95 38 98C60 101 73 89 75 74C77 62 70 54 58 50L38 43C31 40 28 37 29 32C30 26 38 23 48 24C60 25 67 33 67 33L78 28Z" fill="url(#samco_s_grad)"/>
+        <!-- Swoosh Accent -->
+        <path d="M88 45C85 30 75 22 75 22L66 31C66 31 73 37 75 48C77 60 70 70 70 70L81 78C81 78 91 63 88 45Z" fill="url(#samco_accent_grad)"/>
+        <defs>
+          <linearGradient id="samco_s_grad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="0.5" stop-color="#38EF7D"/>
+            <stop offset="1" stop-color="#4FACFE"/>
+          </linearGradient>
+          <linearGradient id="samco_accent_grad" x1="60" y1="20" x2="90" y2="80" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="1" stop-color="#7928CA"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+  </div>
+
+  <!-- SAMCO Text Branding -->
+  <div style="display: flex; flex-direction: column; justify-content: center;">
+    <span style="font-size: 25px; font-weight: 900; letter-spacing: 2.5px; line-height: 1.05; text-transform: uppercase; background: linear-gradient(135deg, #00f2fe 0%, #38ef7d 45%, #4facfe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 10px rgba(0, 242, 254, 0.45)); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+      SAMCO
+    </span>
+    <span style="font-size: 8.5px; font-weight: 700; color: #64748b; letter-spacing: 2px; text-transform: uppercase; margin-top: 3px;">
+      CLOUD ERP SYSTEM
+    </span>
+  </div>
+</div></a>
+
+                <a href="/admin/accounting/product/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition"><!-- SAMCO LUXURY BRANDING LOGO -->
+<div class="samco-brand-wrapper" style="display: flex; align-items: center; gap: 12px; padding: 6px 0;">
+  <!-- Stylized S Icon Box -->
+  <div style="width: 44px; height: 44px; min-width: 44px; border-radius: 12px; background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #7928ca 100%); padding: 2px; box-shadow: 0 0 20px rgba(0, 242, 254, 0.4); display: flex; align-items: center; justify-content: center;">
+    <div style="width: 100%; height: 100%; background: #070d19; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+      <svg width="26" height="26" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Top S Curve (Cyan/Teal) -->
+        <path d="M78 28C72 14 55 8 36 12C20 15 10 28 12 42C13 49 18 54 26 57L48 64C56 67 59 71 58 76C57 82 48 86 36 84C24 82 18 73 18 73L6 81C6 81 16 95 38 98C60 101 73 89 75 74C77 62 70 54 58 50L38 43C31 40 28 37 29 32C30 26 38 23 48 24C60 25 67 33 67 33L78 28Z" fill="url(#samco_s_grad)"/>
+        <!-- Swoosh Accent -->
+        <path d="M88 45C85 30 75 22 75 22L66 31C66 31 73 37 75 48C77 60 70 70 70 70L81 78C81 78 91 63 88 45Z" fill="url(#samco_accent_grad)"/>
+        <defs>
+          <linearGradient id="samco_s_grad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="0.5" stop-color="#38EF7D"/>
+            <stop offset="1" stop-color="#4FACFE"/>
+          </linearGradient>
+          <linearGradient id="samco_accent_grad" x1="60" y1="20" x2="90" y2="80" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="1" stop-color="#7928CA"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+  </div>
+
+  <!-- SAMCO Text Branding -->
+  <div style="display: flex; flex-direction: column; justify-content: center;">
+    <span style="font-size: 25px; font-weight: 900; letter-spacing: 2.5px; line-height: 1.05; text-transform: uppercase; background: linear-gradient(135deg, #00f2fe 0%, #38ef7d 45%, #4facfe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 10px rgba(0, 242, 254, 0.45)); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+      SAMCO
+    </span>
+    <span style="font-size: 8.5px; font-weight: 700; color: #64748b; letter-spacing: 2px; text-transform: uppercase; margin-top: 3px;">
+      CLOUD ERP SYSTEM
+    </span>
+  </div>
+</div></a>
 
                 <!-- 3. BANKING DROPDOWN -->
                 <div>
@@ -126,30 +253,185 @@
                     </div>
                 </div>
 
-                <a href="/admin/accounting/account/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
-                    <i class="fa-solid fa-calculator w-4 text-center"></i>
-                    <span class="nav-label" data-i18n="accounting">Accounting</span>
-                </a>
+                <a href="/admin/accounting/account/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition"><!-- SAMCO LUXURY BRANDING LOGO -->
+<div class="samco-brand-wrapper" style="display: flex; align-items: center; gap: 12px; padding: 6px 0;">
+  <!-- Stylized S Icon Box -->
+  <div style="width: 44px; height: 44px; min-width: 44px; border-radius: 12px; background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #7928ca 100%); padding: 2px; box-shadow: 0 0 20px rgba(0, 242, 254, 0.4); display: flex; align-items: center; justify-content: center;">
+    <div style="width: 100%; height: 100%; background: #070d19; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+      <svg width="26" height="26" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Top S Curve (Cyan/Teal) -->
+        <path d="M78 28C72 14 55 8 36 12C20 15 10 28 12 42C13 49 18 54 26 57L48 64C56 67 59 71 58 76C57 82 48 86 36 84C24 82 18 73 18 73L6 81C6 81 16 95 38 98C60 101 73 89 75 74C77 62 70 54 58 50L38 43C31 40 28 37 29 32C30 26 38 23 48 24C60 25 67 33 67 33L78 28Z" fill="url(#samco_s_grad)"/>
+        <!-- Swoosh Accent -->
+        <path d="M88 45C85 30 75 22 75 22L66 31C66 31 73 37 75 48C77 60 70 70 70 70L81 78C81 78 91 63 88 45Z" fill="url(#samco_accent_grad)"/>
+        <defs>
+          <linearGradient id="samco_s_grad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="0.5" stop-color="#38EF7D"/>
+            <stop offset="1" stop-color="#4FACFE"/>
+          </linearGradient>
+          <linearGradient id="samco_accent_grad" x1="60" y1="20" x2="90" y2="80" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="1" stop-color="#7928CA"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+  </div>
 
-                <a href="/reports/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
-                    <i class="fa-solid fa-chart-pie w-4 text-center"></i>
-                    <span class="nav-label" data-i18n="reports">Reports</span>
-                </a>
+  <!-- SAMCO Text Branding -->
+  <div style="display: flex; flex-direction: column; justify-content: center;">
+    <span style="font-size: 25px; font-weight: 900; letter-spacing: 2.5px; line-height: 1.05; text-transform: uppercase; background: linear-gradient(135deg, #00f2fe 0%, #38ef7d 45%, #4facfe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 10px rgba(0, 242, 254, 0.45)); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+      SAMCO
+    </span>
+    <span style="font-size: 8.5px; font-weight: 700; color: #64748b; letter-spacing: 2px; text-transform: uppercase; margin-top: 3px;">
+      CLOUD ERP SYSTEM
+    </span>
+  </div>
+</div></a>
 
-                <a href="/vat/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
-                    <i class="fa-solid fa-percent w-4 text-center text-amber-400"></i>
-                    <span class="text-amber-400 nav-label" data-i18n="vat_declaration">VAT Declaration</span>
-                </a>
+                <a href="/reports/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition"><!-- SAMCO LUXURY BRANDING LOGO -->
+<div class="samco-brand-wrapper" style="display: flex; align-items: center; gap: 12px; padding: 6px 0;">
+  <!-- Stylized S Icon Box -->
+  <div style="width: 44px; height: 44px; min-width: 44px; border-radius: 12px; background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #7928ca 100%); padding: 2px; box-shadow: 0 0 20px rgba(0, 242, 254, 0.4); display: flex; align-items: center; justify-content: center;">
+    <div style="width: 100%; height: 100%; background: #070d19; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+      <svg width="26" height="26" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Top S Curve (Cyan/Teal) -->
+        <path d="M78 28C72 14 55 8 36 12C20 15 10 28 12 42C13 49 18 54 26 57L48 64C56 67 59 71 58 76C57 82 48 86 36 84C24 82 18 73 18 73L6 81C6 81 16 95 38 98C60 101 73 89 75 74C77 62 70 54 58 50L38 43C31 40 28 37 29 32C30 26 38 23 48 24C60 25 67 33 67 33L78 28Z" fill="url(#samco_s_grad)"/>
+        <!-- Swoosh Accent -->
+        <path d="M88 45C85 30 75 22 75 22L66 31C66 31 73 37 75 48C77 60 70 70 70 70L81 78C81 78 91 63 88 45Z" fill="url(#samco_accent_grad)"/>
+        <defs>
+          <linearGradient id="samco_s_grad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="0.5" stop-color="#38EF7D"/>
+            <stop offset="1" stop-color="#4FACFE"/>
+          </linearGradient>
+          <linearGradient id="samco_accent_grad" x1="60" y1="20" x2="90" y2="80" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="1" stop-color="#7928CA"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+  </div>
 
-                <a href="/reports/aging/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
-                    <i class="fa-solid fa-clock-rotate-left w-4 text-center"></i>
-                    <span class="nav-label" data-i18n="debt_aging">Debt Aging</span>
-                </a>
+  <!-- SAMCO Text Branding -->
+  <div style="display: flex; flex-direction: column; justify-content: center;">
+    <span style="font-size: 25px; font-weight: 900; letter-spacing: 2.5px; line-height: 1.05; text-transform: uppercase; background: linear-gradient(135deg, #00f2fe 0%, #38ef7d 45%, #4facfe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 10px rgba(0, 242, 254, 0.45)); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+      SAMCO
+    </span>
+    <span style="font-size: 8.5px; font-weight: 700; color: #64748b; letter-spacing: 2px; text-transform: uppercase; margin-top: 3px;">
+      CLOUD ERP SYSTEM
+    </span>
+  </div>
+</div></a>
 
-                <a href="/admin/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition">
-                    <i class="fa-solid fa-gear w-4 text-center text-indigo-400"></i>
-                    <span class="text-indigo-400 font-bold nav-label" data-i18n="settings">Settings</span>
-                </a>
+                <a href="/vat/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition"><!-- SAMCO LUXURY BRANDING LOGO -->
+<div class="samco-brand-wrapper" style="display: flex; align-items: center; gap: 12px; padding: 6px 0;">
+  <!-- Stylized S Icon Box -->
+  <div style="width: 44px; height: 44px; min-width: 44px; border-radius: 12px; background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #7928ca 100%); padding: 2px; box-shadow: 0 0 20px rgba(0, 242, 254, 0.4); display: flex; align-items: center; justify-content: center;">
+    <div style="width: 100%; height: 100%; background: #070d19; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+      <svg width="26" height="26" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Top S Curve (Cyan/Teal) -->
+        <path d="M78 28C72 14 55 8 36 12C20 15 10 28 12 42C13 49 18 54 26 57L48 64C56 67 59 71 58 76C57 82 48 86 36 84C24 82 18 73 18 73L6 81C6 81 16 95 38 98C60 101 73 89 75 74C77 62 70 54 58 50L38 43C31 40 28 37 29 32C30 26 38 23 48 24C60 25 67 33 67 33L78 28Z" fill="url(#samco_s_grad)"/>
+        <!-- Swoosh Accent -->
+        <path d="M88 45C85 30 75 22 75 22L66 31C66 31 73 37 75 48C77 60 70 70 70 70L81 78C81 78 91 63 88 45Z" fill="url(#samco_accent_grad)"/>
+        <defs>
+          <linearGradient id="samco_s_grad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="0.5" stop-color="#38EF7D"/>
+            <stop offset="1" stop-color="#4FACFE"/>
+          </linearGradient>
+          <linearGradient id="samco_accent_grad" x1="60" y1="20" x2="90" y2="80" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="1" stop-color="#7928CA"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+  </div>
+
+  <!-- SAMCO Text Branding -->
+  <div style="display: flex; flex-direction: column; justify-content: center;">
+    <span style="font-size: 25px; font-weight: 900; letter-spacing: 2.5px; line-height: 1.05; text-transform: uppercase; background: linear-gradient(135deg, #00f2fe 0%, #38ef7d 45%, #4facfe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 10px rgba(0, 242, 254, 0.45)); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+      SAMCO
+    </span>
+    <span style="font-size: 8.5px; font-weight: 700; color: #64748b; letter-spacing: 2px; text-transform: uppercase; margin-top: 3px;">
+      CLOUD ERP SYSTEM
+    </span>
+  </div>
+</div></a>
+
+                <a href="/reports/aging/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition"><!-- SAMCO LUXURY BRANDING LOGO -->
+<div class="samco-brand-wrapper" style="display: flex; align-items: center; gap: 12px; padding: 6px 0;">
+  <!-- Stylized S Icon Box -->
+  <div style="width: 44px; height: 44px; min-width: 44px; border-radius: 12px; background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #7928ca 100%); padding: 2px; box-shadow: 0 0 20px rgba(0, 242, 254, 0.4); display: flex; align-items: center; justify-content: center;">
+    <div style="width: 100%; height: 100%; background: #070d19; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+      <svg width="26" height="26" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Top S Curve (Cyan/Teal) -->
+        <path d="M78 28C72 14 55 8 36 12C20 15 10 28 12 42C13 49 18 54 26 57L48 64C56 67 59 71 58 76C57 82 48 86 36 84C24 82 18 73 18 73L6 81C6 81 16 95 38 98C60 101 73 89 75 74C77 62 70 54 58 50L38 43C31 40 28 37 29 32C30 26 38 23 48 24C60 25 67 33 67 33L78 28Z" fill="url(#samco_s_grad)"/>
+        <!-- Swoosh Accent -->
+        <path d="M88 45C85 30 75 22 75 22L66 31C66 31 73 37 75 48C77 60 70 70 70 70L81 78C81 78 91 63 88 45Z" fill="url(#samco_accent_grad)"/>
+        <defs>
+          <linearGradient id="samco_s_grad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="0.5" stop-color="#38EF7D"/>
+            <stop offset="1" stop-color="#4FACFE"/>
+          </linearGradient>
+          <linearGradient id="samco_accent_grad" x1="60" y1="20" x2="90" y2="80" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="1" stop-color="#7928CA"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+  </div>
+
+  <!-- SAMCO Text Branding -->
+  <div style="display: flex; flex-direction: column; justify-content: center;">
+    <span style="font-size: 25px; font-weight: 900; letter-spacing: 2.5px; line-height: 1.05; text-transform: uppercase; background: linear-gradient(135deg, #00f2fe 0%, #38ef7d 45%, #4facfe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 10px rgba(0, 242, 254, 0.45)); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+      SAMCO
+    </span>
+    <span style="font-size: 8.5px; font-weight: 700; color: #64748b; letter-spacing: 2px; text-transform: uppercase; margin-top: 3px;">
+      CLOUD ERP SYSTEM
+    </span>
+  </div>
+</div></a>
+
+                <a href="/admin/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800/60 hover:text-slate-100 transition"><!-- SAMCO LUXURY BRANDING LOGO -->
+<div class="samco-brand-wrapper" style="display: flex; align-items: center; gap: 12px; padding: 6px 0;">
+  <!-- Stylized S Icon Box -->
+  <div style="width: 44px; height: 44px; min-width: 44px; border-radius: 12px; background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #7928ca 100%); padding: 2px; box-shadow: 0 0 20px rgba(0, 242, 254, 0.4); display: flex; align-items: center; justify-content: center;">
+    <div style="width: 100%; height: 100%; background: #070d19; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+      <svg width="26" height="26" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Top S Curve (Cyan/Teal) -->
+        <path d="M78 28C72 14 55 8 36 12C20 15 10 28 12 42C13 49 18 54 26 57L48 64C56 67 59 71 58 76C57 82 48 86 36 84C24 82 18 73 18 73L6 81C6 81 16 95 38 98C60 101 73 89 75 74C77 62 70 54 58 50L38 43C31 40 28 37 29 32C30 26 38 23 48 24C60 25 67 33 67 33L78 28Z" fill="url(#samco_s_grad)"/>
+        <!-- Swoosh Accent -->
+        <path d="M88 45C85 30 75 22 75 22L66 31C66 31 73 37 75 48C77 60 70 70 70 70L81 78C81 78 91 63 88 45Z" fill="url(#samco_accent_grad)"/>
+        <defs>
+          <linearGradient id="samco_s_grad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="0.5" stop-color="#38EF7D"/>
+            <stop offset="1" stop-color="#4FACFE"/>
+          </linearGradient>
+          <linearGradient id="samco_accent_grad" x1="60" y1="20" x2="90" y2="80" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="1" stop-color="#7928CA"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+  </div>
+
+  <!-- SAMCO Text Branding -->
+  <div style="display: flex; flex-direction: column; justify-content: center;">
+    <span style="font-size: 25px; font-weight: 900; letter-spacing: 2.5px; line-height: 1.05; text-transform: uppercase; background: linear-gradient(135deg, #00f2fe 0%, #38ef7d 45%, #4facfe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 10px rgba(0, 242, 254, 0.45)); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+      SAMCO
+    </span>
+    <span style="font-size: 8.5px; font-weight: 700; color: #64748b; letter-spacing: 2px; text-transform: uppercase; margin-top: 3px;">
+      CLOUD ERP SYSTEM
+    </span>
+  </div>
+</div></a>
             </nav>
         </div>
 
@@ -185,21 +467,181 @@
                         <i class="fa-solid fa-plus"></i>
                     </button>
                     <div id="quickPlusMenu" class="hidden absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-2xl shadow-xl py-2 z-50 text-xs">
-                        <a href="/invoices/create/" class="flex items-center gap-2.5 px-4 py-2 hover:bg-slate-50 text-slate-700 font-bold">
-                            <i class="fa-solid fa-file-invoice text-indigo-600 w-4"></i> <span data-i18n="create_invoice">+ New Invoice</span>
-                        </a>
-                        <a href="/admin/accounting/purchasebill/add/" class="flex items-center gap-2.5 px-4 py-2 hover:bg-slate-50 text-slate-700 font-bold">
-                            <i class="fa-solid fa-bag-shopping text-blue-600 w-4"></i> <span data-i18n="add_purchase_bill">+ Purchase Bill</span>
-                        </a>
-                        <a href="/admin/accounting/directexpense/add/" class="flex items-center gap-2.5 px-4 py-2 hover:bg-slate-50 text-slate-700 font-bold">
-                            <i class="fa-solid fa-receipt text-amber-600 w-4"></i> <span data-i18n="add_expense_menu">+ Add Expense</span>
-                        </a>
-                        <a href="/admin/accounting/customer/add/" class="flex items-center gap-2.5 px-4 py-2 hover:bg-slate-50 text-slate-700 font-bold">
-                            <i class="fa-solid fa-user-plus text-cyan-600 w-4"></i> <span data-i18n="new_contact_menu">+ New Contact</span>
-                        </a>
-                        <a href="/admin/accounting/product/add/" class="flex items-center gap-2.5 px-4 py-2 hover:bg-slate-50 text-slate-700 font-bold">
-                            <i class="fa-solid fa-box text-emerald-600 w-4"></i> <span data-i18n="add_product_menu">+ Add Product</span>
-                        </a>
+                        <a href="/invoices/create/" class="flex items-center gap-2.5 px-4 py-2 hover:bg-slate-50 text-slate-700 font-bold"><!-- SAMCO LUXURY BRANDING LOGO -->
+<div class="samco-brand-wrapper" style="display: flex; align-items: center; gap: 12px; padding: 6px 0;">
+  <!-- Stylized S Icon Box -->
+  <div style="width: 44px; height: 44px; min-width: 44px; border-radius: 12px; background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #7928ca 100%); padding: 2px; box-shadow: 0 0 20px rgba(0, 242, 254, 0.4); display: flex; align-items: center; justify-content: center;">
+    <div style="width: 100%; height: 100%; background: #070d19; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+      <svg width="26" height="26" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Top S Curve (Cyan/Teal) -->
+        <path d="M78 28C72 14 55 8 36 12C20 15 10 28 12 42C13 49 18 54 26 57L48 64C56 67 59 71 58 76C57 82 48 86 36 84C24 82 18 73 18 73L6 81C6 81 16 95 38 98C60 101 73 89 75 74C77 62 70 54 58 50L38 43C31 40 28 37 29 32C30 26 38 23 48 24C60 25 67 33 67 33L78 28Z" fill="url(#samco_s_grad)"/>
+        <!-- Swoosh Accent -->
+        <path d="M88 45C85 30 75 22 75 22L66 31C66 31 73 37 75 48C77 60 70 70 70 70L81 78C81 78 91 63 88 45Z" fill="url(#samco_accent_grad)"/>
+        <defs>
+          <linearGradient id="samco_s_grad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="0.5" stop-color="#38EF7D"/>
+            <stop offset="1" stop-color="#4FACFE"/>
+          </linearGradient>
+          <linearGradient id="samco_accent_grad" x1="60" y1="20" x2="90" y2="80" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="1" stop-color="#7928CA"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+  </div>
+
+  <!-- SAMCO Text Branding -->
+  <div style="display: flex; flex-direction: column; justify-content: center;">
+    <span style="font-size: 25px; font-weight: 900; letter-spacing: 2.5px; line-height: 1.05; text-transform: uppercase; background: linear-gradient(135deg, #00f2fe 0%, #38ef7d 45%, #4facfe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 10px rgba(0, 242, 254, 0.45)); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+      SAMCO
+    </span>
+    <span style="font-size: 8.5px; font-weight: 700; color: #64748b; letter-spacing: 2px; text-transform: uppercase; margin-top: 3px;">
+      CLOUD ERP SYSTEM
+    </span>
+  </div>
+</div></a>
+                        <a href="/admin/accounting/purchasebill/add/" class="flex items-center gap-2.5 px-4 py-2 hover:bg-slate-50 text-slate-700 font-bold"><!-- SAMCO LUXURY BRANDING LOGO -->
+<div class="samco-brand-wrapper" style="display: flex; align-items: center; gap: 12px; padding: 6px 0;">
+  <!-- Stylized S Icon Box -->
+  <div style="width: 44px; height: 44px; min-width: 44px; border-radius: 12px; background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #7928ca 100%); padding: 2px; box-shadow: 0 0 20px rgba(0, 242, 254, 0.4); display: flex; align-items: center; justify-content: center;">
+    <div style="width: 100%; height: 100%; background: #070d19; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+      <svg width="26" height="26" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Top S Curve (Cyan/Teal) -->
+        <path d="M78 28C72 14 55 8 36 12C20 15 10 28 12 42C13 49 18 54 26 57L48 64C56 67 59 71 58 76C57 82 48 86 36 84C24 82 18 73 18 73L6 81C6 81 16 95 38 98C60 101 73 89 75 74C77 62 70 54 58 50L38 43C31 40 28 37 29 32C30 26 38 23 48 24C60 25 67 33 67 33L78 28Z" fill="url(#samco_s_grad)"/>
+        <!-- Swoosh Accent -->
+        <path d="M88 45C85 30 75 22 75 22L66 31C66 31 73 37 75 48C77 60 70 70 70 70L81 78C81 78 91 63 88 45Z" fill="url(#samco_accent_grad)"/>
+        <defs>
+          <linearGradient id="samco_s_grad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="0.5" stop-color="#38EF7D"/>
+            <stop offset="1" stop-color="#4FACFE"/>
+          </linearGradient>
+          <linearGradient id="samco_accent_grad" x1="60" y1="20" x2="90" y2="80" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="1" stop-color="#7928CA"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+  </div>
+
+  <!-- SAMCO Text Branding -->
+  <div style="display: flex; flex-direction: column; justify-content: center;">
+    <span style="font-size: 25px; font-weight: 900; letter-spacing: 2.5px; line-height: 1.05; text-transform: uppercase; background: linear-gradient(135deg, #00f2fe 0%, #38ef7d 45%, #4facfe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 10px rgba(0, 242, 254, 0.45)); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+      SAMCO
+    </span>
+    <span style="font-size: 8.5px; font-weight: 700; color: #64748b; letter-spacing: 2px; text-transform: uppercase; margin-top: 3px;">
+      CLOUD ERP SYSTEM
+    </span>
+  </div>
+</div></a>
+                        <a href="/admin/accounting/directexpense/add/" class="flex items-center gap-2.5 px-4 py-2 hover:bg-slate-50 text-slate-700 font-bold"><!-- SAMCO LUXURY BRANDING LOGO -->
+<div class="samco-brand-wrapper" style="display: flex; align-items: center; gap: 12px; padding: 6px 0;">
+  <!-- Stylized S Icon Box -->
+  <div style="width: 44px; height: 44px; min-width: 44px; border-radius: 12px; background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #7928ca 100%); padding: 2px; box-shadow: 0 0 20px rgba(0, 242, 254, 0.4); display: flex; align-items: center; justify-content: center;">
+    <div style="width: 100%; height: 100%; background: #070d19; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+      <svg width="26" height="26" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Top S Curve (Cyan/Teal) -->
+        <path d="M78 28C72 14 55 8 36 12C20 15 10 28 12 42C13 49 18 54 26 57L48 64C56 67 59 71 58 76C57 82 48 86 36 84C24 82 18 73 18 73L6 81C6 81 16 95 38 98C60 101 73 89 75 74C77 62 70 54 58 50L38 43C31 40 28 37 29 32C30 26 38 23 48 24C60 25 67 33 67 33L78 28Z" fill="url(#samco_s_grad)"/>
+        <!-- Swoosh Accent -->
+        <path d="M88 45C85 30 75 22 75 22L66 31C66 31 73 37 75 48C77 60 70 70 70 70L81 78C81 78 91 63 88 45Z" fill="url(#samco_accent_grad)"/>
+        <defs>
+          <linearGradient id="samco_s_grad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="0.5" stop-color="#38EF7D"/>
+            <stop offset="1" stop-color="#4FACFE"/>
+          </linearGradient>
+          <linearGradient id="samco_accent_grad" x1="60" y1="20" x2="90" y2="80" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="1" stop-color="#7928CA"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+  </div>
+
+  <!-- SAMCO Text Branding -->
+  <div style="display: flex; flex-direction: column; justify-content: center;">
+    <span style="font-size: 25px; font-weight: 900; letter-spacing: 2.5px; line-height: 1.05; text-transform: uppercase; background: linear-gradient(135deg, #00f2fe 0%, #38ef7d 45%, #4facfe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 10px rgba(0, 242, 254, 0.45)); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+      SAMCO
+    </span>
+    <span style="font-size: 8.5px; font-weight: 700; color: #64748b; letter-spacing: 2px; text-transform: uppercase; margin-top: 3px;">
+      CLOUD ERP SYSTEM
+    </span>
+  </div>
+</div></a>
+                        <a href="/admin/accounting/customer/add/" class="flex items-center gap-2.5 px-4 py-2 hover:bg-slate-50 text-slate-700 font-bold"><!-- SAMCO LUXURY BRANDING LOGO -->
+<div class="samco-brand-wrapper" style="display: flex; align-items: center; gap: 12px; padding: 6px 0;">
+  <!-- Stylized S Icon Box -->
+  <div style="width: 44px; height: 44px; min-width: 44px; border-radius: 12px; background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #7928ca 100%); padding: 2px; box-shadow: 0 0 20px rgba(0, 242, 254, 0.4); display: flex; align-items: center; justify-content: center;">
+    <div style="width: 100%; height: 100%; background: #070d19; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+      <svg width="26" height="26" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Top S Curve (Cyan/Teal) -->
+        <path d="M78 28C72 14 55 8 36 12C20 15 10 28 12 42C13 49 18 54 26 57L48 64C56 67 59 71 58 76C57 82 48 86 36 84C24 82 18 73 18 73L6 81C6 81 16 95 38 98C60 101 73 89 75 74C77 62 70 54 58 50L38 43C31 40 28 37 29 32C30 26 38 23 48 24C60 25 67 33 67 33L78 28Z" fill="url(#samco_s_grad)"/>
+        <!-- Swoosh Accent -->
+        <path d="M88 45C85 30 75 22 75 22L66 31C66 31 73 37 75 48C77 60 70 70 70 70L81 78C81 78 91 63 88 45Z" fill="url(#samco_accent_grad)"/>
+        <defs>
+          <linearGradient id="samco_s_grad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="0.5" stop-color="#38EF7D"/>
+            <stop offset="1" stop-color="#4FACFE"/>
+          </linearGradient>
+          <linearGradient id="samco_accent_grad" x1="60" y1="20" x2="90" y2="80" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="1" stop-color="#7928CA"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+  </div>
+
+  <!-- SAMCO Text Branding -->
+  <div style="display: flex; flex-direction: column; justify-content: center;">
+    <span style="font-size: 25px; font-weight: 900; letter-spacing: 2.5px; line-height: 1.05; text-transform: uppercase; background: linear-gradient(135deg, #00f2fe 0%, #38ef7d 45%, #4facfe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 10px rgba(0, 242, 254, 0.45)); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+      SAMCO
+    </span>
+    <span style="font-size: 8.5px; font-weight: 700; color: #64748b; letter-spacing: 2px; text-transform: uppercase; margin-top: 3px;">
+      CLOUD ERP SYSTEM
+    </span>
+  </div>
+</div></a>
+                        <a href="/admin/accounting/product/add/" class="flex items-center gap-2.5 px-4 py-2 hover:bg-slate-50 text-slate-700 font-bold"><!-- SAMCO LUXURY BRANDING LOGO -->
+<div class="samco-brand-wrapper" style="display: flex; align-items: center; gap: 12px; padding: 6px 0;">
+  <!-- Stylized S Icon Box -->
+  <div style="width: 44px; height: 44px; min-width: 44px; border-radius: 12px; background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #7928ca 100%); padding: 2px; box-shadow: 0 0 20px rgba(0, 242, 254, 0.4); display: flex; align-items: center; justify-content: center;">
+    <div style="width: 100%; height: 100%; background: #070d19; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+      <svg width="26" height="26" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Top S Curve (Cyan/Teal) -->
+        <path d="M78 28C72 14 55 8 36 12C20 15 10 28 12 42C13 49 18 54 26 57L48 64C56 67 59 71 58 76C57 82 48 86 36 84C24 82 18 73 18 73L6 81C6 81 16 95 38 98C60 101 73 89 75 74C77 62 70 54 58 50L38 43C31 40 28 37 29 32C30 26 38 23 48 24C60 25 67 33 67 33L78 28Z" fill="url(#samco_s_grad)"/>
+        <!-- Swoosh Accent -->
+        <path d="M88 45C85 30 75 22 75 22L66 31C66 31 73 37 75 48C77 60 70 70 70 70L81 78C81 78 91 63 88 45Z" fill="url(#samco_accent_grad)"/>
+        <defs>
+          <linearGradient id="samco_s_grad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="0.5" stop-color="#38EF7D"/>
+            <stop offset="1" stop-color="#4FACFE"/>
+          </linearGradient>
+          <linearGradient id="samco_accent_grad" x1="60" y1="20" x2="90" y2="80" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="1" stop-color="#7928CA"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+  </div>
+
+  <!-- SAMCO Text Branding -->
+  <div style="display: flex; flex-direction: column; justify-content: center;">
+    <span style="font-size: 25px; font-weight: 900; letter-spacing: 2.5px; line-height: 1.05; text-transform: uppercase; background: linear-gradient(135deg, #00f2fe 0%, #38ef7d 45%, #4facfe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 10px rgba(0, 242, 254, 0.45)); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+      SAMCO
+    </span>
+    <span style="font-size: 8.5px; font-weight: 700; color: #64748b; letter-spacing: 2px; text-transform: uppercase; margin-top: 3px;">
+      CLOUD ERP SYSTEM
+    </span>
+  </div>
+</div></a>
                     </div>
                 </div>
 
@@ -250,9 +692,41 @@
                         <option data-i18n="this_quarter">This Quarter</option>
                         <option data-i18n="this_year">This Year</option>
                     </select>
-                    <a href="/invoices/create/" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-4 py-2 rounded-xl text-xs shadow flex items-center gap-2 transition">
-                        <i class="fa-solid fa-plus"></i> <span data-i18n="create_invoice">+ New Invoice</span>
-                    </a>
+                    <a href="/invoices/create/" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-4 py-2 rounded-xl text-xs shadow flex items-center gap-2 transition"><!-- SAMCO LUXURY BRANDING LOGO -->
+<div class="samco-brand-wrapper" style="display: flex; align-items: center; gap: 12px; padding: 6px 0;">
+  <!-- Stylized S Icon Box -->
+  <div style="width: 44px; height: 44px; min-width: 44px; border-radius: 12px; background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #7928ca 100%); padding: 2px; box-shadow: 0 0 20px rgba(0, 242, 254, 0.4); display: flex; align-items: center; justify-content: center;">
+    <div style="width: 100%; height: 100%; background: #070d19; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+      <svg width="26" height="26" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Top S Curve (Cyan/Teal) -->
+        <path d="M78 28C72 14 55 8 36 12C20 15 10 28 12 42C13 49 18 54 26 57L48 64C56 67 59 71 58 76C57 82 48 86 36 84C24 82 18 73 18 73L6 81C6 81 16 95 38 98C60 101 73 89 75 74C77 62 70 54 58 50L38 43C31 40 28 37 29 32C30 26 38 23 48 24C60 25 67 33 67 33L78 28Z" fill="url(#samco_s_grad)"/>
+        <!-- Swoosh Accent -->
+        <path d="M88 45C85 30 75 22 75 22L66 31C66 31 73 37 75 48C77 60 70 70 70 70L81 78C81 78 91 63 88 45Z" fill="url(#samco_accent_grad)"/>
+        <defs>
+          <linearGradient id="samco_s_grad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="0.5" stop-color="#38EF7D"/>
+            <stop offset="1" stop-color="#4FACFE"/>
+          </linearGradient>
+          <linearGradient id="samco_accent_grad" x1="60" y1="20" x2="90" y2="80" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="1" stop-color="#7928CA"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+  </div>
+
+  <!-- SAMCO Text Branding -->
+  <div style="display: flex; flex-direction: column; justify-content: center;">
+    <span style="font-size: 25px; font-weight: 900; letter-spacing: 2.5px; line-height: 1.05; text-transform: uppercase; background: linear-gradient(135deg, #00f2fe 0%, #38ef7d 45%, #4facfe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 10px rgba(0, 242, 254, 0.45)); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+      SAMCO
+    </span>
+    <span style="font-size: 8.5px; font-weight: 700; color: #64748b; letter-spacing: 2px; text-transform: uppercase; margin-top: 3px;">
+      CLOUD ERP SYSTEM
+    </span>
+  </div>
+</div></a>
                 </div>
             </div>
 
@@ -353,43 +827,321 @@
                 <div class="lg:col-span-3 bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
                     <h3 class="text-sm font-black text-slate-900 mb-3" data-i18n="quick_links">Quick Links</h3>
                     <div class="grid grid-cols-3 gap-2 text-center">
-                        <a href="/invoices/create/" class="p-2 rounded-xl border border-slate-100 hover:bg-slate-50 flex flex-col items-center gap-1 transition group">
-                            <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs group-hover:scale-110 transition"><i class="fa-solid fa-file-invoice"></i></div>
-                            <span class="text-[10px] font-bold text-slate-700 leading-tight" data-i18n="create_invoice">+ Create Invoice</span>
-                        </a>
-                        <a href="/admin/accounting/purchasebill/" class="p-2 rounded-xl border border-slate-100 hover:bg-slate-50 flex flex-col items-center gap-1 transition group">
-                            <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-xs group-hover:scale-110 transition"><i class="fa-solid fa-cart-shopping"></i></div>
-                            <span class="text-[10px] font-bold text-slate-700 leading-tight" data-i18n="purchases_link">Purchases</span>
-                        </a>
-                        <a href="/admin/accounting/directexpense/" class="p-2 rounded-xl border border-slate-100 hover:bg-slate-50 flex flex-col items-center gap-1 transition group">
-                            <div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-xs group-hover:scale-110 transition"><i class="fa-solid fa-receipt"></i></div>
-                            <span class="text-[10px] font-bold text-slate-700 leading-tight" data-i18n="add_expense_link">Add Expense</span>
-                        </a>
-                        <a href="/admin/accounting/customer/add/" class="p-2 rounded-xl border border-slate-100 hover:bg-slate-50 flex flex-col items-center gap-1 transition group">
-                            <div class="w-8 h-8 rounded-lg bg-cyan-50 text-cyan-600 flex items-center justify-center text-xs group-hover:scale-110 transition"><i class="fa-solid fa-user-plus"></i></div>
-                            <span class="text-[10px] font-bold text-slate-700 leading-tight" data-i18n="new_contact_link">New Contact</span>
-                        </a>
-                        <a href="/banking/transfer/" class="p-2 rounded-xl border border-slate-100 hover:bg-slate-50 flex flex-col items-center gap-1 transition group">
-                            <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs group-hover:scale-110 transition"><i class="fa-solid fa-building-columns"></i></div>
-                            <span class="text-[10px] font-bold text-slate-700 leading-tight" data-i18n="bank_transfer_link">Bank Transfer</span>
-                        </a>
-                        <a href="/reports/" class="p-2 rounded-xl border border-slate-100 hover:bg-slate-50 flex flex-col items-center gap-1 transition group">
-                            <div class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center text-xs group-hover:scale-110 transition"><i class="fa-solid fa-chart-pie"></i></div>
-                            <span class="text-[10px] font-bold text-slate-700 leading-tight" data-i18n="reports_link">Reports</span>
-                        </a>
-                        <a href="/scanner/" class="p-2 rounded-xl border border-cyan-200 bg-cyan-50/40 hover:bg-cyan-100/70 flex flex-col items-center gap-1 transition group relative">
-                            <span class="absolute -top-1.5 -right-1 text-[8px] bg-cyan-500 text-white font-black px-1 py-0.2 rounded-full uppercase shadow-xs">AI</span>
-                            <div class="w-8 h-8 rounded-lg bg-cyan-100 text-cyan-700 flex items-center justify-center text-xs group-hover:scale-110 transition"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
-                            <span class="text-[10px] font-bold text-cyan-950 leading-tight" data-i18n="ai_scanner_link">AI Scanner</span>
-                        </a>
-                        <a href="/vat/" class="p-2 rounded-xl border border-amber-200 bg-amber-50/40 hover:bg-amber-100/70 flex flex-col items-center gap-1 transition group">
-                            <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center text-xs group-hover:scale-110 transition"><i class="fa-solid fa-percent"></i></div>
-                            <span class="text-[10px] font-bold text-amber-950 leading-tight" data-i18n="vat_return_link">VAT Return</span>
-                        </a>
-                        <a href="/reports/aging/" class="p-2 rounded-xl border border-indigo-200 bg-indigo-50/40 hover:bg-indigo-100/70 flex flex-col items-center gap-1 transition group">
-                            <div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center text-xs group-hover:scale-110 transition"><i class="fa-solid fa-clock-rotate-left"></i></div>
-                            <span class="text-[10px] font-bold text-indigo-950 leading-tight" data-i18n="debt_aging_link">Debt Aging</span>
-                        </a>
+                        <a href="/invoices/create/" class="p-2 rounded-xl border border-slate-100 hover:bg-slate-50 flex flex-col items-center gap-1 transition group"><!-- SAMCO LUXURY BRANDING LOGO -->
+<div class="samco-brand-wrapper" style="display: flex; align-items: center; gap: 12px; padding: 6px 0;">
+  <!-- Stylized S Icon Box -->
+  <div style="width: 44px; height: 44px; min-width: 44px; border-radius: 12px; background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #7928ca 100%); padding: 2px; box-shadow: 0 0 20px rgba(0, 242, 254, 0.4); display: flex; align-items: center; justify-content: center;">
+    <div style="width: 100%; height: 100%; background: #070d19; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+      <svg width="26" height="26" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Top S Curve (Cyan/Teal) -->
+        <path d="M78 28C72 14 55 8 36 12C20 15 10 28 12 42C13 49 18 54 26 57L48 64C56 67 59 71 58 76C57 82 48 86 36 84C24 82 18 73 18 73L6 81C6 81 16 95 38 98C60 101 73 89 75 74C77 62 70 54 58 50L38 43C31 40 28 37 29 32C30 26 38 23 48 24C60 25 67 33 67 33L78 28Z" fill="url(#samco_s_grad)"/>
+        <!-- Swoosh Accent -->
+        <path d="M88 45C85 30 75 22 75 22L66 31C66 31 73 37 75 48C77 60 70 70 70 70L81 78C81 78 91 63 88 45Z" fill="url(#samco_accent_grad)"/>
+        <defs>
+          <linearGradient id="samco_s_grad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="0.5" stop-color="#38EF7D"/>
+            <stop offset="1" stop-color="#4FACFE"/>
+          </linearGradient>
+          <linearGradient id="samco_accent_grad" x1="60" y1="20" x2="90" y2="80" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="1" stop-color="#7928CA"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+  </div>
+
+  <!-- SAMCO Text Branding -->
+  <div style="display: flex; flex-direction: column; justify-content: center;">
+    <span style="font-size: 25px; font-weight: 900; letter-spacing: 2.5px; line-height: 1.05; text-transform: uppercase; background: linear-gradient(135deg, #00f2fe 0%, #38ef7d 45%, #4facfe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 10px rgba(0, 242, 254, 0.45)); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+      SAMCO
+    </span>
+    <span style="font-size: 8.5px; font-weight: 700; color: #64748b; letter-spacing: 2px; text-transform: uppercase; margin-top: 3px;">
+      CLOUD ERP SYSTEM
+    </span>
+  </div>
+</div></a>
+                        <a href="/admin/accounting/purchasebill/" class="p-2 rounded-xl border border-slate-100 hover:bg-slate-50 flex flex-col items-center gap-1 transition group"><!-- SAMCO LUXURY BRANDING LOGO -->
+<div class="samco-brand-wrapper" style="display: flex; align-items: center; gap: 12px; padding: 6px 0;">
+  <!-- Stylized S Icon Box -->
+  <div style="width: 44px; height: 44px; min-width: 44px; border-radius: 12px; background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #7928ca 100%); padding: 2px; box-shadow: 0 0 20px rgba(0, 242, 254, 0.4); display: flex; align-items: center; justify-content: center;">
+    <div style="width: 100%; height: 100%; background: #070d19; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+      <svg width="26" height="26" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Top S Curve (Cyan/Teal) -->
+        <path d="M78 28C72 14 55 8 36 12C20 15 10 28 12 42C13 49 18 54 26 57L48 64C56 67 59 71 58 76C57 82 48 86 36 84C24 82 18 73 18 73L6 81C6 81 16 95 38 98C60 101 73 89 75 74C77 62 70 54 58 50L38 43C31 40 28 37 29 32C30 26 38 23 48 24C60 25 67 33 67 33L78 28Z" fill="url(#samco_s_grad)"/>
+        <!-- Swoosh Accent -->
+        <path d="M88 45C85 30 75 22 75 22L66 31C66 31 73 37 75 48C77 60 70 70 70 70L81 78C81 78 91 63 88 45Z" fill="url(#samco_accent_grad)"/>
+        <defs>
+          <linearGradient id="samco_s_grad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="0.5" stop-color="#38EF7D"/>
+            <stop offset="1" stop-color="#4FACFE"/>
+          </linearGradient>
+          <linearGradient id="samco_accent_grad" x1="60" y1="20" x2="90" y2="80" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="1" stop-color="#7928CA"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+  </div>
+
+  <!-- SAMCO Text Branding -->
+  <div style="display: flex; flex-direction: column; justify-content: center;">
+    <span style="font-size: 25px; font-weight: 900; letter-spacing: 2.5px; line-height: 1.05; text-transform: uppercase; background: linear-gradient(135deg, #00f2fe 0%, #38ef7d 45%, #4facfe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 10px rgba(0, 242, 254, 0.45)); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+      SAMCO
+    </span>
+    <span style="font-size: 8.5px; font-weight: 700; color: #64748b; letter-spacing: 2px; text-transform: uppercase; margin-top: 3px;">
+      CLOUD ERP SYSTEM
+    </span>
+  </div>
+</div></a>
+                        <a href="/admin/accounting/directexpense/" class="p-2 rounded-xl border border-slate-100 hover:bg-slate-50 flex flex-col items-center gap-1 transition group"><!-- SAMCO LUXURY BRANDING LOGO -->
+<div class="samco-brand-wrapper" style="display: flex; align-items: center; gap: 12px; padding: 6px 0;">
+  <!-- Stylized S Icon Box -->
+  <div style="width: 44px; height: 44px; min-width: 44px; border-radius: 12px; background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #7928ca 100%); padding: 2px; box-shadow: 0 0 20px rgba(0, 242, 254, 0.4); display: flex; align-items: center; justify-content: center;">
+    <div style="width: 100%; height: 100%; background: #070d19; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+      <svg width="26" height="26" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Top S Curve (Cyan/Teal) -->
+        <path d="M78 28C72 14 55 8 36 12C20 15 10 28 12 42C13 49 18 54 26 57L48 64C56 67 59 71 58 76C57 82 48 86 36 84C24 82 18 73 18 73L6 81C6 81 16 95 38 98C60 101 73 89 75 74C77 62 70 54 58 50L38 43C31 40 28 37 29 32C30 26 38 23 48 24C60 25 67 33 67 33L78 28Z" fill="url(#samco_s_grad)"/>
+        <!-- Swoosh Accent -->
+        <path d="M88 45C85 30 75 22 75 22L66 31C66 31 73 37 75 48C77 60 70 70 70 70L81 78C81 78 91 63 88 45Z" fill="url(#samco_accent_grad)"/>
+        <defs>
+          <linearGradient id="samco_s_grad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="0.5" stop-color="#38EF7D"/>
+            <stop offset="1" stop-color="#4FACFE"/>
+          </linearGradient>
+          <linearGradient id="samco_accent_grad" x1="60" y1="20" x2="90" y2="80" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="1" stop-color="#7928CA"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+  </div>
+
+  <!-- SAMCO Text Branding -->
+  <div style="display: flex; flex-direction: column; justify-content: center;">
+    <span style="font-size: 25px; font-weight: 900; letter-spacing: 2.5px; line-height: 1.05; text-transform: uppercase; background: linear-gradient(135deg, #00f2fe 0%, #38ef7d 45%, #4facfe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 10px rgba(0, 242, 254, 0.45)); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+      SAMCO
+    </span>
+    <span style="font-size: 8.5px; font-weight: 700; color: #64748b; letter-spacing: 2px; text-transform: uppercase; margin-top: 3px;">
+      CLOUD ERP SYSTEM
+    </span>
+  </div>
+</div></a>
+                        <a href="/admin/accounting/customer/add/" class="p-2 rounded-xl border border-slate-100 hover:bg-slate-50 flex flex-col items-center gap-1 transition group"><!-- SAMCO LUXURY BRANDING LOGO -->
+<div class="samco-brand-wrapper" style="display: flex; align-items: center; gap: 12px; padding: 6px 0;">
+  <!-- Stylized S Icon Box -->
+  <div style="width: 44px; height: 44px; min-width: 44px; border-radius: 12px; background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #7928ca 100%); padding: 2px; box-shadow: 0 0 20px rgba(0, 242, 254, 0.4); display: flex; align-items: center; justify-content: center;">
+    <div style="width: 100%; height: 100%; background: #070d19; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+      <svg width="26" height="26" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Top S Curve (Cyan/Teal) -->
+        <path d="M78 28C72 14 55 8 36 12C20 15 10 28 12 42C13 49 18 54 26 57L48 64C56 67 59 71 58 76C57 82 48 86 36 84C24 82 18 73 18 73L6 81C6 81 16 95 38 98C60 101 73 89 75 74C77 62 70 54 58 50L38 43C31 40 28 37 29 32C30 26 38 23 48 24C60 25 67 33 67 33L78 28Z" fill="url(#samco_s_grad)"/>
+        <!-- Swoosh Accent -->
+        <path d="M88 45C85 30 75 22 75 22L66 31C66 31 73 37 75 48C77 60 70 70 70 70L81 78C81 78 91 63 88 45Z" fill="url(#samco_accent_grad)"/>
+        <defs>
+          <linearGradient id="samco_s_grad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="0.5" stop-color="#38EF7D"/>
+            <stop offset="1" stop-color="#4FACFE"/>
+          </linearGradient>
+          <linearGradient id="samco_accent_grad" x1="60" y1="20" x2="90" y2="80" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="1" stop-color="#7928CA"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+  </div>
+
+  <!-- SAMCO Text Branding -->
+  <div style="display: flex; flex-direction: column; justify-content: center;">
+    <span style="font-size: 25px; font-weight: 900; letter-spacing: 2.5px; line-height: 1.05; text-transform: uppercase; background: linear-gradient(135deg, #00f2fe 0%, #38ef7d 45%, #4facfe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 10px rgba(0, 242, 254, 0.45)); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+      SAMCO
+    </span>
+    <span style="font-size: 8.5px; font-weight: 700; color: #64748b; letter-spacing: 2px; text-transform: uppercase; margin-top: 3px;">
+      CLOUD ERP SYSTEM
+    </span>
+  </div>
+</div></a>
+                        <a href="/banking/transfer/" class="p-2 rounded-xl border border-slate-100 hover:bg-slate-50 flex flex-col items-center gap-1 transition group"><!-- SAMCO LUXURY BRANDING LOGO -->
+<div class="samco-brand-wrapper" style="display: flex; align-items: center; gap: 12px; padding: 6px 0;">
+  <!-- Stylized S Icon Box -->
+  <div style="width: 44px; height: 44px; min-width: 44px; border-radius: 12px; background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #7928ca 100%); padding: 2px; box-shadow: 0 0 20px rgba(0, 242, 254, 0.4); display: flex; align-items: center; justify-content: center;">
+    <div style="width: 100%; height: 100%; background: #070d19; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+      <svg width="26" height="26" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Top S Curve (Cyan/Teal) -->
+        <path d="M78 28C72 14 55 8 36 12C20 15 10 28 12 42C13 49 18 54 26 57L48 64C56 67 59 71 58 76C57 82 48 86 36 84C24 82 18 73 18 73L6 81C6 81 16 95 38 98C60 101 73 89 75 74C77 62 70 54 58 50L38 43C31 40 28 37 29 32C30 26 38 23 48 24C60 25 67 33 67 33L78 28Z" fill="url(#samco_s_grad)"/>
+        <!-- Swoosh Accent -->
+        <path d="M88 45C85 30 75 22 75 22L66 31C66 31 73 37 75 48C77 60 70 70 70 70L81 78C81 78 91 63 88 45Z" fill="url(#samco_accent_grad)"/>
+        <defs>
+          <linearGradient id="samco_s_grad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="0.5" stop-color="#38EF7D"/>
+            <stop offset="1" stop-color="#4FACFE"/>
+          </linearGradient>
+          <linearGradient id="samco_accent_grad" x1="60" y1="20" x2="90" y2="80" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="1" stop-color="#7928CA"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+  </div>
+
+  <!-- SAMCO Text Branding -->
+  <div style="display: flex; flex-direction: column; justify-content: center;">
+    <span style="font-size: 25px; font-weight: 900; letter-spacing: 2.5px; line-height: 1.05; text-transform: uppercase; background: linear-gradient(135deg, #00f2fe 0%, #38ef7d 45%, #4facfe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 10px rgba(0, 242, 254, 0.45)); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+      SAMCO
+    </span>
+    <span style="font-size: 8.5px; font-weight: 700; color: #64748b; letter-spacing: 2px; text-transform: uppercase; margin-top: 3px;">
+      CLOUD ERP SYSTEM
+    </span>
+  </div>
+</div></a>
+                        <a href="/reports/" class="p-2 rounded-xl border border-slate-100 hover:bg-slate-50 flex flex-col items-center gap-1 transition group"><!-- SAMCO LUXURY BRANDING LOGO -->
+<div class="samco-brand-wrapper" style="display: flex; align-items: center; gap: 12px; padding: 6px 0;">
+  <!-- Stylized S Icon Box -->
+  <div style="width: 44px; height: 44px; min-width: 44px; border-radius: 12px; background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #7928ca 100%); padding: 2px; box-shadow: 0 0 20px rgba(0, 242, 254, 0.4); display: flex; align-items: center; justify-content: center;">
+    <div style="width: 100%; height: 100%; background: #070d19; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+      <svg width="26" height="26" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Top S Curve (Cyan/Teal) -->
+        <path d="M78 28C72 14 55 8 36 12C20 15 10 28 12 42C13 49 18 54 26 57L48 64C56 67 59 71 58 76C57 82 48 86 36 84C24 82 18 73 18 73L6 81C6 81 16 95 38 98C60 101 73 89 75 74C77 62 70 54 58 50L38 43C31 40 28 37 29 32C30 26 38 23 48 24C60 25 67 33 67 33L78 28Z" fill="url(#samco_s_grad)"/>
+        <!-- Swoosh Accent -->
+        <path d="M88 45C85 30 75 22 75 22L66 31C66 31 73 37 75 48C77 60 70 70 70 70L81 78C81 78 91 63 88 45Z" fill="url(#samco_accent_grad)"/>
+        <defs>
+          <linearGradient id="samco_s_grad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="0.5" stop-color="#38EF7D"/>
+            <stop offset="1" stop-color="#4FACFE"/>
+          </linearGradient>
+          <linearGradient id="samco_accent_grad" x1="60" y1="20" x2="90" y2="80" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="1" stop-color="#7928CA"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+  </div>
+
+  <!-- SAMCO Text Branding -->
+  <div style="display: flex; flex-direction: column; justify-content: center;">
+    <span style="font-size: 25px; font-weight: 900; letter-spacing: 2.5px; line-height: 1.05; text-transform: uppercase; background: linear-gradient(135deg, #00f2fe 0%, #38ef7d 45%, #4facfe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 10px rgba(0, 242, 254, 0.45)); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+      SAMCO
+    </span>
+    <span style="font-size: 8.5px; font-weight: 700; color: #64748b; letter-spacing: 2px; text-transform: uppercase; margin-top: 3px;">
+      CLOUD ERP SYSTEM
+    </span>
+  </div>
+</div></a>
+                        <a href="/scanner/" class="p-2 rounded-xl border border-cyan-200 bg-cyan-50/40 hover:bg-cyan-100/70 flex flex-col items-center gap-1 transition group relative"><!-- SAMCO LUXURY BRANDING LOGO -->
+<div class="samco-brand-wrapper" style="display: flex; align-items: center; gap: 12px; padding: 6px 0;">
+  <!-- Stylized S Icon Box -->
+  <div style="width: 44px; height: 44px; min-width: 44px; border-radius: 12px; background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #7928ca 100%); padding: 2px; box-shadow: 0 0 20px rgba(0, 242, 254, 0.4); display: flex; align-items: center; justify-content: center;">
+    <div style="width: 100%; height: 100%; background: #070d19; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+      <svg width="26" height="26" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Top S Curve (Cyan/Teal) -->
+        <path d="M78 28C72 14 55 8 36 12C20 15 10 28 12 42C13 49 18 54 26 57L48 64C56 67 59 71 58 76C57 82 48 86 36 84C24 82 18 73 18 73L6 81C6 81 16 95 38 98C60 101 73 89 75 74C77 62 70 54 58 50L38 43C31 40 28 37 29 32C30 26 38 23 48 24C60 25 67 33 67 33L78 28Z" fill="url(#samco_s_grad)"/>
+        <!-- Swoosh Accent -->
+        <path d="M88 45C85 30 75 22 75 22L66 31C66 31 73 37 75 48C77 60 70 70 70 70L81 78C81 78 91 63 88 45Z" fill="url(#samco_accent_grad)"/>
+        <defs>
+          <linearGradient id="samco_s_grad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="0.5" stop-color="#38EF7D"/>
+            <stop offset="1" stop-color="#4FACFE"/>
+          </linearGradient>
+          <linearGradient id="samco_accent_grad" x1="60" y1="20" x2="90" y2="80" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="1" stop-color="#7928CA"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+  </div>
+
+  <!-- SAMCO Text Branding -->
+  <div style="display: flex; flex-direction: column; justify-content: center;">
+    <span style="font-size: 25px; font-weight: 900; letter-spacing: 2.5px; line-height: 1.05; text-transform: uppercase; background: linear-gradient(135deg, #00f2fe 0%, #38ef7d 45%, #4facfe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 10px rgba(0, 242, 254, 0.45)); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+      SAMCO
+    </span>
+    <span style="font-size: 8.5px; font-weight: 700; color: #64748b; letter-spacing: 2px; text-transform: uppercase; margin-top: 3px;">
+      CLOUD ERP SYSTEM
+    </span>
+  </div>
+</div></a>
+                        <a href="/vat/" class="p-2 rounded-xl border border-amber-200 bg-amber-50/40 hover:bg-amber-100/70 flex flex-col items-center gap-1 transition group"><!-- SAMCO LUXURY BRANDING LOGO -->
+<div class="samco-brand-wrapper" style="display: flex; align-items: center; gap: 12px; padding: 6px 0;">
+  <!-- Stylized S Icon Box -->
+  <div style="width: 44px; height: 44px; min-width: 44px; border-radius: 12px; background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #7928ca 100%); padding: 2px; box-shadow: 0 0 20px rgba(0, 242, 254, 0.4); display: flex; align-items: center; justify-content: center;">
+    <div style="width: 100%; height: 100%; background: #070d19; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+      <svg width="26" height="26" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Top S Curve (Cyan/Teal) -->
+        <path d="M78 28C72 14 55 8 36 12C20 15 10 28 12 42C13 49 18 54 26 57L48 64C56 67 59 71 58 76C57 82 48 86 36 84C24 82 18 73 18 73L6 81C6 81 16 95 38 98C60 101 73 89 75 74C77 62 70 54 58 50L38 43C31 40 28 37 29 32C30 26 38 23 48 24C60 25 67 33 67 33L78 28Z" fill="url(#samco_s_grad)"/>
+        <!-- Swoosh Accent -->
+        <path d="M88 45C85 30 75 22 75 22L66 31C66 31 73 37 75 48C77 60 70 70 70 70L81 78C81 78 91 63 88 45Z" fill="url(#samco_accent_grad)"/>
+        <defs>
+          <linearGradient id="samco_s_grad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="0.5" stop-color="#38EF7D"/>
+            <stop offset="1" stop-color="#4FACFE"/>
+          </linearGradient>
+          <linearGradient id="samco_accent_grad" x1="60" y1="20" x2="90" y2="80" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="1" stop-color="#7928CA"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+  </div>
+
+  <!-- SAMCO Text Branding -->
+  <div style="display: flex; flex-direction: column; justify-content: center;">
+    <span style="font-size: 25px; font-weight: 900; letter-spacing: 2.5px; line-height: 1.05; text-transform: uppercase; background: linear-gradient(135deg, #00f2fe 0%, #38ef7d 45%, #4facfe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 10px rgba(0, 242, 254, 0.45)); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+      SAMCO
+    </span>
+    <span style="font-size: 8.5px; font-weight: 700; color: #64748b; letter-spacing: 2px; text-transform: uppercase; margin-top: 3px;">
+      CLOUD ERP SYSTEM
+    </span>
+  </div>
+</div></a>
+                        <a href="/reports/aging/" class="p-2 rounded-xl border border-indigo-200 bg-indigo-50/40 hover:bg-indigo-100/70 flex flex-col items-center gap-1 transition group"><!-- SAMCO LUXURY BRANDING LOGO -->
+<div class="samco-brand-wrapper" style="display: flex; align-items: center; gap: 12px; padding: 6px 0;">
+  <!-- Stylized S Icon Box -->
+  <div style="width: 44px; height: 44px; min-width: 44px; border-radius: 12px; background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #7928ca 100%); padding: 2px; box-shadow: 0 0 20px rgba(0, 242, 254, 0.4); display: flex; align-items: center; justify-content: center;">
+    <div style="width: 100%; height: 100%; background: #070d19; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+      <svg width="26" height="26" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Top S Curve (Cyan/Teal) -->
+        <path d="M78 28C72 14 55 8 36 12C20 15 10 28 12 42C13 49 18 54 26 57L48 64C56 67 59 71 58 76C57 82 48 86 36 84C24 82 18 73 18 73L6 81C6 81 16 95 38 98C60 101 73 89 75 74C77 62 70 54 58 50L38 43C31 40 28 37 29 32C30 26 38 23 48 24C60 25 67 33 67 33L78 28Z" fill="url(#samco_s_grad)"/>
+        <!-- Swoosh Accent -->
+        <path d="M88 45C85 30 75 22 75 22L66 31C66 31 73 37 75 48C77 60 70 70 70 70L81 78C81 78 91 63 88 45Z" fill="url(#samco_accent_grad)"/>
+        <defs>
+          <linearGradient id="samco_s_grad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="0.5" stop-color="#38EF7D"/>
+            <stop offset="1" stop-color="#4FACFE"/>
+          </linearGradient>
+          <linearGradient id="samco_accent_grad" x1="60" y1="20" x2="90" y2="80" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#00F2FE"/>
+            <stop offset="1" stop-color="#7928CA"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+  </div>
+
+  <!-- SAMCO Text Branding -->
+  <div style="display: flex; flex-direction: column; justify-content: center;">
+    <span style="font-size: 25px; font-weight: 900; letter-spacing: 2.5px; line-height: 1.05; text-transform: uppercase; background: linear-gradient(135deg, #00f2fe 0%, #38ef7d 45%, #4facfe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 10px rgba(0, 242, 254, 0.45)); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+      SAMCO
+    </span>
+    <span style="font-size: 8.5px; font-weight: 700; color: #64748b; letter-spacing: 2px; text-transform: uppercase; margin-top: 3px;">
+      CLOUD ERP SYSTEM
+    </span>
+  </div>
+</div></a>
                     </div>
                 </div>
 
