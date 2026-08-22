@@ -7,10 +7,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
-  /* GORGEOUS SIDEBAR NAVIGATION PANEL */
-  aside, .sidebar-container, nav[class*="bg-"] {
-    background: linear-gradient(180deg, #070d19 0%, #0d1527 50%, #040711 100%) !important;
-    border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+  aside, .sidebar-wrapper, [class*="w-64"] {
+    background: linear-gradient(180deg, #070c18 0%, #0d1527 50%, #040711 100%) !important;
+    min-width: 260px !important;
+    max-width: 260px !important;
   }
 </style>
 
@@ -18,44 +18,9 @@
 <body class="bg-slate-50 text-slate-800 min-h-screen p-6 antialiased font-sans">
     <div class="max-w-4xl mx-auto space-y-6">
         <div class="flex justify-between items-center">
-            <a href="/invoices/" class="text-xs font-bold text-slate-600 hover:text-indigo-600 flex items-center gap-2"><!-- EXACT IMAGE 2 SAMCO BRANDING -->
-<div style="display: flex; align-items: center; gap: 8px; padding: 4px 0;">
-  <!-- ২ নম্বর ছবির নিখুঁত SAMCO 'S' আইকন -->
-  <svg width="48" height="38" viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 2px 10px rgba(0, 242, 254, 0.55)); min-width: 48px;">
-    <!-- উপরের মূল বাঁকানো উইং (Top Blade) -->
-    <path d="M82 14C62 8 36 12 22 28C14 37 12 47 14 55C17 45 25 36 38 30C52 24 72 22 88 26C88 26 86 19 82 14Z" fill="url(#s_grad_cyan)"/>
-    <!-- উপরের ভেতরের উইং শ্যাডো (Top Inner Wing) -->
-    <path d="M38 30C29 35 24 42 22 50C25 43 32 37 42 33C56 28 72 27 82 30C86 28 84 25 78 22C64 18 48 24 38 30Z" fill="url(#s_grad_light)" opacity="0.9"/>
-    
-    <!-- নিচের মূল বাঁকানো উইং (Bottom Blade) -->
-    <path d="M38 76C58 82 84 78 98 62C106 53 108 43 106 35C103 45 95 54 82 60C68 66 48 68 32 64C32 64 34 71 38 76Z" fill="url(#s_grad_cyan)"/>
-    <!-- নিচের ভেতরের উইং শ্যাডো (Bottom Inner Wing) -->
-    <path d="M82 60C91 55 96 48 98 40C95 47 88 53 78 57C64 62 48 63 38 60C34 62 36 65 42 68C56 72 72 66 82 60Z" fill="url(#s_grad_light)" opacity="0.9"/>
-
-    <defs>
-      <linearGradient id="s_grad_cyan" x1="12" y1="10" x2="108" y2="80" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stop-color="#00f2fe"/>
-        <stop offset="50%" stop-color="#38ef7d"/>
-        <stop offset="100%" stop-color="#4facfe"/>
-      </linearGradient>
-      <linearGradient id="s_grad_light" x1="20" y1="20" x2="100" y2="70" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stop-color="#ffffff"/>
-        <stop offset="50%" stop-color="#00f2fe"/>
-        <stop offset="100%" stop-color="#805ad5"/>
-      </linearGradient>
-    </defs>
-  </svg>
-
-  <!-- SAMCO টেক্সট (গর্জিয়াস নিয়ন গ্রেডিয়েন্ট) -->
-  <div style="display: flex; flex-direction: column; justify-content: center;">
-    <span style="font-size: 26px; font-weight: 900; letter-spacing: 2px; line-height: 1; text-transform: uppercase; background: linear-gradient(135deg, #00f2fe 0%, #38ef7d 45%, #4facfe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 12px rgba(0, 242, 254, 0.45)); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-      SAMCO
-    </span>
-    <span style="font-size: 8px; font-weight: 700; color: #64748b; letter-spacing: 2px; text-transform: uppercase; margin-top: 3px;">
-      CLOUD ERP SYSTEM
-    </span>
-  </div>
-</div></a>
+            <a href="/invoices/" class="text-xs font-bold text-slate-600 hover:text-indigo-600 flex items-center gap-2">
+                <i class="fa-solid fa-arrow-left"></i> Back to Invoices List
+            </a>
             <span class="px-3 py-1 bg-indigo-50 text-indigo-700 font-bold text-xs rounded-full border border-indigo-200">
                 Saudi ZATCA Phase 2 Compliant
             </span>

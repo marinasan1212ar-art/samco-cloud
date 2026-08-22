@@ -17,10 +17,10 @@
     </style>
 
 <style>
-  /* GORGEOUS SIDEBAR NAVIGATION PANEL */
-  aside, .sidebar-container, nav[class*="bg-"] {
-    background: linear-gradient(180deg, #070d19 0%, #0d1527 50%, #040711 100%) !important;
-    border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+  aside, .sidebar-wrapper, [class*="w-64"] {
+    background: linear-gradient(180deg, #070c18 0%, #0d1527 50%, #040711 100%) !important;
+    min-width: 260px !important;
+    max-width: 260px !important;
   }
 </style>
 
@@ -31,216 +31,34 @@
     <aside class="w-64 bg-[#0a1020] text-slate-300 flex flex-col justify-between shrink-0 h-full border-r border-slate-800 z-30 select-none">
         
         <div class="flex flex-col flex-1 overflow-y-auto custom-scrollbar p-3.5">
-            
-            <!-- Perfect Official QOYOD Vector Logo -->
-            <div class="flex items-center justify-between pb-3.5 border-b border-slate-800/80 mb-3 px-1">
-                <a href="/" class="flex flex-col select-none"><!-- EXACT IMAGE 2 SAMCO BRANDING -->
-<div style="display: flex; align-items: center; gap: 8px; padding: 4px 0;">
-  <!-- ২ নম্বর ছবির নিখুঁত SAMCO 'S' আইকন -->
-  <svg width="48" height="38" viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 2px 10px rgba(0, 242, 254, 0.55)); min-width: 48px;">
-    <!-- উপরের মূল বাঁকানো উইং (Top Blade) -->
-    <path d="M82 14C62 8 36 12 22 28C14 37 12 47 14 55C17 45 25 36 38 30C52 24 72 22 88 26C88 26 86 19 82 14Z" fill="url(#s_grad_cyan)"/>
-    <!-- উপরের ভেতরের উইং শ্যাডো (Top Inner Wing) -->
-    <path d="M38 30C29 35 24 42 22 50C25 43 32 37 42 33C56 28 72 27 82 30C86 28 84 25 78 22C64 18 48 24 38 30Z" fill="url(#s_grad_light)" opacity="0.9"/>
-    
-    <!-- নিচের মূল বাঁকানো উইং (Bottom Blade) -->
-    <path d="M38 76C58 82 84 78 98 62C106 53 108 43 106 35C103 45 95 54 82 60C68 66 48 68 32 64C32 64 34 71 38 76Z" fill="url(#s_grad_cyan)"/>
-    <!-- নিচের ভেতরের উইং শ্যাডো (Bottom Inner Wing) -->
-    <path d="M82 60C91 55 96 48 98 40C95 47 88 53 78 57C64 62 48 63 38 60C34 62 36 65 42 68C56 72 72 66 82 60Z" fill="url(#s_grad_light)" opacity="0.9"/>
-
-    <defs>
-      <linearGradient id="s_grad_cyan" x1="12" y1="10" x2="108" y2="80" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stop-color="#00f2fe"/>
-        <stop offset="50%" stop-color="#38ef7d"/>
-        <stop offset="100%" stop-color="#4facfe"/>
-      </linearGradient>
-      <linearGradient id="s_grad_light" x1="20" y1="20" x2="100" y2="70" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stop-color="#ffffff"/>
-        <stop offset="50%" stop-color="#00f2fe"/>
-        <stop offset="100%" stop-color="#805ad5"/>
-      </linearGradient>
-    </defs>
-  </svg>
-
-  <!-- SAMCO টেক্সট (গর্জিয়াস নিয়ন গ্রেডিয়েন্ট) -->
-  <div style="display: flex; flex-direction: column; justify-content: center;">
-    <span style="font-size: 26px; font-weight: 900; letter-spacing: 2px; line-height: 1; text-transform: uppercase; background: linear-gradient(135deg, #00f2fe 0%, #38ef7d 45%, #4facfe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 12px rgba(0, 242, 254, 0.45)); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-      SAMCO
-    </span>
-    <span style="font-size: 8px; font-weight: 700; color: #64748b; letter-spacing: 2px; text-transform: uppercase; margin-top: 3px;">
-      CLOUD ERP SYSTEM
-    </span>
-  </div>
-</div></a>
-            </div>
-
-            <!-- Operations Section Title -->
-            <div class="text-[10px] font-bold text-cyan-400 uppercase tracking-wider mb-2 px-2 flex items-center gap-1.5">
-                <span>🏭</span> <span>WAREHOUSE OPERATIONS</span>
-            </div>
-
-            <!-- Custom WMS Navigation Menu -->
-            <nav class="space-y-1 text-xs font-semibold" id="sidebarMenu">
-                <!-- 1. Sales Entry -->
-                <button onclick="showWMSPanel('sales_entry', this)" class="wms-nav-btn w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
-                    <span>🛍️</span> <span>Sales Entry</span>
-                </button>
-
-                <!-- 2. Purchase Entry -->
-                <button onclick="showWMSPanel('purchase_entry', this)" class="wms-nav-btn w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
-                    <span>🛒</span> <span>Purchase Entry</span>
-                </button>
-
-                <!-- 3. Supplier -->
-                <button onclick="showWMSPanel('suppliers', this)" class="wms-nav-btn w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
-                    <span>🏭</span> <span>Supplier</span>
-                </button>
-
-                <!-- 4. Stock / Inventory (Default) -->
-                <button onclick="showWMSPanel('inventory', this)" class="wms-nav-btn active w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl bg-cyan-600/30 text-cyan-300 border border-cyan-500/40 font-bold transition">
-                    <span>📦</span> <span>Stock / Inventory</span>
-                </button>
-
-                <!-- 5. Receiving -->
-                <div>
-                    <button type="button" onclick="toggleSubmenu('receiving-sub', this)" class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
-                        <div class="flex items-center gap-3">
-                            <span>📥</span> <span>Receiving</span>
-                        </div>
-                        <i class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200"></i>
-                    </button>
-                    <div id="receiving-sub" class="hidden pl-8 pr-2 py-1 space-y-1 text-[11px] bg-slate-900/60 rounded-xl my-1 border border-slate-800">
-                        <button onclick="showWMSPanel('recv_finished', this)" class="w-full text-left block py-1.5 px-2.5 rounded-lg text-slate-400 hover:text-white">📦 Finished Goods</button>
-                        <button onclick="showWMSPanel('recv_semi', this)" class="w-full text-left block py-1.5 px-2.5 rounded-lg text-slate-400 hover:text-white">🧩 Semi Goods</button>
-                        <button onclick="showWMSPanel('recv_outside', this)" class="w-full text-left block py-1.5 px-2.5 rounded-lg text-slate-400 hover:text-white">🌍 Outside Goods</button>
-                    </div>
-                </div>
-
-                <!-- 6. Raw Material -->
-                <div>
-                    <button type="button" onclick="toggleSubmenu('raw-sub', this)" class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
-                        <div class="flex items-center gap-3">
-                            <span>🧪</span> <span>Raw Material</span>
-                        </div>
-                        <i class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200"></i>
-                    </button>
-                    <div id="raw-sub" class="hidden pl-8 pr-2 py-1 space-y-1 text-[11px] bg-slate-900/60 rounded-xl my-1 border border-slate-800">
-                        <button onclick="showWMSPanel('raw_stock', this)" class="w-full text-left block py-1.5 px-2.5 rounded-lg text-slate-400 hover:text-white">🧪 Raw Material Stock</button>
-                        <button onclick="showWMSPanel('transfer_slip', this)" class="w-full text-left block py-1.5 px-2.5 rounded-lg text-slate-400 hover:text-white">🔄 Transfer Material Slip</button>
-                        <button onclick="showWMSPanel('raw_qa', this)" class="w-full text-left block py-1.5 px-2.5 rounded-lg text-slate-400 hover:text-white">🔬 QA Quarantine</button>
-                    </div>
-                </div>
-
-                <!-- 7. Delivery Note (Now with direct Entry Form!) -->
-                <button onclick="showWMSPanel('delivery_notes', this)" class="wms-nav-btn w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
-                    <span>🚚</span> <span>Delivery Note</span>
-                </button>
-
-                <!-- 8. Issue Slip -->
-                <button onclick="showWMSPanel('issue_slip', this)" class="wms-nav-btn w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
-                    <span>📑</span> <span>Issue Slip</span>
-                </button>
-
-                <!-- 9. SABIC -->
-                <button onclick="showWMSPanel('sabic_ledger', this)" class="wms-nav-btn w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
-                    <span>🏢</span> <span>SABIC (Polymers)</span>
-                </button>
-
-                <!-- 10. Surebeam (Direct click opens Entry Form & toggles dropdown) -->
-                <div>
-                    <button type="button" onclick="showWMSPanel('surebeam_transfer', this); toggleSubmenu('surebeam-sub', this);" class="wms-nav-btn w-full flex items-center justify-between px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
-                        <div class="flex items-center gap-3">
-                            <span>⚛️</span> <span>Surebeam</span>
-                        </div>
-                        <i class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200"></i>
-                    </button>
-                    <div id="surebeam-sub" class="hidden pl-8 pr-2 py-1 space-y-1 text-[11px] bg-slate-900/60 rounded-xl my-1 border border-slate-800">
-                        <button onclick="showWMSPanel('surebeam_transfer', this)" class="w-full text-left block py-1.5 px-2.5 rounded-lg text-slate-400 hover:text-white">📤 Transfer Surebeam Goods</button>
-                        <button onclick="showWMSPanel('surebeam_recv', this)" class="w-full text-left block py-1.5 px-2.5 rounded-lg text-slate-400 hover:text-white">📥 Receiving Surebeam Goods</button>
-                    </div>
-                </div>
-
-                <!-- 11. System Setting -->
-                <button onclick="showWMSPanel('system_setting', this)" class="wms-nav-btn w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
-                    <span>⚙️</span> <span>System Setting</span>
-                </button>
-            </nav>
-        </div>
-
-        <!-- Back to Main Qoyod Button -->
-        <div class="p-3 border-t border-slate-800/80 bg-[#080d1a]">
-            <a href="/" class="text-xs font-bold text-slate-400 hover:text-white flex items-center gap-2">
-                <i class="fa-solid fa-arrow-left"></i> Back to Main Qoyod
-            </a>
-        </div>
-    </aside>
-
-    <!-- 2. MAIN WORKSPACE -->
-    <main class="flex-1 flex flex-col h-full overflow-hidden bg-[#f8fafc]">
-        
-        <!-- HEADER (EXACT IMAGE 4 STYLE) -->
-        <header class="bg-white border-b border-slate-200 px-6 py-3 flex justify-between items-center z-20 shadow-xs">
-            <!-- Left: Search Box -->
-            <div class="relative w-96">
-                <input type="text" id="wmsSearch" placeholder="Search anything..." oninput="filterWMSTables(this.value)" class="w-full pl-4 pr-10 py-2 bg-white border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-slate-400 text-slate-700 shadow-xs">
-                <i class="fa-solid fa-magnifying-glass absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-            </div>
-
-            <!-- Right Controls: Live Clock + Bell (8) + Mail (3) + Admin Profile -->
-            <div class="flex items-center gap-6 text-slate-700">
-                <!-- Live Date & Clock -->
-                <div class="flex items-center gap-3 text-xs font-semibold pl-4 border-l border-slate-200">
-                    <div class="text-right">
-                        <div id="liveDate" class="text-slate-800 font-bold">Tuesday, 14 May 2024</div>
-                        <div class="text-slate-500 font-mono text-[11px] flex items-center gap-1 justify-end">
-                            <i class="fa-regular fa-clock text-[10px]"></i>
-                            <span id="liveTime">10:24:35 AM</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Bell (8) -->
-                <div class="relative cursor-pointer">
-                    <i class="fa-regular fa-bell text-base text-slate-600 hover:text-slate-900"></i>
-                    <span class="absolute -top-1.5 -right-2 bg-rose-500 text-white font-black text-[9px] w-4 h-4 rounded-full flex items-center justify-center shadow-xs">8</span>
-                </div>
-
-                <!-- Mail (3) -->
-                <div class="relative cursor-pointer">
-                    <i class="fa-regular fa-envelope text-base text-slate-600 hover:text-slate-900"></i>
-                    <span class="absolute -top-1.5 -right-2 bg-emerald-500 text-white font-black text-[9px] w-4 h-4 rounded-full flex items-center justify-center shadow-xs">3</span>
-                </div>
-
-                <!-- Admin Profile -->
-                <div class="flex items-center gap-3 pl-4 border-l border-slate-200">
-                    <div class="text-right">
-                        <div class="text-xs font-black text-slate-900 leading-tight">Admin</div>
-                        <div class="text-[10px] text-slate-500">Super Admin</div>
-                    </div>
-                    <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-xs">
-                        <i class="fa-solid fa-user text-xs"></i>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <!-- DYNAMIC PANELS CONTAINER -->
-        <div class="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
-
-            <!-- ========================================================= -->
-            <!-- 🚚 1. REAL DELIVERY NOTE ENTRY FORM & QUEUE -->
-            <!-- ========================================================= -->
-            <div id="panel-delivery_notes" class="wms-panel space-y-6">
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-                    
-                    <!-- Left: Entry Form Card -->
-                    <div class="lg:col-span-5 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
-                        <div class="border-b border-slate-100 pb-3">
-                            <h3 class="text-base font-black text-slate-900 flex items-center gap-2">
-                                🚚 Delivery Note Entry Form (سند تسليم বضاعة)
-                            </h3>
-                            <p class="text-xs text-slate-500">Add medical products and create KSA gate clearance delivery note</p>
-                        </div>
+<!-- SAMCO EXACT HEADER -->
+      <div class="px-4 py-4 mb-2 border-b border-slate-800/80 flex items-center justify-between">
+        <a href="/" class="flex items-center gap-2.5 no-underline">
+          <!-- 2 No. Image Exact S Swoosh -->
+          <svg width="42" height="32" viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg" style="min-width: 42px; filter: drop-shadow(0 0 8px rgba(0, 242, 254, 0.6));">
+            <path d="M72 10C54 4 30 8 16 22C8 30 6 38 8 46C11 36 18 28 30 22C42 16 62 14 78 18C78 18 76 13 72 10Z" fill="url(#s_cyan)"/>
+            <path d="M30 24C22 28 17 34 15 41C18 35 24 30 34 26C46 21 62 20 72 23C75 21 73 19 68 17C54 14 40 19 30 24Z" fill="#ffffff" opacity="0.8"/>
+            <path d="M28 70C46 76 70 72 84 58C92 50 94 42 92 34C89 44 82 52 70 58C58 64 38 66 22 62C22 62 24 67 28 70Z" fill="url(#s_cyan)"/>
+            <path d="M70 56C78 52 83 46 85 39C82 45 76 50 66 54C54 59 38 60 28 57C25 59 27 61 32 63C46 66 60 61 70 56Z" fill="#ffffff" opacity="0.8"/>
+            <defs>
+              <linearGradient id="s_cyan" x1="0" y1="0" x2="100" y2="80" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#00f2fe"/>
+                <stop offset="50%" stop-color="#38ef7d"/>
+                <stop offset="100%" stop-color="#4facfe"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <div class="flex flex-col justify-center">
+            <span style="font-size: 24px; font-weight: 900; letter-spacing: 2px; line-height: 1; text-transform: uppercase; background: linear-gradient(135deg, #00f2fe 0%, #38ef7d 45%, #4facfe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 10px rgba(0, 242, 254, 0.45));">
+              SAMCO
+            </span>
+            <span style="font-size: 8px; font-weight: 700; color: #64748b; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 2px;">
+              CLOUD ERP SYSTEM
+            </span>
+          </div>
+        </a>
+      </div>
+</div>
 
                         <div class="space-y-3 text-xs font-semibold">
                             <div class="grid grid-cols-2 gap-3">
