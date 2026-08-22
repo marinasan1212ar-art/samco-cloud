@@ -15,6 +15,15 @@
         .wms-panel { display: none; }
         .wms-panel.active { display: block; }
     </style>
+
+<style>
+  /* GORGEOUS SIDEBAR NAVIGATION PANEL */
+  aside, .sidebar-container, nav[class*="bg-"] {
+    background: linear-gradient(180deg, #070d19 0%, #0d1527 50%, #040711 100%) !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+  }
+</style>
+
 </head>
 <body class="bg-slate-50 text-slate-800 h-full flex overflow-hidden">
 
@@ -23,46 +32,31 @@
         
         <div class="flex flex-col flex-1 overflow-y-auto custom-scrollbar p-3.5">
             
-        <!-- GORGEOUS SAMCO LOGO -->
-        <div style="display: flex; align-items: center; gap: 12px; padding: 4px 0;">
-          <div style="width: 44px; height: 44px; min-width: 44px; border-radius: 12px; background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #7928ca 100%); padding: 2px; box-shadow: 0 0 18px rgba(0, 242, 254, 0.45); display: flex; align-items: center; justify-content: center;">
-            <div style="width: 100%; height: 100%; background: #070d19; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
-              <svg width="26" height="26" viewBox="0 0 100 100" fill="none">
-                <path d="M78 28C72 14 55 8 36 12C20 15 10 28 12 42C13 49 18 54 26 57L48 64C56 67 59 71 58 76C57 82 48 86 36 84C24 82 18 73 18 73L6 81C6 81 16 95 38 98C60 101 73 89 75 74C77 62 70 54 58 50L38 43C31 40 28 37 29 32C30 26 38 23 48 24C60 25 67 33 67 33L78 28Z" fill="url(#scyan)"/>
-                <path d="M88 45C85 30 75 22 75 22L66 31C66 31 73 37 75 48C77 60 70 70 70 70L81 78C81 78 91 63 88 45Z" fill="url(#spurple)"/>
-                <defs>
-                  <linearGradient id="scyan" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse"><stop stop-color="#00F2FE"/><stop offset="0.5" stop-color="#38EF7D"/><stop offset="1" stop-color="#4FACFE"/></linearGradient>
-                  <linearGradient id="spurple" x1="60" y1="20" x2="90" y2="80" gradientUnits="userSpaceOnUse"><stop stop-color="#00F2FE"/><stop offset="1" stop-color="#7928CA"/></linearGradient>
-                </defs>
-              </svg>
-            </div>
-          </div>
-          <div style="display: flex; flex-direction: column;">
-            <span style="font-size: 24px; font-weight: 900; letter-spacing: 2px; line-height: 1; text-transform: uppercase; background: linear-gradient(135deg, #00f2fe 0%, #38ef7d 45%, #4facfe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 10px rgba(0, 242, 254, 0.45)); font-family: system-ui, sans-serif;">
-              SAMCO
-            </span>
-            <span style="font-size: 9px; font-weight: 700; color: #94a3b8; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 3px;">
-              CLOUD ERP SYSTEM
-            </span>
-          </div>
-        </div>
+            <!-- Perfect Official QOYOD Vector Logo -->
             <div class="flex items-center justify-between pb-3.5 border-b border-slate-800/80 mb-3 px-1">
                 <a href="/" class="flex flex-col select-none">
-                    <div class="flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 38" class="w-36 h-auto">
-                            <circle cx="16" cy="17" r="11.5" fill="none" stroke="#ffffff" stroke-width="4.8"/>
-                            <rect x="9.5" y="24.5" width="6.5" height="6.5" rx="1.5" fill="#22d3ee"/>
-                            <circle cx="45" cy="17" r="11.5" fill="none" stroke="#ffffff" stroke-width="4.8"/>
-                            <path d="M 64.5 6 L 73 18.5 L 81.5 6 M 73 18.5 L 73 28.5" fill="none" stroke="#ffffff" stroke-width="4.8" stroke-linecap="round" stroke-linejoin="round"/>
-                            <circle cx="102" cy="17" r="11.5" fill="none" stroke="#ffffff" stroke-width="4.8"/>
-                            <path d="M 123 6 L 133 6 C 141 6 146.5 11 146.5 17.25 C 146.5 23.5 141 28.5 133 28.5 L 123 28.5 Z" fill="none" stroke="#ffffff" stroke-width="4.8" stroke-linejoin="round"/>
-                        </svg>
-                    </div>
-                    <div class="mt-1 leading-tight">
-                        <span class="text-[9.5px] font-bold text-slate-100 tracking-[0.18em] block" dir="rtl">Cloud ERP System</span>
-                        <span class="text-[7.2px] font-medium text-slate-400 tracking-[0.06em] block mt-0.5">Warehouse WMS Management</span>
-                    </div>
-                </a>
+                    <div class="flex items-center gap-3 py-1">
+  <div style="width: 42px; height: 42px; min-width: 42px; border-radius: 12px; background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #7928ca 100%); padding: 2px; box-shadow: 0 0 16px rgba(0, 242, 254, 0.45); display: flex; align-items: center; justify-content: center;">
+    <div style="width: 100%; height: 100%; background: #070d19; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+      <svg width="24" height="24" viewBox="0 0 100 100" fill="none">
+        <path d="M78 28C72 14 55 8 36 12C20 15 10 28 12 42C13 49 18 54 26 57L48 64C56 67 59 71 58 76C57 82 48 86 36 84C24 82 18 73 18 73L6 81C6 81 16 95 38 98C60 101 73 89 75 74C77 62 70 54 58 50L38 43C31 40 28 37 29 32C30 26 38 23 48 24C60 25 67 33 67 33L78 28Z" fill="url(#s1)"/>
+        <path d="M88 45C85 30 75 22 75 22L66 31C66 31 73 37 75 48C77 60 70 70 70 70L81 78C81 78 91 63 88 45Z" fill="url(#s2)"/>
+        <defs>
+          <linearGradient id="s1" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse"><stop stop-color="#00F2FE"/><stop offset="0.5" stop-color="#38EF7D"/><stop offset="1" stop-color="#4FACFE"/></linearGradient>
+          <linearGradient id="s2" x1="60" y1="20" x2="90" y2="80" gradientUnits="userSpaceOnUse"><stop stop-color="#00F2FE"/><stop offset="1" stop-color="#7928CA"/></linearGradient>
+        </defs>
+      </svg>
+    </div>
+  </div>
+  <div class="flex flex-col">
+    <span style="font-size: 22px; font-weight: 900; letter-spacing: 2px; line-height: 1; text-transform: uppercase; background: linear-gradient(135deg, #00f2fe 0%, #38ef7d 45%, #4facfe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 10px rgba(0, 242, 254, 0.4)); font-family: system-ui, sans-serif;">
+      SAMCO
+    </span>
+    <span style="font-size: 8px; font-weight: 700; color: #94a3b8; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 3px;">
+      CLOUD ERP SYSTEM
+    </span>
+  </div>
+</div></a>
             </div>
 
             <!-- Operations Section Title -->
