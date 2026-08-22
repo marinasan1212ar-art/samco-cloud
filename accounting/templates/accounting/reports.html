@@ -19,41 +19,9 @@
 
     <!-- Top Action Bar -->
     <div class="max-w-6xl mx-auto mb-6 flex justify-between items-center no-print">
-        <a href="/" class="text-sm font-semibold text-slate-400 hover:text-white flex items-center gap-2"><!-- SAMCO LUXURY BRANDING LOGO -->
-<div class="samco-brand-wrapper" style="display: flex; align-items: center; gap: 12px; padding: 6px 0;">
-  <!-- Stylized S Icon Box -->
-  <div style="width: 44px; height: 44px; min-width: 44px; border-radius: 12px; background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #7928ca 100%); padding: 2px; box-shadow: 0 0 20px rgba(0, 242, 254, 0.4); display: flex; align-items: center; justify-content: center;">
-    <div style="width: 100%; height: 100%; background: #070d19; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
-      <svg width="26" height="26" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <!-- Top S Curve (Cyan/Teal) -->
-        <path d="M78 28C72 14 55 8 36 12C20 15 10 28 12 42C13 49 18 54 26 57L48 64C56 67 59 71 58 76C57 82 48 86 36 84C24 82 18 73 18 73L6 81C6 81 16 95 38 98C60 101 73 89 75 74C77 62 70 54 58 50L38 43C31 40 28 37 29 32C30 26 38 23 48 24C60 25 67 33 67 33L78 28Z" fill="url(#samco_s_grad)"/>
-        <!-- Swoosh Accent -->
-        <path d="M88 45C85 30 75 22 75 22L66 31C66 31 73 37 75 48C77 60 70 70 70 70L81 78C81 78 91 63 88 45Z" fill="url(#samco_accent_grad)"/>
-        <defs>
-          <linearGradient id="samco_s_grad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
-            <stop stop-color="#00F2FE"/>
-            <stop offset="0.5" stop-color="#38EF7D"/>
-            <stop offset="1" stop-color="#4FACFE"/>
-          </linearGradient>
-          <linearGradient id="samco_accent_grad" x1="60" y1="20" x2="90" y2="80" gradientUnits="userSpaceOnUse">
-            <stop stop-color="#00F2FE"/>
-            <stop offset="1" stop-color="#7928CA"/>
-          </linearGradient>
-        </defs>
-      </svg>
-    </div>
-  </div>
-
-  <!-- SAMCO Text Branding -->
-  <div style="display: flex; flex-direction: column; justify-content: center;">
-    <span style="font-size: 25px; font-weight: 900; letter-spacing: 2.5px; line-height: 1.05; text-transform: uppercase; background: linear-gradient(135deg, #00f2fe 0%, #38ef7d 45%, #4facfe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 10px rgba(0, 242, 254, 0.45)); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-      SAMCO
-    </span>
-    <span style="font-size: 8.5px; font-weight: 700; color: #64748b; letter-spacing: 2px; text-transform: uppercase; margin-top: 3px;">
-      CLOUD ERP SYSTEM
-    </span>
-  </div>
-</div></a>
+        <a href="/" class="text-sm font-semibold text-slate-400 hover:text-white flex items-center gap-2">
+            <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+        </a>
         <div class="flex items-center gap-3">
             <span class="text-xs px-3 py-1.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold flex items-center gap-1.5">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Double-Entry Balanced 🟢
@@ -68,7 +36,7 @@
     <div class="max-w-6xl mx-auto space-y-6">
         
         <!-- Header Banner -->
-        <div class="bg-gradient-to-b from-[#0a0f1d] via-[#0d1527] to-[#060a12] border border-slate-800 rounded-2xl p-6 shadow-xl flex justify-between items-center print-card">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl flex justify-between items-center print-card">
             <div>
                 <h1 class="text-xl md:text-2xl font-black text-white print-text-dark">{{ company.company_name_en }}</h1>
                 <p class="text-sm font-bold text-slate-400 print-text-dark" dir="rtl">{{ company.company_name_ar }}</p>
@@ -87,16 +55,16 @@
             <button onclick="switchTab('pnl')" id="tab-btn-pnl" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold bg-cyan-500 text-slate-950 shadow-lg">
                 📈 Profit & Loss (قائمة الدخل)
             </button>
-            <button onclick="switchTab('bs')" id="tab-btn-bs" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-b from-[#0a0f1d] via-[#0d1527] to-[#060a12] text-slate-400 hover:text-white border border-slate-800">
+            <button onclick="switchTab('bs')" id="tab-btn-bs" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 hover:text-white border border-slate-800">
                 🏛️ Balance Sheet (الميزانية العمومية)
             </button>
-            <button onclick="switchTab('tb')" id="tab-btn-tb" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-b from-[#0a0f1d] via-[#0d1527] to-[#060a12] text-slate-400 hover:text-white border border-slate-800">
+            <button onclick="switchTab('tb')" id="tab-btn-tb" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 hover:text-white border border-slate-800">
                 ⚖️ Trial Balance (ميزان المراجعة)
             </button>
-            <button onclick="switchTab('vat')" id="tab-btn-vat" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-b from-[#0a0f1d] via-[#0d1527] to-[#060a12] text-slate-400 hover:text-white border border-slate-800">
+            <button onclick="switchTab('vat')" id="tab-btn-vat" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 hover:text-white border border-slate-800">
                 🧾 ZATCA VAT Return (الإقرار الضريبي)
             </button>
-            <button onclick="switchTab('gl')" id="tab-btn-gl" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-b from-[#0a0f1d] via-[#0d1527] to-[#060a12] text-slate-400 hover:text-white border border-slate-800">
+            <button onclick="switchTab('gl')" id="tab-btn-gl" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 hover:text-white border border-slate-800">
                 📖 General Ledger (دفتر الأستاذ)
             </button>
         </div>
@@ -104,7 +72,7 @@
         <!-- ========================================================= -->
         <!-- 📈 1. PROFIT & LOSS STATEMENT (قائمة الدخل) -->
         <!-- ========================================================= -->
-        <div id="tab-pnl" class="tab-content bg-gradient-to-b from-[#0a0f1d] via-[#0d1527] to-[#060a12] border border-slate-800 rounded-2xl p-8 shadow-xl print-card">
+        <div id="tab-pnl" class="tab-content bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-xl print-card">
             <div class="border-b border-slate-800 pb-4 mb-6 flex justify-between items-center">
                 <div>
                     <h2 class="text-lg font-black text-white print-text-dark">Income Statement / Profit & Loss (قائمة الدخل)</h2>
@@ -170,7 +138,7 @@
         <!-- ========================================================= -->
         <!-- 🏛️ 2. BALANCE SHEET (الميزانية العمومية) -->
         <!-- ========================================================= -->
-        <div id="tab-bs" class="tab-content bg-gradient-to-b from-[#0a0f1d] via-[#0d1527] to-[#060a12] border border-slate-800 rounded-2xl p-8 shadow-xl print-card hidden">
+        <div id="tab-bs" class="tab-content bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-xl print-card hidden">
             <div class="border-b border-slate-800 pb-4 mb-6 flex justify-between items-center">
                 <div>
                     <h2 class="text-lg font-black text-white print-text-dark">Balance Sheet Statement (الميزانية العمومية)</h2>
@@ -238,7 +206,7 @@
         <!-- ========================================================= -->
         <!-- ⚖️ 3. TRIAL BALANCE (ميزان المراجعة) -->
         <!-- ========================================================= -->
-        <div id="tab-tb" class="tab-content bg-gradient-to-b from-[#0a0f1d] via-[#0d1527] to-[#060a12] border border-slate-800 rounded-2xl p-8 shadow-xl print-card hidden">
+        <div id="tab-tb" class="tab-content bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-xl print-card hidden">
             <div class="border-b border-slate-800 pb-4 mb-6 flex justify-between items-center">
                 <div>
                     <h2 class="text-lg font-black text-white print-text-dark">Trial Balance / General Ledger Summary (ميزان المراجعة)</h2>
@@ -288,7 +256,7 @@
         <!-- ========================================================= -->
         <!-- 🧾 4. ZATCA VAT RETURN REPORT (الإقرار الضريبي) -->
         <!-- ========================================================= -->
-        <div id="tab-vat" class="tab-content bg-gradient-to-b from-[#0a0f1d] via-[#0d1527] to-[#060a12] border border-slate-800 rounded-2xl p-8 shadow-xl print-card hidden">
+        <div id="tab-vat" class="tab-content bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-xl print-card hidden">
             <div class="border-b border-slate-800 pb-4 mb-6 flex justify-between items-center">
                 <div>
                     <h2 class="text-lg font-black text-white print-text-dark">ZATCA 15% VAT Return Declaration (تقرير الإقرار الضريبي)</h2>
@@ -348,7 +316,7 @@
         <!-- ========================================================= -->
         <!-- 📖 5. GENERAL LEDGER (دفتر الأستاذ) -->
         <!-- ========================================================= -->
-        <div id="tab-gl" class="tab-content bg-gradient-to-b from-[#0a0f1d] via-[#0d1527] to-[#060a12] border border-slate-800 rounded-2xl p-8 shadow-xl print-card hidden">
+        <div id="tab-gl" class="tab-content bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-xl print-card hidden">
             <div class="border-b border-slate-800 pb-4 mb-6 flex justify-between items-center">
                 <div>
                     <h2 class="text-lg font-black text-white print-text-dark">General Ledger Detail Trail (دفتر الأستاذ العام)</h2>
@@ -393,7 +361,7 @@
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.className = 'tab-btn px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-b from-[#0a0f1d] via-[#0d1527] to-[#060a12] text-slate-400 hover:text-white border border-slate-800';
+                btn.className = 'tab-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-900 text-slate-400 hover:text-white border border-slate-800';
             });
 
             document.getElementById('tab-' + tabId).classList.remove('hidden');

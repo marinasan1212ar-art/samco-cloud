@@ -22,7 +22,7 @@
                             <p class="text-sm font-bold text-white truncate w-32">${item.name}</p>
                             <p class="text-[10px] text-cyan-400">${item.price} SAR</p>
                         </div>
-                        <div class="flex items-center gap-2 bg-gradient-to-b from-[#0a0f1d] via-[#0d1527] to-[#060a12] rounded-lg p-1">
+                        <div class="flex items-center gap-2 bg-slate-900 rounded-lg p-1">
                             <button onclick="changeQty(${index}, -1)" class="w-6 h-6 bg-slate-700 hover:bg-slate-600 rounded-md text-white font-bold">-</button>
                             <span class="w-6 text-center text-sm font-bold text-white">${item.qty}</span>
                             <button onclick="changeQty(${index}, 1)" class="w-6 h-6 bg-slate-700 hover:bg-slate-600 rounded-md text-white font-bold">+</button>
@@ -93,7 +93,7 @@
 <body class="bg-slate-950 text-slate-100 min-h-screen font-sans antialiased overflow-hidden flex flex-col">
 
     <!-- Top Bar -->
-    <header class="h-14 bg-gradient-to-b from-[#0a0f1d] via-[#0d1527] to-[#060a12] border-b border-slate-800 flex items-center justify-between px-4 shrink-0">
+    <header class="h-14 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-4 shrink-0">
         <div class="flex items-center gap-3">
             <a href="/" class="text-slate-400 hover:text-white px-2 py-1 bg-slate-800 rounded-lg"><i class="fa-solid fa-house"></i></a>
             <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-500 to-emerald-400 flex items-center justify-center text-black font-black text-sm">S</div>
@@ -110,7 +110,7 @@
         
         <!-- Products Grid (Left) -->
         <div class="flex-1 flex flex-col bg-slate-950">
-            <div class="p-4 bg-gradient-to-b from-[#0a0f1d] via-[#0d1527] to-[#060a12] border-b border-slate-800">
+            <div class="p-4 bg-slate-900 border-b border-slate-800">
                 <div class="relative">
                     <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400"></i>
                     <input type="text" placeholder="Scan Barcode or Search Product..." class="w-full bg-slate-950 border border-cyan-500/30 rounded-xl py-2.5 pl-10 pr-4 text-white focus:outline-none focus:border-cyan-400 transition">
@@ -120,7 +120,7 @@
             <div class="flex-1 overflow-y-auto p-4">
                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                     {% for p in products %}
-                    <div onclick="addToCart({{ p.id }}, '{{ p.name|escapejs }}', {{ p.sale_price|default:15.00 }})" class="bg-gradient-to-b from-[#0a0f1d] via-[#0d1527] to-[#060a12] border border-slate-800 rounded-2xl p-4 cursor-pointer hover:border-cyan-400 hover:shadow-[0_0_15px_rgba(6,182,212,0.2)] transition group flex flex-col justify-between h-40">
+                    <div onclick="addToCart({{ p.id }}, '{{ p.name|escapejs }}', {{ p.sale_price|default:15.00 }})" class="bg-slate-900 border border-slate-800 rounded-2xl p-4 cursor-pointer hover:border-cyan-400 hover:shadow-[0_0_15px_rgba(6,182,212,0.2)] transition group flex flex-col justify-between h-40">
                         <div class="text-xs font-mono text-slate-500 mb-1">{{ p.cat_no }}</div>
                         <h3 class="font-bold text-sm text-slate-200 group-hover:text-white leading-tight line-clamp-3">{{ p.name }}</h3>
                         <div class="mt-2 flex justify-between items-end">
@@ -136,7 +136,7 @@
         </div>
 
         <!-- Cart Sidebar (Right) -->
-        <div class="w-96 bg-gradient-to-b from-[#0a0f1d] via-[#0d1527] to-[#060a12] border-l border-slate-800 flex flex-col shadow-2xl z-10 shrink-0">
+        <div class="w-96 bg-slate-900 border-l border-slate-800 flex flex-col shadow-2xl z-10 shrink-0">
             <!-- Customer Select -->
             <div class="p-4 border-b border-slate-800 bg-slate-800/30">
                 <div class="flex items-center gap-2 mb-2">
@@ -151,7 +151,7 @@
             </div>
 
             <!-- Cart Items -->
-            <div id="cart-items" class="flex-1 overflow-y-auto p-4 bg-gradient-to-b from-[#0a0f1d] via-[#0d1527] to-[#060a12]/50">
+            <div id="cart-items" class="flex-1 overflow-y-auto p-4 bg-slate-900/50">
                 <div class="h-full flex flex-col items-center justify-center text-slate-600">
                     <i class="fa-solid fa-cart-arrow-down text-4xl mb-3"></i>
                     <p class="text-sm font-semibold">Cart is empty</p>
@@ -170,7 +170,7 @@
                 </div>
 
                 <div class="grid grid-cols-2 gap-2 mb-4">
-                    <select id="payment-method" class="col-span-2 bg-gradient-to-b from-[#0a0f1d] via-[#0d1527] to-[#060a12] border border-slate-700 rounded-xl p-2.5 text-sm text-white font-bold text-center">
+                    <select id="payment-method" class="col-span-2 bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-sm text-white font-bold text-center">
                         <option value="Cash">💵 Cash (نقدي)</option>
                         <option value="Mada / Card">💳 Mada / Visa (شبكة)</option>
                         <option value="Bank Transfer">🏦 Bank Transfer</option>
