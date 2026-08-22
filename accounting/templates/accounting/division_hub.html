@@ -26,40 +26,190 @@
             <!-- Perfect Official QOYOD Vector Logo -->
             <div class="flex items-center justify-between pb-3.5 border-b border-slate-800/80 mb-3 px-1">
                 <a href="/" class="flex flex-col select-none">
-                    <!-- SAMCO LUXURY BRANDING LOGO -->
-<div style="display: flex; align-items: center; gap: 12px; padding: 18px 16px 16px 16px;">
-  <!-- Stylized S Icon Box -->
-  <div style="width: 42px; height: 42px; min-width: 42px; border-radius: 12px; background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #7928ca 100%); padding: 2px; box-shadow: 0 0 18px rgba(0, 242, 254, 0.4); display: flex; align-items: center; justify-content: center;">
-    <div style="width: 100%; height: 100%; background: #070d19; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
-      <svg width="24" height="24" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M78 28C72 14 55 8 36 12C20 15 10 28 12 42C13 49 18 54 26 57L48 64C56 67 59 71 58 76C57 82 48 86 36 84C24 82 18 73 18 73L6 81C6 81 16 95 38 98C60 101 73 89 75 74C77 62 70 54 58 50L38 43C31 40 28 37 29 32C30 26 38 23 48 24C60 25 67 33 67 33L78 28Z" fill="url(#s_cyan)"/>
-        <path d="M88 45C85 30 75 22 75 22L66 31C66 31 73 37 75 48C77 60 70 70 70 70L81 78C81 78 91 63 88 45Z" fill="url(#s_purple)"/>
-        <defs>
-          <linearGradient id="s_cyan" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
-            <stop stop-color="#00F2FE"/>
-            <stop offset="0.5" stop-color="#38EF7D"/>
-            <stop offset="1" stop-color="#4FACFE"/>
-          </linearGradient>
-          <linearGradient id="s_purple" x1="60" y1="20" x2="90" y2="80" gradientUnits="userSpaceOnUse">
-            <stop stop-color="#00F2FE"/>
-            <stop offset="1" stop-color="#7928CA"/>
-          </linearGradient>
-        </defs>
-      </svg>
-    </div>
-  </div>
+                    <div class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 38" class="w-36 h-auto">
+                            <circle cx="16" cy="17" r="11.5" fill="none" stroke="#ffffff" stroke-width="4.8"/>
+                            <rect x="9.5" y="24.5" width="6.5" height="6.5" rx="1.5" fill="#22d3ee"/>
+                            <circle cx="45" cy="17" r="11.5" fill="none" stroke="#ffffff" stroke-width="4.8"/>
+                            <path d="M 64.5 6 L 73 18.5 L 81.5 6 M 73 18.5 L 73 28.5" fill="none" stroke="#ffffff" stroke-width="4.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="102" cy="17" r="11.5" fill="none" stroke="#ffffff" stroke-width="4.8"/>
+                            <path d="M 123 6 L 133 6 C 141 6 146.5 11 146.5 17.25 C 146.5 23.5 141 28.5 133 28.5 L 123 28.5 Z" fill="none" stroke="#ffffff" stroke-width="4.8" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="mt-1 leading-tight">
+                        <span class="text-[9.5px] font-bold text-slate-100 tracking-[0.18em] block" dir="rtl">Cloud ERP System</span>
+                        <span class="text-[7.2px] font-medium text-slate-400 tracking-[0.06em] block mt-0.5">Warehouse WMS Management</span>
+                    </div>
+                </a>
+            </div>
 
-  <!-- SAMCO Text Branding -->
-  <div style="display: flex; flex-direction: column; justify-content: center;">
-    <span style="font-size: 24px; font-weight: 900; letter-spacing: 2px; line-height: 1.05; text-transform: uppercase; background: linear-gradient(135deg, #00f2fe 0%, #38ef7d 45%, #4facfe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 10px rgba(0, 242, 254, 0.4)); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-      SAMCO
-    </span>
-    <span style="font-size: 8.5px; font-weight: 700; color: #64748b; letter-spacing: 2px; text-transform: uppercase; margin-top: 3px;">
-      CLOUD ERP SYSTEM
-    </span>
-  </div>
-</div>
-</div>
+            <!-- Operations Section Title -->
+            <div class="text-[10px] font-bold text-cyan-400 uppercase tracking-wider mb-2 px-2 flex items-center gap-1.5">
+                <span>🏭</span> <span>WAREHOUSE OPERATIONS</span>
+            </div>
+
+            <!-- Custom WMS Navigation Menu -->
+            <nav class="space-y-1 text-xs font-semibold" id="sidebarMenu">
+                <!-- 1. Sales Entry -->
+                <button onclick="showWMSPanel('sales_entry', this)" class="wms-nav-btn w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                    <span>🛍️</span> <span>Sales Entry</span>
+                </button>
+
+                <!-- 2. Purchase Entry -->
+                <button onclick="showWMSPanel('purchase_entry', this)" class="wms-nav-btn w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                    <span>🛒</span> <span>Purchase Entry</span>
+                </button>
+
+                <!-- 3. Supplier -->
+                <button onclick="showWMSPanel('suppliers', this)" class="wms-nav-btn w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                    <span>🏭</span> <span>Supplier</span>
+                </button>
+
+                <!-- 4. Stock / Inventory (Default) -->
+                <button onclick="showWMSPanel('inventory', this)" class="wms-nav-btn active w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl bg-cyan-600/30 text-cyan-300 border border-cyan-500/40 font-bold transition">
+                    <span>📦</span> <span>Stock / Inventory</span>
+                </button>
+
+                <!-- 5. Receiving -->
+                <div>
+                    <button type="button" onclick="toggleSubmenu('receiving-sub', this)" class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                        <div class="flex items-center gap-3">
+                            <span>📥</span> <span>Receiving</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200"></i>
+                    </button>
+                    <div id="receiving-sub" class="hidden pl-8 pr-2 py-1 space-y-1 text-[11px] bg-slate-900/60 rounded-xl my-1 border border-slate-800">
+                        <button onclick="showWMSPanel('recv_finished', this)" class="w-full text-left block py-1.5 px-2.5 rounded-lg text-slate-400 hover:text-white">📦 Finished Goods</button>
+                        <button onclick="showWMSPanel('recv_semi', this)" class="w-full text-left block py-1.5 px-2.5 rounded-lg text-slate-400 hover:text-white">🧩 Semi Goods</button>
+                        <button onclick="showWMSPanel('recv_outside', this)" class="w-full text-left block py-1.5 px-2.5 rounded-lg text-slate-400 hover:text-white">🌍 Outside Goods</button>
+                    </div>
+                </div>
+
+                <!-- 6. Raw Material -->
+                <div>
+                    <button type="button" onclick="toggleSubmenu('raw-sub', this)" class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                        <div class="flex items-center gap-3">
+                            <span>🧪</span> <span>Raw Material</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200"></i>
+                    </button>
+                    <div id="raw-sub" class="hidden pl-8 pr-2 py-1 space-y-1 text-[11px] bg-slate-900/60 rounded-xl my-1 border border-slate-800">
+                        <button onclick="showWMSPanel('raw_stock', this)" class="w-full text-left block py-1.5 px-2.5 rounded-lg text-slate-400 hover:text-white">🧪 Raw Material Stock</button>
+                        <button onclick="showWMSPanel('transfer_slip', this)" class="w-full text-left block py-1.5 px-2.5 rounded-lg text-slate-400 hover:text-white">🔄 Transfer Material Slip</button>
+                        <button onclick="showWMSPanel('raw_qa', this)" class="w-full text-left block py-1.5 px-2.5 rounded-lg text-slate-400 hover:text-white">🔬 QA Quarantine</button>
+                    </div>
+                </div>
+
+                <!-- 7. Delivery Note (Now with direct Entry Form!) -->
+                <button onclick="showWMSPanel('delivery_notes', this)" class="wms-nav-btn w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                    <span>🚚</span> <span>Delivery Note</span>
+                </button>
+
+                <!-- 8. Issue Slip -->
+                <button onclick="showWMSPanel('issue_slip', this)" class="wms-nav-btn w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                    <span>📑</span> <span>Issue Slip</span>
+                </button>
+
+                <!-- 9. SABIC -->
+                <button onclick="showWMSPanel('sabic_ledger', this)" class="wms-nav-btn w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                    <span>🏢</span> <span>SABIC (Polymers)</span>
+                </button>
+
+                <!-- 10. Surebeam (Direct click opens Entry Form & toggles dropdown) -->
+                <div>
+                    <button type="button" onclick="showWMSPanel('surebeam_transfer', this); toggleSubmenu('surebeam-sub', this);" class="wms-nav-btn w-full flex items-center justify-between px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                        <div class="flex items-center gap-3">
+                            <span>⚛️</span> <span>Surebeam</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200"></i>
+                    </button>
+                    <div id="surebeam-sub" class="hidden pl-8 pr-2 py-1 space-y-1 text-[11px] bg-slate-900/60 rounded-xl my-1 border border-slate-800">
+                        <button onclick="showWMSPanel('surebeam_transfer', this)" class="w-full text-left block py-1.5 px-2.5 rounded-lg text-slate-400 hover:text-white">📤 Transfer Surebeam Goods</button>
+                        <button onclick="showWMSPanel('surebeam_recv', this)" class="w-full text-left block py-1.5 px-2.5 rounded-lg text-slate-400 hover:text-white">📥 Receiving Surebeam Goods</button>
+                    </div>
+                </div>
+
+                <!-- 11. System Setting -->
+                <button onclick="showWMSPanel('system_setting', this)" class="wms-nav-btn w-full text-left flex items-center gap-3 px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition">
+                    <span>⚙️</span> <span>System Setting</span>
+                </button>
+            </nav>
+        </div>
+
+        <!-- Back to Main Qoyod Button -->
+        <div class="p-3 border-t border-slate-800/80 bg-[#080d1a]">
+            <a href="/" class="text-xs font-bold text-slate-400 hover:text-white flex items-center gap-2">
+                <i class="fa-solid fa-arrow-left"></i> Back to Main Qoyod
+            </a>
+        </div>
+    </aside>
+
+    <!-- 2. MAIN WORKSPACE -->
+    <main class="flex-1 flex flex-col h-full overflow-hidden bg-[#f8fafc]">
+        
+        <!-- HEADER (EXACT IMAGE 4 STYLE) -->
+        <header class="bg-white border-b border-slate-200 px-6 py-3 flex justify-between items-center z-20 shadow-xs">
+            <!-- Left: Search Box -->
+            <div class="relative w-96">
+                <input type="text" id="wmsSearch" placeholder="Search anything..." oninput="filterWMSTables(this.value)" class="w-full pl-4 pr-10 py-2 bg-white border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-slate-400 text-slate-700 shadow-xs">
+                <i class="fa-solid fa-magnifying-glass absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+            </div>
+
+            <!-- Right Controls: Live Clock + Bell (8) + Mail (3) + Admin Profile -->
+            <div class="flex items-center gap-6 text-slate-700">
+                <!-- Live Date & Clock -->
+                <div class="flex items-center gap-3 text-xs font-semibold pl-4 border-l border-slate-200">
+                    <div class="text-right">
+                        <div id="liveDate" class="text-slate-800 font-bold">Tuesday, 14 May 2024</div>
+                        <div class="text-slate-500 font-mono text-[11px] flex items-center gap-1 justify-end">
+                            <i class="fa-regular fa-clock text-[10px]"></i>
+                            <span id="liveTime">10:24:35 AM</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bell (8) -->
+                <div class="relative cursor-pointer">
+                    <i class="fa-regular fa-bell text-base text-slate-600 hover:text-slate-900"></i>
+                    <span class="absolute -top-1.5 -right-2 bg-rose-500 text-white font-black text-[9px] w-4 h-4 rounded-full flex items-center justify-center shadow-xs">8</span>
+                </div>
+
+                <!-- Mail (3) -->
+                <div class="relative cursor-pointer">
+                    <i class="fa-regular fa-envelope text-base text-slate-600 hover:text-slate-900"></i>
+                    <span class="absolute -top-1.5 -right-2 bg-emerald-500 text-white font-black text-[9px] w-4 h-4 rounded-full flex items-center justify-center shadow-xs">3</span>
+                </div>
+
+                <!-- Admin Profile -->
+                <div class="flex items-center gap-3 pl-4 border-l border-slate-200">
+                    <div class="text-right">
+                        <div class="text-xs font-black text-slate-900 leading-tight">Admin</div>
+                        <div class="text-[10px] text-slate-500">Super Admin</div>
+                    </div>
+                    <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-xs">
+                        <i class="fa-solid fa-user text-xs"></i>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- DYNAMIC PANELS CONTAINER -->
+        <div class="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
+
+            <!-- ========================================================= -->
+            <!-- 🚚 1. REAL DELIVERY NOTE ENTRY FORM & QUEUE -->
+            <!-- ========================================================= -->
+            <div id="panel-delivery_notes" class="wms-panel space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                    
+                    <!-- Left: Entry Form Card -->
+                    <div class="lg:col-span-5 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+                        <div class="border-b border-slate-100 pb-3">
+                            <h3 class="text-base font-black text-slate-900 flex items-center gap-2">
+                                🚚 Delivery Note Entry Form (سند تسليم বضاعة)
+                            </h3>
+                            <p class="text-xs text-slate-500">Add medical products and create KSA gate clearance delivery note</p>
+                        </div>
 
                         <div class="space-y-3 text-xs font-semibold">
                             <div class="grid grid-cols-2 gap-3">
